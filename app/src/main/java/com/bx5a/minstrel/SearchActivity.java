@@ -89,11 +89,7 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     private void updateList(ArrayList<Video> videos) {
-        for (Video video : videos) {
-            Log.i("SearchActivity", video.getTitle());
-        }
-        Log.i("SearchActivity", "--");
-        Log.i("SearchActivity", "--");
+        resultList.setAdapter(new VideoAdapter(this, videos));
     }
 
     class AsyncSearchVideos extends AsyncTask<String, Integer, Boolean> {
