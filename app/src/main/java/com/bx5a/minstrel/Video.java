@@ -3,38 +3,51 @@ package com.bx5a.minstrel;
 import android.content.Context;
 
 import com.bx5a.minstrel.youtube.YoutubeSearchEngine;
-import com.google.api.services.youtube.model.SearchListResponse;
-import com.google.api.services.youtube.model.SearchResult;
+import com.bx5a.minstrel.youtube.YoutubeVideo;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by guillaume on 23/03/2016.
  */
 public class Video {
-    private String title;
-    private String description;
-    private String thumbnailURL;
     private String id;
+    private String title;
+    private String thumbnailURL;
+    private BigInteger viewCount;
+    private String duration;
 
     public static ArrayList<Video> searchYoutube(Context context, String keywords) {
         // TODO: should be a singleton ?
         YoutubeSearchEngine youtubeSearchEngine = new YoutubeSearchEngine(context);
-        SearchListResponse results = youtubeSearchEngine.search(keywords);
-        if (results == null) {
+        List<YoutubeVideo> videos = youtubeSearchEngine.search(keywords);
+        if (videos == null) {
             return null;
         }
 
         ArrayList<Video> items = new ArrayList<Video>();
-        for(SearchResult result:results.getItems()){
-            Video item = new Video();
-            item.setTitle(result.getSnippet().getTitle());
-            item.setDescription(result.getSnippet().getDescription());
-            item.setThumbnailURL(result.getSnippet().getThumbnails().getDefault().getUrl());
-            item.setId(result.getId().getVideoId());
-            items.add(item);
+        for(YoutubeVideo video : videos){
+            items.add(video);
         }
         return items;
+    }
+
+    public String getDuration() {
+        return duration;
+    }
+
+    public void setDuration(String duration) {
+        this.duration = duration;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getTitle() {
@@ -53,20 +66,13 @@ public class Video {
         this.thumbnailURL = thumbnailURL;
     }
 
-    public String getId() {
-        return id;
+    public BigInteger getViewCount() {
+        return viewCount;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setViewCount(BigInteger viewCount) {
+        this.viewCount = viewCount;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
 }
 

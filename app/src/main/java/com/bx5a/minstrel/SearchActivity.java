@@ -89,6 +89,9 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     private void updateList(ArrayList<Video> videos) {
+        if (videos == null) {
+            return;
+        }
         resultList.setAdapter(new VideoAdapter(this, videos));
     }
 

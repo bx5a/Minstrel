@@ -1,12 +1,19 @@
 package com.bx5a.minstrel;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.List;
 
 /**
@@ -34,11 +41,48 @@ public class VideoAdapter extends ArrayAdapter<Video> {
         view.setTag(video);
 
         TextView title = (TextView)view.findViewById(R.id.listItemVideo_title);
-        TextView description = (TextView)view.findViewById(R.id.listItemVideo_description);
+        TextView viewCount = (TextView)view.findViewById(R.id.listItemVideo_viewCount);
+        ImageView thumbnail = (ImageView)view.findViewById(R.id.listItemVideo_thumbnail);
 
         title.setText(video.getTitle());
-        description.setText(video.getDescription());
+        viewCount.setText(
+                String.format(context.getString(R.string.view_count), video.getViewCount()));
+        new DisplayImageTask(video.getThumbnailURL(),thumbnail).execute();
 
         return view;
+    }
+
+    // Class that enable async loading of image views
+    // TODO: move to utils package ?
+    class DisplayImageTask extends AsyncTask<Void, Void, Bitmap> {
+        private String url;
+        private ImageView imageView;
+
+        public DisplayImageTask(String url, ImageView imageView) {
+            this.url = url;
+            this.imageView = imageView;
+        }
+
+        @Override
+        protected Bitmap doInBackground(Void... params) {
+            try {
+                URL urlConnection = new URL(url);
+                HttpURLConnection connection = (HttpURLConnection) urlConnection.openConnection();
+                connection.setDoInput(true);
+                connection.connect();
+                InputStream input = connection.getInputStream();
+                Bitmap myBitmap = BitmapFactory.decodeStream(input);
+                return myBitmap;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap result) {
+            super.onPostExecute(result);
+            imageView.setImageBitmap(result);
+        }
     }
 }
