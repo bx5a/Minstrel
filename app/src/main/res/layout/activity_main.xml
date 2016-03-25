@@ -4,15 +4,26 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!" />
+    <!-- Footer aligned to bottom -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentBottom="true"
+        android:gravity="bottom">
 
+        <com.bx5a.minstrel.widget.PlayerView
+            android:layout_width="match_parent"
+            android:layout_height="90dp"
+            android:background="@color/colorPrimaryDark">
+        </com.bx5a.minstrel.widget.PlayerView>
+    </RelativeLayout>
+
+
+    <!-- Side panel -->
     <ListView
         android:id="@+id/activityMain_sidePanel"
         android:layout_width="300dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:background="@color/colorPrimaryDark"></ListView>
+        android:background="@color/colorPrimary"></ListView>
 </android.support.v4.widget.DrawerLayout>
