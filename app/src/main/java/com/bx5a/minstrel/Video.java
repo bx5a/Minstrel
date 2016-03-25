@@ -2,6 +2,7 @@ package com.bx5a.minstrel;
 
 import android.content.Context;
 
+import com.bx5a.minstrel.player.Playable;
 import com.bx5a.minstrel.youtube.YoutubeSearchEngine;
 import com.bx5a.minstrel.youtube.YoutubeVideo;
 
@@ -12,9 +13,9 @@ import java.util.List;
 /**
  * Created by guillaume on 23/03/2016.
  */
-public class Video {
+public abstract class Video implements Playable {
     private String id;
-    private String title;
+    protected String title;
     private String thumbnailURL;
     private BigInteger viewCount;
     private String duration;

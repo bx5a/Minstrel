@@ -29,6 +29,7 @@
                     android:textStyle="bold"
                     android:textSize="20dp"
                     android:text="The Currently Playing Song"
+                    android:singleLine="true"
                     android:id="@+id/viewPlayer_currentSong"/>
 
                 <LinearLayout
@@ -53,6 +54,7 @@
                         android:textStyle="italic"
                         android:layout_gravity="center"
                         android:text="Next: The next playing song"
+                        android:maxLines="2"
                         android:id="@+id/viewPlayer_nextSong"/>
                 </LinearLayout>
 

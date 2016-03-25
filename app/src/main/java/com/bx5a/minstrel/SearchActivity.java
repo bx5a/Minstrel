@@ -1,19 +1,20 @@
 package com.bx5a.minstrel;
 
-import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
-import java.lang.reflect.Array;
+import com.bx5a.minstrel.player.Player;
+import com.bx5a.minstrel.player.Position;
+
 import java.util.ArrayList;
 
 /**
@@ -35,6 +36,22 @@ public class SearchActivity extends AppCompatActivity {
         resultList = (ListView)findViewById(R.id.activitySearch_resultList);
         searchView = null;
         nextSearch = null;
+
+        resultList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Object o = view.getTag();
+                if (o != null) {
+                    Video video = (Video)o;
+                    addVideoToPlayer(video);
+                }
+            }
+        });
+    }
+
+    private void addVideoToPlayer(Video video) {
+        Player.getInstance().enqueue(this, video, Position.Next);
+        Player.getInstance().play(this);
     }
 
     @Override
