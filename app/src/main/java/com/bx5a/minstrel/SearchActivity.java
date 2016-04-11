@@ -2,8 +2,8 @@ package com.bx5a.minstrel;
 
 import android.app.SearchManager;
 import android.content.Context;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.view.Menu;
@@ -16,6 +16,9 @@ import com.bx5a.minstrel.player.Player;
 import com.bx5a.minstrel.player.Position;
 
 import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 /**
  * Created by guillaume on 23/03/2016.
@@ -24,8 +27,9 @@ public class SearchActivity extends AppCompatActivity {
 
     private ListView resultList;
     private SearchView searchView;
-    private AsyncSearchVideos asyncSearch;
     private String nextSearch;
+    private ExecutorService searchQueue;
+    private ArrayList<Future<?>> pendingSearch;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -36,6 +40,7 @@ public class SearchActivity extends AppCompatActivity {
         resultList = (ListView)findViewById(R.id.activitySearch_resultList);
         searchView = null;
         nextSearch = null;
+        pendingSearch = new ArrayList<>();
 
         resultList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -47,6 +52,9 @@ public class SearchActivity extends AppCompatActivity {
                 }
             }
         });
+
+        // only one thread to make a serial queue
+        searchQueue = Executors.newFixedThreadPool(1);
     }
 
     private void addVideoToPlayer(Video video) {
@@ -85,14 +93,10 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     private void asyncSearch(String keywords) {
-        // if a search is running, do not start a new one. Just wait for it to finish and start the
-        // next one after
-        if (asyncSearch != null && asyncSearch.getStatus() == AsyncTask.Status.RUNNING) {
-            nextSearch = keywords;
-            return;
-        }
-        asyncSearch = new AsyncSearchVideos(this);
-        asyncSearch.execute(keywords);
+        cancelPendingSearch();
+        Future<?> search = searchQueue.submit(new AsyncVideosSearch(this, keywords));
+        pendingSearch.add(search);
+        // TODO: when destroying the SearchActivity we should shutdown() and awaitTermination()
     }
 
     private void searchFinished(ArrayList<Video> videos) {
@@ -103,6 +107,9 @@ public class SearchActivity extends AppCompatActivity {
             return;
         }
         updateList(videos);
+
+        // remove finished search
+        clearPendingSearch();
     }
 
     private void updateList(ArrayList<Video> videos) {
@@ -112,26 +119,55 @@ public class SearchActivity extends AppCompatActivity {
         resultList.setAdapter(new VideoAdapter(this, videos));
     }
 
-    class AsyncSearchVideos extends AsyncTask<String, Integer, Boolean> {
+    private void cancelPendingSearch() {
+        for (Future<?> search : pendingSearch) {
+            search.cancel(true);
+        }
+        pendingSearch.clear();
+    }
+
+    private void clearPendingSearch() {
+        // do a copy not to modify the array we iterate on
+        ArrayList<Future<?>> pendingSearchCopy = pendingSearch;
+        for (Future<?> search : pendingSearchCopy) {
+            if (search.isDone() || search.isCancelled()) {
+                pendingSearch.remove(search);
+            }
+        }
+    }
+
+    class AsyncVideosSearch implements Runnable {
         private SearchActivity context;
+        private String keywords;
         private ArrayList<Video> videos;
 
-        public AsyncSearchVideos(SearchActivity context) {
+        public AsyncVideosSearch(SearchActivity context, String searchKeywords) {
             super();
             this.context = context;
+            this.keywords = searchKeywords;
             this.videos = null;
         }
 
         @Override
-        protected Boolean doInBackground(String... params) {
-            videos = Video.searchYoutube(context, params[0]);
-            return videos != null;
-        }
+        public void run() {
+            // search
+            if (Thread.currentThread().isInterrupted()) {
+                return;
+            }
+            videos = Video.searchYoutube(context, keywords);
 
-        @Override
-        protected void onPostExecute(Boolean aBoolean) {
-            super.onPostExecute(aBoolean);
-            context.searchFinished(videos);
+            // notify on main thread
+            if (Thread.currentThread().isInterrupted()) {
+                return;
+            }
+            Handler mainHandler = new Handler(context.getMainLooper());
+            Runnable runOnMainThread = new Runnable() {
+                @Override
+                public void run() {
+                    context.searchFinished(videos);
+                }
+            };
+            mainHandler.post(runOnMainThread);
         }
     }
 }
