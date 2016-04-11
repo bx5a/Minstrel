@@ -1,18 +1,17 @@
 package com.bx5a.minstrel.widget;
 
-import android.app.Fragment;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.VideoView;
 
 import com.bx5a.minstrel.R;
 
@@ -24,7 +23,6 @@ public class PlayerFragment extends Fragment {
     private TextView nextSongText;
     private Button playPauseButton;
     private Button nextButton;
-    private VideoView videoView;
     private SeekBar seekBar;
 
     private BroadcastReceiver currentSongChangedReceiver = new BroadcastReceiver() {
@@ -50,7 +48,6 @@ public class PlayerFragment extends Fragment {
         nextSongText = (TextView) view.findViewById(R.id.viewPlayer_nextSong);
         playPauseButton = (Button) view.findViewById(R.id.viewPlayer_playPause);
         nextButton = (Button) view.findViewById(R.id.viewPlayer_next);
-        videoView = (VideoView) view.findViewById(R.id.viewPlayer_video);
         seekBar = (SeekBar) view.findViewById(R.id.viewPlayer_seekBar);
 
         // connect the receivers

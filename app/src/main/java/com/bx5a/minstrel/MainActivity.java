@@ -1,18 +1,20 @@
 package com.bx5a.minstrel;
 
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.bx5a.minstrel.widget.PlayerFragment;
+import com.bx5a.minstrel.youtube.DeveloperKey;
+import com.google.android.youtube.player.YouTubeInitializationResult;
+import com.google.android.youtube.player.YouTubePlayer;
+import com.google.android.youtube.player.YouTubePlayerSupportFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -27,14 +29,19 @@ public class MainActivity extends AppCompatActivity {
         sidePanel.setAdapter(
                 new ArrayAdapter<String>(this, R.layout.listitem_drawer, sidePanelItems));
 
-        FragmentManager fragmentManager = getFragmentManager();
-        // player fragment
-        FragmentTransaction playerTransaction = fragmentManager.beginTransaction();
-        PlayerFragment playerFragment = new PlayerFragment();
-        playerTransaction.replace(R.id.activityMain_playerPlaceholder, playerFragment);
-        playerTransaction.addToBackStack(null);
-        playerTransaction.commit();
+        // fragments
+        YouTubePlayerSupportFragment fragment = (YouTubePlayerSupportFragment) getSupportFragmentManager().findFragmentById(R.id.youtube_fragment);
+        fragment.initialize(DeveloperKey.DEVELOPER_KEY, new YouTubePlayer.OnInitializedListener() {
+            @Override
+            public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer youTubePlayer, boolean b) {
+                Log.i("Youtube", "Initialized");
+            }
 
+            @Override
+            public void onInitializationFailure(YouTubePlayer.Provider provider, YouTubeInitializationResult youTubeInitializationResult) {
+                Log.e("Youtube", youTubeInitializationResult.toString());
+            }
+        });
     }
 
     @Override

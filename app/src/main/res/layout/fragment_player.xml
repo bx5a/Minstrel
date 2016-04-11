@@ -61,14 +61,6 @@
 
         </LinearLayout>
 
-        <VideoView
-            android:id="@+id/viewPlayer_video"
-            android:layout_width="81dp"
-            android:layout_height="54dp"
-            android:layout_gravity="center_vertical"
-            android:layout_marginRight="10dp"
-            android:background="#000000" />
-
     </LinearLayout>
 
 </LinearLayout>
