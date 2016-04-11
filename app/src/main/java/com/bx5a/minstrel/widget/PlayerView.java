@@ -51,12 +51,12 @@ public class PlayerView extends LinearLayout {
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         inflater.inflate(R.layout.view_player, this, true);
 
-        currentSongText = (TextView)findViewById(R.id.viewPlayer_currentSong);
-        nextSongText = (TextView)findViewById(R.id.viewPlayer_nextSong);
-        playPauseButton = (Button)findViewById(R.id.viewPlayer_playPause);
-        nextButton = (Button)findViewById(R.id.viewPlayer_next);
-        videoView = (VideoView)findViewById(R.id.viewPlayer_video);
-        seekBar = (SeekBar)findViewById(R.id.viewPlayer_seekBar);
+        currentSongText = (TextView) findViewById(R.id.viewPlayer_currentSong);
+        nextSongText = (TextView) findViewById(R.id.viewPlayer_nextSong);
+        playPauseButton = (Button) findViewById(R.id.viewPlayer_playPause);
+        nextButton = (Button) findViewById(R.id.viewPlayer_next);
+        videoView = (VideoView) findViewById(R.id.viewPlayer_video);
+        seekBar = (SeekBar) findViewById(R.id.viewPlayer_seekBar);
 
         // connect the receivers
         IntentFilter currentSongIntentFilter = new IntentFilter("Minstrel.currentSongChanged");

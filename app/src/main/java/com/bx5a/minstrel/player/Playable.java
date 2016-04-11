@@ -5,8 +5,11 @@ package com.bx5a.minstrel.player;
  */
 public interface Playable {
     void play();
+
     void pause();
+
     String title();
+
     // position is a value [0, 1]. 0 being the beginning of the song and 1 the end
     void seek(float position);
 }

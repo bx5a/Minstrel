@@ -18,7 +18,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // Fill side panel
-        ListView sidePanel = (ListView)findViewById(R.id.activityMain_sidePanel);
+        ListView sidePanel = (ListView) findViewById(R.id.activityMain_sidePanel);
         String[] sidePanelItems = getResources().getStringArray(R.array.sidePanel_items);
         sidePanel.setAdapter(
                 new ArrayAdapter<String>(this, R.layout.listitem_drawer, sidePanelItems));

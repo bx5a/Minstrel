@@ -7,7 +7,6 @@ import java.util.ArrayList;
 
 // Singleton
 public class Player {
-
     private static Player instance;
     private ArrayList<Playable> playlist;
     private int currentPlayableIndex;
@@ -86,6 +85,7 @@ public class Player {
         notificationIntent.putExtra("Title", playlist.get(currentPlayableIndex).title());
         context.sendBroadcast(notificationIntent);
     }
+
     private void notifyNextSongChanged(Context context) {
         if (playlist.size() <= currentPlayableIndex + 1) {
             // TODO: log error

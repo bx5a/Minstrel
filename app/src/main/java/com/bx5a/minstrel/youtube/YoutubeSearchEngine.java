@@ -27,11 +27,11 @@ public class YoutubeSearchEngine {
     public YoutubeSearchEngine(Context context) {
         youtube = new YouTube.Builder(new NetHttpTransport(), new JacksonFactory(),
                 new HttpRequestInitializer() {
-            @Override
-            public void initialize(HttpRequest request) throws IOException {
+                    @Override
+                    public void initialize(HttpRequest request) throws IOException {
 
-            }
-        }).setApplicationName(context.getString(R.string.app_name)).build();
+                    }
+                }).setApplicationName(context.getString(R.string.app_name)).build();
     }
 
     private List<String> searchVideoIds(String keywords) throws IOException {
@@ -55,7 +55,7 @@ public class YoutubeSearchEngine {
         YouTube.Videos.List query =
                 youtube.videos().list("contentDetails,snippet,statistics").setId(videoId);
         query.setKey(DeveloperKey.DEVELOPER_KEY);
-        query.setFields("items(id,snippet/title,snippet/thumbnails/default/url,"+
+        query.setFields("items(id,snippet/title,snippet/thumbnails/default/url," +
                 "contentDetails/duration,statistics/viewCount)");
 
         VideoListResponse response = query.execute();

@@ -33,21 +33,21 @@ public class VideoAdapter extends ArrayAdapter<Video> {
         View view = convertView;
         if (view == null) {
             LayoutInflater layoutInflater =
-                    (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                    (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             view = layoutInflater.inflate(R.layout.listitem_video, null);
         }
         Video video = getItem(position);
 
         view.setTag(video);
 
-        TextView title = (TextView)view.findViewById(R.id.listItemVideo_title);
-        TextView viewCount = (TextView)view.findViewById(R.id.listItemVideo_viewCount);
-        ImageView thumbnail = (ImageView)view.findViewById(R.id.listItemVideo_thumbnail);
+        TextView title = (TextView) view.findViewById(R.id.listItemVideo_title);
+        TextView viewCount = (TextView) view.findViewById(R.id.listItemVideo_viewCount);
+        ImageView thumbnail = (ImageView) view.findViewById(R.id.listItemVideo_thumbnail);
 
         title.setText(video.getTitle());
         viewCount.setText(
                 String.format(context.getString(R.string.view_count), video.getViewCount()));
-        new DisplayImageTask(video.getThumbnailURL(),thumbnail).execute();
+        new DisplayImageTask(video.getThumbnailURL(), thumbnail).execute();
 
         return view;
     }

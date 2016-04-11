@@ -29,7 +29,7 @@ public abstract class Video implements Playable {
         }
 
         ArrayList<Video> items = new ArrayList<Video>();
-        for(YoutubeVideo video : videos){
+        for (YoutubeVideo video : videos) {
             items.add(video);
         }
         return items;

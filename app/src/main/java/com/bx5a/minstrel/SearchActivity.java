@@ -37,7 +37,7 @@ public class SearchActivity extends AppCompatActivity {
         setContentView(R.layout.activity_search);
 
         // get the result list
-        resultList = (ListView)findViewById(R.id.activitySearch_resultList);
+        resultList = (ListView) findViewById(R.id.activitySearch_resultList);
         searchView = null;
         nextSearch = null;
         pendingSearch = new ArrayList<>();
@@ -47,7 +47,7 @@ public class SearchActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Object o = view.getTag();
                 if (o != null) {
-                    Video video = (Video)o;
+                    Video video = (Video) o;
                     addVideoToPlayer(video);
                 }
             }
