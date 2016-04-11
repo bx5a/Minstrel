@@ -18,7 +18,7 @@ import com.bx5a.minstrel.R;
 /**
  * Created by guillaume on 11/04/2016.
  */
-public class PlayerFragment extends Fragment {
+public class PlayerControlFragment extends Fragment {
     private TextView currentSongText;
     private TextView nextSongText;
     private Button playPauseButton;

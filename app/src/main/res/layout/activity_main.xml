@@ -16,7 +16,7 @@
             android:layout_width="match_parent"
             android:layout_height="90dp">
             <fragment
-                android:name="com.bx5a.minstrel.widget.PlayerFragment"
+                android:name="com.bx5a.minstrel.widget.PlayerControlFragment"
                 android:id="@+id/activityMain_playerControls"
                 android:layout_width="250dp"
                 android:layout_height="90dp"
