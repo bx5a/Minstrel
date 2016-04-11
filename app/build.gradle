@@ -28,4 +28,5 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:23.2.1'
     compile 'com.google.apis:google-api-services-youtube:v3-rev163-1.21.0'
+    compile files('libs/YouTubeAndroidPlayerApi.jar')
 }

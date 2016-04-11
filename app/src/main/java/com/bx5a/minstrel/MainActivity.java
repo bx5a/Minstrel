@@ -1,5 +1,7 @@
 package com.bx5a.minstrel;
 
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 
@@ -9,6 +11,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+
+import com.bx5a.minstrel.widget.PlayerFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -22,6 +26,15 @@ public class MainActivity extends AppCompatActivity {
         String[] sidePanelItems = getResources().getStringArray(R.array.sidePanel_items);
         sidePanel.setAdapter(
                 new ArrayAdapter<String>(this, R.layout.listitem_drawer, sidePanelItems));
+
+        FragmentManager fragmentManager = getFragmentManager();
+        // player fragment
+        FragmentTransaction playerTransaction = fragmentManager.beginTransaction();
+        PlayerFragment playerFragment = new PlayerFragment();
+        playerTransaction.replace(R.id.activityMain_playerPlaceholder, playerFragment);
+        playerTransaction.addToBackStack(null);
+        playerTransaction.commit();
+
     }
 
     @Override

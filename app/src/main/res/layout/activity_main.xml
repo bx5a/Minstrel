@@ -11,11 +11,13 @@
         android:layout_alignParentBottom="true"
         android:gravity="bottom">
 
-        <com.bx5a.minstrel.widget.PlayerView
+        <FrameLayout
+            android:id="@+id/activityMain_playerPlaceholder"
             android:layout_width="match_parent"
             android:layout_height="90dp"
             android:background="@color/colorPrimaryDark">
-        </com.bx5a.minstrel.widget.PlayerView>
+        </FrameLayout>
+
     </RelativeLayout>
 
 
