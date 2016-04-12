@@ -4,6 +4,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <View
+            android:layout_width="1dp"
+            android:layout_height="1dp"
+            android:layout_gravity="right"
+            android:id="@+id/activityMain_videoPlaceholder"/>
+    </LinearLayout>
 
     <!-- Footer aligned to bottom -->
     <RelativeLayout
@@ -15,12 +25,7 @@
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="200dp">
-            <fragment
-                android:name="com.google.android.youtube.player.YouTubePlayerSupportFragment"
-                android:id="@+id/youtube_fragment"
-                android:layout_width="match_parent"
-                android:layout_height="110dp" />
+            android:layout_height="90dp">
             <fragment
                 android:name="com.bx5a.minstrel.widget.PlayerControlFragment"
                 android:id="@+id/activityMain_playerControls"
