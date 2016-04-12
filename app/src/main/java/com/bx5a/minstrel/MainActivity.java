@@ -1,6 +1,5 @@
 package com.bx5a.minstrel;
 
-import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 
 import android.os.Bundle;
@@ -24,10 +23,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // Fill side panel
-        ListView sidePanel = (ListView) findViewById(R.id.activityMain_sidePanel);
+        /*ListView sidePanel = (ListView) findViewById(R.id.activityMain_sidePanel);
         String[] sidePanelItems = getResources().getStringArray(R.array.sidePanel_items);
         sidePanel.setAdapter(
-                new ArrayAdapter<String>(this, R.layout.listitem_drawer, sidePanelItems));
+                new ArrayAdapter<String>(this, R.layout.listitem_drawer, sidePanelItems));*/
 
         // fragments
         YouTubePlayerSupportFragment fragment = (YouTubePlayerSupportFragment) getSupportFragmentManager().findFragmentById(R.id.youtube_fragment);
@@ -63,7 +62,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startSearchView() {
-        Intent intent = new Intent(this, SearchActivity.class);
-        startActivity(intent);
+
     }
 }

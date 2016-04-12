@@ -1,16 +1,14 @@
 package com.bx5a.minstrel;
 
-import android.app.SearchManager;
 import android.content.Context;
-import android.os.Bundle;
 import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.SearchView;
-import android.view.Menu;
-import android.view.MenuInflater;
+import android.util.AttributeSet;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.SearchView;
 
 import com.bx5a.minstrel.player.Player;
 import com.bx5a.minstrel.player.Position;
@@ -23,7 +21,7 @@ import java.util.concurrent.Future;
 /**
  * Created by guillaume on 23/03/2016.
  */
-public class SearchActivity extends AppCompatActivity {
+public class CustomSearchView extends LinearLayout {
 
     private ListView resultList;
     private SearchView searchView;
@@ -31,13 +29,26 @@ public class SearchActivity extends AppCompatActivity {
     private ExecutorService searchQueue;
     private ArrayList<Future<?>> pendingSearch;
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_search);
+    public CustomSearchView(Context context) {
+        super(context);
+        init(context);
+    }
 
-        // get the result list
-        resultList = (ListView) findViewById(R.id.activitySearch_resultList);
+    public CustomSearchView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        init(context);
+    }
+
+    public CustomSearchView(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
+        init(context);
+    }
+
+    private void init(Context context) {
+        LayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        inflater.inflate(R.layout.view_search, this);
+
+        resultList = (ListView) findViewById(R.id.viewSearch_resultList);
         searchView = null;
         nextSearch = null;
         pendingSearch = new ArrayList<>();
@@ -55,24 +66,9 @@ public class SearchActivity extends AppCompatActivity {
 
         // only one thread to make a serial queue
         searchQueue = Executors.newFixedThreadPool(1);
-    }
 
-    private void addVideoToPlayer(Video video) {
-        Player.getInstance().enqueue(this, video, Position.Next);
-        Player.getInstance().play(this);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the options menu from XML
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_search, menu);
-
-        // Get the SearchView and set the searchable configuration
-        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        searchView = (SearchView) menu.findItem(R.id.menuSearch_search).getActionView();
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-        searchView.setIconifiedByDefault(false);
+        // search view
+        searchView = (SearchView) findViewById(R.id.viewSearch_search);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -88,15 +84,18 @@ public class SearchActivity extends AppCompatActivity {
                 return true;
             }
         });
+    }
 
-        return super.onCreateOptionsMenu(menu);
+    private void addVideoToPlayer(Video video) {
+        Player.getInstance().enqueue(getContext(), video, Position.Next);
+        Player.getInstance().play(getContext());
     }
 
     private void asyncSearch(String keywords) {
         cancelPendingSearch();
         Future<?> search = searchQueue.submit(new AsyncVideosSearch(this, keywords));
         pendingSearch.add(search);
-        // TODO: when destroying the SearchActivity we should shutdown() and awaitTermination()
+        // TODO: when destroying should shutdown() and awaitTermination()
     }
 
     private void searchFinished(ArrayList<Video> videos) {
@@ -116,7 +115,7 @@ public class SearchActivity extends AppCompatActivity {
         if (videos == null) {
             return;
         }
-        resultList.setAdapter(new VideoAdapter(this, videos));
+        resultList.setAdapter(new VideoAdapter(getContext(), videos));
     }
 
     private void cancelPendingSearch() {
@@ -137,13 +136,13 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     class AsyncVideosSearch implements Runnable {
-        private SearchActivity context;
+        private CustomSearchView search;
         private String keywords;
         private ArrayList<Video> videos;
 
-        public AsyncVideosSearch(SearchActivity context, String searchKeywords) {
+        public AsyncVideosSearch(CustomSearchView search, String searchKeywords) {
             super();
-            this.context = context;
+            this.search = search;
             this.keywords = searchKeywords;
             this.videos = null;
         }
@@ -154,17 +153,17 @@ public class SearchActivity extends AppCompatActivity {
             if (Thread.currentThread().isInterrupted()) {
                 return;
             }
-            videos = Video.searchYoutube(context, keywords);
+            videos = Video.searchYoutube(search.getContext(), keywords);
 
             // notify on main thread
             if (Thread.currentThread().isInterrupted()) {
                 return;
             }
-            Handler mainHandler = new Handler(context.getMainLooper());
+            Handler mainHandler = new Handler(search.getContext().getMainLooper());
             Runnable runOnMainThread = new Runnable() {
                 @Override
                 public void run() {
-                    context.searchFinished(videos);
+                    search.searchFinished(videos);
                 }
             };
             mainHandler.post(runOnMainThread);

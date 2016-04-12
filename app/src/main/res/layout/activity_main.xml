@@ -31,12 +31,11 @@
 
     </RelativeLayout>
 
-
     <!-- Side panel -->
-    <ListView
+    <com.bx5a.minstrel.CustomSearchView
         android:id="@+id/activityMain_sidePanel"
         android:layout_width="300dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:background="@color/colorPrimary"></ListView>
+        android:background="@color/colorPrimary"/>
 </android.support.v4.widget.DrawerLayout>
