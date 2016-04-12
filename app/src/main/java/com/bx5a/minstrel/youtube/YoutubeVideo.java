@@ -8,7 +8,7 @@ import com.bx5a.minstrel.Video;
 public class YoutubeVideo extends Video {
     @Override
     public void play() {
-
+        Player.getInstance().play(this);
     }
 
     @Override

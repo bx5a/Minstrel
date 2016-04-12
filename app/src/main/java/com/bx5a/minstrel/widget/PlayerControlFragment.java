@@ -56,6 +56,8 @@ public class PlayerControlFragment extends Fragment {
         IntentFilter nextSongIntentFilter = new IntentFilter("Minstrel.nextSongChanged");
         getActivity().registerReceiver(nextSongChangedReceiver, nextSongIntentFilter);
 
+        // TODO: unregister receiver ?
+
         return view;
     }
 }

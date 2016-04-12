@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
         fragment.initialize(DeveloperKey.DEVELOPER_KEY, new YouTubePlayer.OnInitializedListener() {
             @Override
             public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer youTubePlayer, boolean b) {
-                Log.i("Youtube", "Initialized");
+                com.bx5a.minstrel.youtube.Player.getInstance().setYoutubePlayer(youTubePlayer);
             }
 
             @Override
