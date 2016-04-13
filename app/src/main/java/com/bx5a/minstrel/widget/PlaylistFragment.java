@@ -10,9 +10,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.SeekBar;
-import android.widget.TextView;
+import android.widget.ListView;
 
 import com.bx5a.minstrel.R;
 import com.bx5a.minstrel.player.Playable;
@@ -21,14 +19,10 @@ import com.bx5a.minstrel.player.Player;
 import java.util.ArrayList;
 
 /**
- * Created by guillaume on 11/04/2016.
+ * Created by guillaume on 13/04/2016.
  */
-public class PlayerControlFragment extends Fragment {
-    private TextView currentSongText;
-    private TextView nextSongText;
-    private Button playPauseButton;
-    private Button nextButton;
-    private SeekBar seekBar;
+public class PlaylistFragment extends Fragment {
+    private ListView playlistView;
 
     private BroadcastReceiver playlistChangedReceiver = new BroadcastReceiver() {
         @Override
@@ -38,7 +32,7 @@ public class PlayerControlFragment extends Fragment {
             Runnable myRunnable = new Runnable() {
                 @Override
                 public void run() {
-                    displayCurrentAndNextSong();
+                    displayPlaylist();
                 }
             };
             mainHandler.post(myRunnable);
@@ -47,32 +41,18 @@ public class PlayerControlFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater layoutInflater, ViewGroup viewGroup, Bundle bundle) {
-        View view = layoutInflater.inflate(R.layout.fragment_player, null);
-
-        currentSongText = (TextView) view.findViewById(R.id.viewPlayer_currentSong);
-        nextSongText = (TextView) view.findViewById(R.id.viewPlayer_nextSong);
-        playPauseButton = (Button) view.findViewById(R.id.viewPlayer_playPause);
-        nextButton = (Button) view.findViewById(R.id.viewPlayer_next);
-        seekBar = (SeekBar) view.findViewById(R.id.viewPlayer_seekBar);
+        View view = layoutInflater.inflate(R.layout.fragment_playlist, null);
+        playlistView = (ListView) view.findViewById(R.id.fragmentPlaylist_list);
 
         // connect the receivers
         IntentFilter currentSongIntentFilter = new IntentFilter("Minstrel.playlistChanged");
         getActivity().registerReceiver(playlistChangedReceiver, currentSongIntentFilter);
 
-        // TODO: unregister receiver ?
-
         return view;
     }
 
-    private void displayCurrentAndNextSong() {
+    private void displayPlaylist() {
         ArrayList<Playable> playlist = Player.getInstance().getPlaylist();
-        int currentSongIndex = Player.getInstance().getCurrentPlayableIndex();
-
-        if (currentSongIndex < playlist.size()) {
-            currentSongText.setText(playlist.get(currentSongIndex).title());
-        }
-        if (currentSongIndex + 1 < playlist.size()) {
-            nextSongText.setText(playlist.get(currentSongIndex + 1).title());
-        }
+        playlistView.setAdapter(new PlayableAdapter(getContext(), playlist));
     }
 }

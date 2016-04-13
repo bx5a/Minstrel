@@ -90,7 +90,6 @@ public class CustomSearchView extends LinearLayout {
 
     private void addVideoToPlayer(Video video) {
         Player.getInstance().enqueue(getContext(), video, Position.Next);
-        Player.getInstance().play(getContext());
     }
 
     private void asyncSearch(String keywords) {

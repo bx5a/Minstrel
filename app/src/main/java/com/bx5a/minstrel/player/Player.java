@@ -11,6 +11,14 @@ public class Player {
     private ArrayList<Playable> playlist;
     private int currentPlayableIndex;
 
+    public ArrayList<Playable> getPlaylist() {
+        return playlist;
+    }
+
+    public int getCurrentPlayableIndex() {
+        return currentPlayableIndex;
+    }
+
     public static Player getInstance() {
         if (instance == null) {
             instance = new Player();
@@ -26,10 +34,11 @@ public class Player {
     public void enqueue(Context context, Playable playable, Position position) {
         if (position == Position.Next && playlist.size() != 0) {
             playlist.add(currentPlayableIndex + 1, playable);
-            notifyNextSongChanged(context);
+            notifyPlaylistChanged(context);
             return;
         }
         playlist.add(playable);
+        notifyPlaylistChanged(context);
     }
 
     public void play(Context context) {
@@ -38,7 +47,6 @@ public class Player {
             return;
         }
         playlist.get(currentPlayableIndex).play();
-        notifyCurrentSongChanged(context);
     }
 
     public void pause(Context context) {
@@ -55,6 +63,7 @@ public class Player {
         }
         pause(context);
         currentPlayableIndex++;
+        notifyPlaylistChanged(context);
         play(context);
     }
 
@@ -64,6 +73,7 @@ public class Player {
         }
         pause(context);
         currentPlayableIndex--;
+        notifyPlaylistChanged(context);
         play(context);
     }
 
@@ -76,23 +86,12 @@ public class Player {
         playlist.get(currentPlayableIndex).seek(position);
     }
 
-    private void notifyCurrentSongChanged(Context context) {
+    private void notifyPlaylistChanged(Context context) {
         if (playlist.size() <= currentPlayableIndex) {
             // TODO: log error
             return;
         }
-        Intent notificationIntent = new Intent("Minstrel.currentSongChanged");
-        notificationIntent.putExtra("Title", playlist.get(currentPlayableIndex).title());
-        context.sendBroadcast(notificationIntent);
-    }
-
-    private void notifyNextSongChanged(Context context) {
-        if (playlist.size() <= currentPlayableIndex + 1) {
-            // TODO: log error
-            return;
-        }
-        Intent notificationIntent = new Intent("Minstrel.nextSongChanged");
-        notificationIntent.putExtra("Title", playlist.get(currentPlayableIndex + 1).title());
+        Intent notificationIntent = new Intent("Minstrel.playlistChanged");
         context.sendBroadcast(notificationIntent);
     }
 }

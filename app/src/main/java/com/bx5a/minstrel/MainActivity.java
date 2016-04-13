@@ -1,9 +1,9 @@
 package com.bx5a.minstrel;
 
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 
 import android.os.Bundle;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -11,11 +11,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.ListView;
 import android.widget.PopupWindow;
 
+import com.bx5a.minstrel.widget.PlaylistFragment;
 import com.bx5a.minstrel.youtube.DeveloperKey;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
@@ -58,6 +56,10 @@ public class MainActivity extends AppCompatActivity {
                 Log.e("Youtube", youTubeInitializationResult.toString());
             }
         });
+
+        // display playlist as default fragment
+        // TODO: should be opened when something is added to the playlist or when the PlayerControlFragment is pressed
+        displayPlaylist();
     }
 
     @Override
@@ -85,5 +87,13 @@ public class MainActivity extends AppCompatActivity {
 
     private void startSearchView() {
         // TODO: pop side panel
+    }
+
+    private void displayPlaylist() {
+        PlaylistFragment fragment = new PlaylistFragment();
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.activityMain_topPlaceholder, fragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
     }
 }
