@@ -1,4 +1,4 @@
-package com.bx5a.minstrel;
+package com.bx5a.minstrel.widget;
 
 import android.content.Context;
 import android.os.Handler;
@@ -10,6 +10,8 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SearchView;
 
+import com.bx5a.minstrel.R;
+import com.bx5a.minstrel.Video;
 import com.bx5a.minstrel.player.Player;
 import com.bx5a.minstrel.player.Position;
 

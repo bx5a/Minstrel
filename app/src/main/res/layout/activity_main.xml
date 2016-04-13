@@ -51,7 +51,7 @@
 
 
     <!-- Side panel -->
-    <com.bx5a.minstrel.CustomSearchView
+    <com.bx5a.minstrel.widget.CustomSearchView
         android:id="@+id/activityMain_sidePanel"
         android:layout_width="300dp"
         android:layout_height="400dp"

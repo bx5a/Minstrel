@@ -1,4 +1,4 @@
-package com.bx5a.minstrel;
+package com.bx5a.minstrel.widget;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -10,6 +10,9 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.bx5a.minstrel.R;
+import com.bx5a.minstrel.Video;
 
 import java.io.InputStream;
 import java.net.HttpURLConnection;
