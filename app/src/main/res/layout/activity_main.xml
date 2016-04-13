@@ -4,16 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <View
-            android:layout_width="1dp"
-            android:layout_height="1dp"
-            android:layout_gravity="right"
-            android:id="@+id/activityMain_videoPlaceholder"/>
-    </LinearLayout>
 
     <!-- Footer aligned to bottom -->
     <RelativeLayout
@@ -25,13 +15,18 @@
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="90dp">
+            android:layout_height="200dp">
             <fragment
                 android:name="com.bx5a.minstrel.widget.PlayerControlFragment"
                 android:id="@+id/activityMain_playerControls"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 tools:layout="@layout/fragment_player" />
+            <RelativeLayout
+                android:id="@+id/activityMain_videoPlaceholder"
+                android:layout_width="match_parent"
+                android:layout_height="110dp"
+                android:background="@color/colorBlack"/>
         </LinearLayout>
 
     </RelativeLayout>
@@ -40,7 +35,7 @@
     <com.bx5a.minstrel.CustomSearchView
         android:id="@+id/activityMain_sidePanel"
         android:layout_width="300dp"
-        android:layout_height="match_parent"
+        android:layout_height="400dp"
         android:layout_gravity="start"
         android:background="@color/colorPrimary"/>
 </android.support.v4.widget.DrawerLayout>

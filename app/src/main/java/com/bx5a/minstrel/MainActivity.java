@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
         popupView = layoutInflater.inflate(R.layout.popup_youtubevideo, null);
         youtubeVideo = new PopupWindow(
                 popupView,
-                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
 
         // init youtube using that popup
@@ -49,13 +49,8 @@ public class MainActivity extends AppCompatActivity {
             public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer youTubePlayer, boolean b) {
                 com.bx5a.minstrel.youtube.Player.getInstance().setYoutubePlayer(youTubePlayer);
 
-                // pop on the top right
-                DisplayMetrics metrics = new DisplayMetrics();
-                getWindowManager().getDefaultDisplay().getMetrics(metrics);
-                Integer activityWidth =  metrics.widthPixels;
-                popupView.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED), View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
-                Integer popUpWidth = popupView.getMeasuredWidth();
-                youtubeVideo.showAsDropDown(placeholder,  activityWidth - popUpWidth, 0);
+                // pop at the right position
+                youtubeVideo.showAsDropDown(placeholder, 0, 0);
             }
 
             @Override
