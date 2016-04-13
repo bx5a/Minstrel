@@ -5,31 +5,50 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <!-- Footer aligned to bottom -->
-    <RelativeLayout
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentBottom="true"
-        android:gravity="bottom">
-
-        <LinearLayout
-            android:orientation="vertical"
+        android:layout_height="match_parent">
+        <!-- top part -->
+        <RelativeLayout
+            android:id="@+id/activityMain_topPlaceholder"
             android:layout_width="match_parent"
-            android:layout_height="200dp">
-            <fragment
-                android:name="com.bx5a.minstrel.widget.PlayerControlFragment"
-                android:id="@+id/activityMain_playerControls"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                tools:layout="@layout/fragment_player" />
-            <RelativeLayout
-                android:id="@+id/activityMain_videoPlaceholder"
-                android:layout_width="match_parent"
-                android:layout_height="110dp"
-                android:background="@color/colorBlack"/>
-        </LinearLayout>
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="top"
+            android:background="@color/colorPrimaryDark"/>
 
-    </RelativeLayout>
+        <!-- bottom part -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_weight="0"
+            android:gravity="bottom">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="200dp">
+                <fragment
+                    android:name="com.bx5a.minstrel.widget.PlayerControlFragment"
+                    android:id="@+id/activityMain_playerControls"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    tools:layout="@layout/fragment_player" />
+                <RelativeLayout
+                    android:id="@+id/activityMain_videoPlaceholder"
+                    android:layout_width="match_parent"
+                    android:layout_height="110dp"
+                    android:background="@color/colorBlack"/>
+            </LinearLayout>
+
+        </RelativeLayout>
+    </LinearLayout>
+
+
+    <!-- Footer aligned to bottom -->
+
 
     <!-- Side panel -->
     <com.bx5a.minstrel.CustomSearchView
