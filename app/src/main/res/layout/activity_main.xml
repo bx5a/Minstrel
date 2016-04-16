@@ -29,7 +29,7 @@
             <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="200dp">
+                android:layout_height="170dp">
                 <fragment
                     android:name="com.bx5a.minstrel.widget.PlayerControlFragment"
                     android:id="@+id/activityMain_playerControls"
@@ -46,15 +46,11 @@
         </RelativeLayout>
     </LinearLayout>
 
-
-    <!-- Footer aligned to bottom -->
-
-
     <!-- Side panel -->
     <com.bx5a.minstrel.widget.CustomSearchView
         android:id="@+id/activityMain_sidePanel"
         android:layout_width="300dp"
         android:layout_height="400dp"
         android:layout_gravity="start"
-        android:background="@color/colorPrimary"/>
+        android:background="@color/colorAccent"/>
 </android.support.v4.widget.DrawerLayout>

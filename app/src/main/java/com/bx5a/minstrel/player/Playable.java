@@ -8,8 +8,10 @@ public interface Playable {
 
     void pause();
 
+    void resume();
+
     String title();
 
     // position is a value [0, 1]. 0 being the beginning of the song and 1 the end
-    void seek(float position);
+    void seekTo(float position);
 }

@@ -14,7 +14,8 @@ import android.widget.ListView;
 
 import com.bx5a.minstrel.R;
 import com.bx5a.minstrel.player.Playable;
-import com.bx5a.minstrel.player.Player;
+import com.bx5a.minstrel.player.MasterPlayer;
+import com.bx5a.minstrel.player.Playlist;
 
 import java.util.ArrayList;
 
@@ -52,7 +53,7 @@ public class PlaylistFragment extends Fragment {
     }
 
     private void displayPlaylist() {
-        ArrayList<Playable> playlist = Player.getInstance().getPlaylist();
+        Playlist playlist = MasterPlayer.getInstance().getPlaylist();
         playlistView.setAdapter(new PlayableAdapter(getContext(), playlist));
     }
 }

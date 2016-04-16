@@ -8,13 +8,13 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
         <TextView
-            android:layout_marginTop="10dp"
+            android:layout_margin="10dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Title"
             android:textSize="18dp"
-            android:textStyle="bold"
             android:singleLine="true"
+            android:textColor="@color/colorAccent"
             android:id="@+id/listItemPlayable_title"/>
     </LinearLayout>
 

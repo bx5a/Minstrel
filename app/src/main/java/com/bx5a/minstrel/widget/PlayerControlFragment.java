@@ -16,7 +16,8 @@ import android.widget.TextView;
 
 import com.bx5a.minstrel.R;
 import com.bx5a.minstrel.player.Playable;
-import com.bx5a.minstrel.player.Player;
+import com.bx5a.minstrel.player.MasterPlayer;
+import com.bx5a.minstrel.player.Playlist;
 
 import java.util.ArrayList;
 
@@ -27,7 +28,6 @@ public class PlayerControlFragment extends Fragment {
     private TextView currentSongText;
     private TextView nextSongText;
     private Button playPauseButton;
-    private Button nextButton;
     private SeekBar seekBar;
 
     private BroadcastReceiver playlistChangedReceiver = new BroadcastReceiver() {
@@ -52,7 +52,6 @@ public class PlayerControlFragment extends Fragment {
         currentSongText = (TextView) view.findViewById(R.id.viewPlayer_currentSong);
         nextSongText = (TextView) view.findViewById(R.id.viewPlayer_nextSong);
         playPauseButton = (Button) view.findViewById(R.id.viewPlayer_playPause);
-        nextButton = (Button) view.findViewById(R.id.viewPlayer_next);
         seekBar = (SeekBar) view.findViewById(R.id.viewPlayer_seekBar);
 
         // connect the receivers
@@ -65,14 +64,14 @@ public class PlayerControlFragment extends Fragment {
     }
 
     private void displayCurrentAndNextSong() {
-        ArrayList<Playable> playlist = Player.getInstance().getPlaylist();
-        int currentSongIndex = Player.getInstance().getCurrentPlayableIndex();
+        Playlist playlist = MasterPlayer.getInstance().getPlaylist();
+        int currentSongIndex = MasterPlayer.getInstance().getCurrentPlayableIndex();
 
         if (currentSongIndex < playlist.size()) {
-            currentSongText.setText(playlist.get(currentSongIndex).title());
+            currentSongText.setText(playlist.at(currentSongIndex).title());
         }
         if (currentSongIndex + 1 < playlist.size()) {
-            nextSongText.setText(playlist.get(currentSongIndex + 1).title());
+            nextSongText.setText(playlist.at(currentSongIndex + 1).title());
         }
     }
 }

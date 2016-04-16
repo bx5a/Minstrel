@@ -15,6 +15,7 @@ import android.widget.PopupWindow;
 
 import com.bx5a.minstrel.widget.PlaylistFragment;
 import com.bx5a.minstrel.youtube.DeveloperKey;
+import com.bx5a.minstrel.youtube.YoutubePlayer;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerSupportFragment;
@@ -45,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
         fragment.initialize(DeveloperKey.DEVELOPER_KEY, new YouTubePlayer.OnInitializedListener() {
             @Override
             public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer youTubePlayer, boolean b) {
-                com.bx5a.minstrel.youtube.Player.getInstance().setYoutubePlayer(youTubePlayer);
+                YoutubePlayer.getInstance().setYoutubePlayer(youTubePlayer);
 
                 // pop at the right position
                 youtubeVideo.showAsDropDown(placeholder, 0, 0);

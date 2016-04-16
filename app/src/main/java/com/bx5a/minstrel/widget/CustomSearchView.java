@@ -12,7 +12,7 @@ import android.widget.SearchView;
 
 import com.bx5a.minstrel.R;
 import com.bx5a.minstrel.Video;
-import com.bx5a.minstrel.player.Player;
+import com.bx5a.minstrel.player.MasterPlayer;
 import com.bx5a.minstrel.player.Position;
 
 import java.util.ArrayList;
@@ -89,7 +89,7 @@ public class CustomSearchView extends LinearLayout {
     }
 
     private void addVideoToPlayer(Video video) {
-        Player.getInstance().enqueue(getContext(), video, Position.Next);
+        MasterPlayer.getInstance().enqueue(getContext(), video, Position.Next);
     }
 
     private void asyncSearch(String keywords) {

@@ -8,12 +8,18 @@ import com.bx5a.minstrel.Video;
 public class YoutubeVideo extends Video {
     @Override
     public void play() {
-        Player.getInstance().play(this);
+        YoutubePlayer.getInstance().load(this);
+        YoutubePlayer.getInstance().play();
     }
 
     @Override
     public void pause() {
+        YoutubePlayer.getInstance().pause();
+    }
 
+    @Override
+    public void resume() {
+        YoutubePlayer.getInstance().play();
     }
 
     @Override
@@ -22,7 +28,7 @@ public class YoutubeVideo extends Video {
     }
 
     @Override
-    public void seek(float position) {
-
+    public void seekTo(float position) {
+        YoutubePlayer.getInstance().seekTo(position);
     }
 }

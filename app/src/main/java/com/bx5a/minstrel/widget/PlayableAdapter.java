@@ -1,7 +1,7 @@
 package com.bx5a.minstrel.widget;
 
 import android.content.Context;
-import android.graphics.Typeface;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,9 +10,8 @@ import android.widget.TextView;
 
 import com.bx5a.minstrel.R;
 import com.bx5a.minstrel.player.Playable;
-import com.bx5a.minstrel.player.Player;
-
-import java.util.List;
+import com.bx5a.minstrel.player.MasterPlayer;
+import com.bx5a.minstrel.player.Playlist;
 
 /**
  * Created by guillaume on 13/04/2016.
@@ -20,8 +19,8 @@ import java.util.List;
 public class PlayableAdapter extends ArrayAdapter<Playable> {
     private Context context;
 
-    public PlayableAdapter(Context context, List<Playable> playables) {
-        super(context, -1, playables);
+    public PlayableAdapter(Context context, Playlist playlist) {
+        super(context, -1, playlist.getList());
         this.context = context;
     }
 
@@ -38,8 +37,9 @@ public class PlayableAdapter extends ArrayAdapter<Playable> {
         view.setTag(playable);
 
         TextView title = (TextView) view.findViewById(R.id.listItemPlayable_title);
-        if (Player.getInstance().getCurrentPlayableIndex() == position) {
-            title.setTypeface(title.getTypeface(), Typeface.BOLD_ITALIC);
+        if (MasterPlayer.getInstance().getCurrentPlayableIndex() == position) {
+            title.setTextColor(ContextCompat.getColor(getContext(), R.color.colorPrimaryDark));
+            view.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
         }
 
         title.setText(playable.title());
