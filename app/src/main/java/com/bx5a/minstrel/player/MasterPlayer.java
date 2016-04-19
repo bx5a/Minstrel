@@ -2,12 +2,17 @@ package com.bx5a.minstrel.player;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
+
+import java.util.ArrayList;
 
 // Singleton
 public class MasterPlayer {
     private static MasterPlayer instance;
     private Playlist playlist;
     private int currentPlayableIndex;
+    private Context context;
+    private ArrayList<Player> players;
 
     public Playlist getPlaylist() {
         return playlist;
@@ -27,44 +32,59 @@ public class MasterPlayer {
     private MasterPlayer() {
         playlist = new Playlist();
         currentPlayableIndex = 0;
+        context = null;
+        players = new ArrayList<>();
     }
 
-    public void enqueue(Context context, Playable playable, Position position) {
+    public void setContext(Context context) {
+        this.context = context;
+    }
+
+    public void enqueue(Playable playable, Position position) {
         if (position == Position.Next && playlist.size() != 0) {
             playlist.add(playable, currentPlayableIndex + 1);
-            notifyPlaylistChanged(context);
+            notifyPlaylistChanged();
             return;
         }
         playlist.add(playable);
-        notifyPlaylistChanged(context);
+        notifyPlaylistChanged();
     }
 
-    public void play(Context context) throws IndexOutOfBoundsException {
+    public void play() throws IndexOutOfBoundsException {
         playlist.at(currentPlayableIndex).play();
     }
 
-    public void pause(Context context) throws IndexOutOfBoundsException {
+    public void pause() throws IndexOutOfBoundsException {
         playlist.at(currentPlayableIndex).pause();
     }
 
-    public void next(Context context) throws IndexOutOfBoundsException {
+    public boolean isPlaying() {
+        for (Player player: players) {
+            if (player.isPlaying()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void next() throws IndexOutOfBoundsException {
         if (playlist.size() <= currentPlayableIndex + 1) {
             throw new IndexOutOfBoundsException("No next song available");
         }
-        pause(context);
+        pause();
         currentPlayableIndex++;
-        notifyPlaylistChanged(context);
-        play(context);
+        notifyPlaylistChanged();
+        play();
     }
 
-    public void previous(Context context) throws IndexOutOfBoundsException {
+    public void previous() throws IndexOutOfBoundsException {
         if (currentPlayableIndex == 0) {
             throw new IndexOutOfBoundsException("No previous song available");
         }
-        pause(context);
+        pause();
         currentPlayableIndex--;
-        notifyPlaylistChanged(context);
-        play(context);
+        notifyPlaylistChanged();
+        play();
     }
 
     // position is a [0, 1] value
@@ -72,8 +92,17 @@ public class MasterPlayer {
         playlist.at(currentPlayableIndex).seekTo(position);
     }
 
-    private void notifyPlaylistChanged(Context context) {
+    private void notifyPlaylistChanged() {
+        if (context == null) {
+            // TODO: assert ?
+            Log.e("MasterPlayer", "Couldn't notify because context isn't set");
+            return;
+        }
         Intent notificationIntent = new Intent("Minstrel.playlistChanged");
         context.sendBroadcast(notificationIntent);
+    }
+
+    public void registerPlayer(Player player) {
+        players.add(player);
     }
 }

@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupWindow;
 
+import com.bx5a.minstrel.player.MasterPlayer;
 import com.bx5a.minstrel.widget.PlaylistFragment;
 import com.bx5a.minstrel.youtube.DeveloperKey;
 import com.bx5a.minstrel.youtube.YoutubePlayer;
@@ -36,6 +37,9 @@ public class MainActivity extends AppCompatActivity {
 
         drawerLayout = (DrawerLayout) findViewById(R.id.activityMain_drawer);
         placeholder = findViewById(R.id.activityMain_videoPlaceholder);
+
+        // init master player
+        MasterPlayer.getInstance().setContext(this);
 
         // init video popup
         LayoutInflater layoutInflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);

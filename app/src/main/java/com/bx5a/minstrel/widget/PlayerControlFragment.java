@@ -57,6 +57,19 @@ public class PlayerControlFragment extends Fragment {
 
         // TODO: unregister receiver ?
 
+        // button action
+        playPauseButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MasterPlayer player = MasterPlayer.getInstance();
+                if (player.isPlaying()) {
+                    player.pause();
+                    return;
+                }
+                player.play();
+            }
+        });
+
         return view;
     }
 

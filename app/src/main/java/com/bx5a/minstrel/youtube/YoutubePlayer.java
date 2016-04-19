@@ -1,5 +1,8 @@
 package com.bx5a.minstrel.youtube;
 
+import android.util.Log;
+
+import com.bx5a.minstrel.player.MasterPlayer;
 import com.bx5a.minstrel.player.Player;
 import com.google.android.youtube.player.YouTubePlayer;
 
@@ -17,35 +20,48 @@ public class YoutubePlayer implements Player {
 
     private YoutubePlayer() {
         youtubePlayer = null;
+        MasterPlayer.getInstance().registerPlayer(this);
     }
 
-    public void setYoutubePlayer(YouTubePlayer youtubePlayer) {
+    public void setYoutubePlayer(final YouTubePlayer youtubePlayer) {
         this.youtubePlayer = youtubePlayer;
-        this.youtubePlayer.setPlaybackEventListener(new YouTubePlayer.PlaybackEventListener() {
+        this.youtubePlayer.setPlayerStateChangeListener(new YouTubePlayer.PlayerStateChangeListener() {
             @Override
-            public void onPlaying() {
+            public void onLoading() {
+                Log.i("YoutubePlayer", "Loading...");
+            }
+
+            @Override
+            public void onLoaded(String s) {
+                Log.i("YoutubePlayer", "Loaded ! " + s);
+            }
+
+            @Override
+            public void onAdStarted() {
 
             }
 
             @Override
-            public void onPaused() {
+            public void onVideoStarted() {
 
             }
 
             @Override
-            public void onStopped() {
-                // that function is called is an error happened or song finishes
-                // TODO: MasterPlayer.getInstance().next(); (+ try/catch)
+            public void onVideoEnded() {
+                videoStopped();
             }
 
             @Override
-            public void onBuffering(boolean b) {
-
+            public void onError(YouTubePlayer.ErrorReason errorReason) {
+                videoStopped();
             }
 
-            @Override
-            public void onSeekTo(int i) {
-
+            private void videoStopped() {
+                try {
+                    MasterPlayer.getInstance().next();
+                } catch (IndexOutOfBoundsException exception) {
+                    Log.i("YoutubePlayer", "Couldn't move to next song: " + exception.getMessage());
+                }
             }
         });
     }
