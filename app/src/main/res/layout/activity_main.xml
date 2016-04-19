@@ -35,13 +35,13 @@
                     android:name="com.bx5a.minstrel.widget.PlayerControlFragment"
                     android:id="@+id/activityMain_playerControls"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="60dp"
                     tools:layout="@layout/fragment_player" />
-                <RelativeLayout
-                    android:id="@+id/activityMain_videoPlaceholder"
+                <fragment
+                    android:name="com.google.android.youtube.player.YouTubePlayerSupportFragment"
+                    android:id="@+id/youtube_fragment"
                     android:layout_width="match_parent"
-                    android:layout_height="110dp"
-                    android:background="@color/colorBlack"/>
+                    android:layout_height="110dp"/>
             </LinearLayout>
 
         </RelativeLayout>

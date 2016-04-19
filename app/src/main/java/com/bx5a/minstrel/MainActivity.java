@@ -26,9 +26,6 @@ import com.google.android.youtube.player.YouTubePlayerSupportFragment;
 public class MainActivity extends AppCompatActivity {
 
     private DrawerLayout drawerLayout;
-    private PopupWindow youtubeVideo;
-    private View placeholder;
-    private View popupView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,28 +33,15 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         drawerLayout = (DrawerLayout) findViewById(R.id.activityMain_drawer);
-        placeholder = findViewById(R.id.activityMain_videoPlaceholder);
 
         // init master player
         MasterPlayer.getInstance().setContext(this);
-
-        // init video popup
-        LayoutInflater layoutInflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-        popupView = layoutInflater.inflate(R.layout.popup_youtubevideo, null);
-        youtubeVideo = new PopupWindow(
-                popupView,
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT);
-
         // init youtube using that popup
         YouTubePlayerSupportFragment fragment = (YouTubePlayerSupportFragment) getSupportFragmentManager().findFragmentById(R.id.youtube_fragment);
         fragment.initialize(DeveloperKey.DEVELOPER_KEY, new YouTubePlayer.OnInitializedListener() {
             @Override
             public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer youTubePlayer, boolean b) {
                 YoutubePlayer.getInstance().setYoutubePlayer(youTubePlayer);
-
-                // pop at the right position
-                youtubeVideo.showAsDropDown(placeholder, 0, 0);
             }
 
             @Override
