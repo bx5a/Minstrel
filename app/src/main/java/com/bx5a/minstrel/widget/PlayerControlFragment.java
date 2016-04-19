@@ -10,16 +10,13 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.bx5a.minstrel.R;
-import com.bx5a.minstrel.player.Playable;
 import com.bx5a.minstrel.player.MasterPlayer;
 import com.bx5a.minstrel.player.Playlist;
-
-import java.util.ArrayList;
 
 /**
  * Created by guillaume on 11/04/2016.
@@ -27,7 +24,7 @@ import java.util.ArrayList;
 public class PlayerControlFragment extends Fragment {
     private TextView currentSongText;
     private TextView nextSongText;
-    private Button playPauseButton;
+    private ImageButton playPauseButton;
     private SeekBar seekBar;
 
     private BroadcastReceiver playlistChangedReceiver = new BroadcastReceiver() {
@@ -51,7 +48,7 @@ public class PlayerControlFragment extends Fragment {
 
         currentSongText = (TextView) view.findViewById(R.id.viewPlayer_currentSong);
         nextSongText = (TextView) view.findViewById(R.id.viewPlayer_nextSong);
-        playPauseButton = (Button) view.findViewById(R.id.viewPlayer_playPause);
+        playPauseButton = (ImageButton) view.findViewById(R.id.viewPlayer_playPause);
         seekBar = (SeekBar) view.findViewById(R.id.viewPlayer_seekBar);
 
         // connect the receivers

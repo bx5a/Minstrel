@@ -44,12 +44,13 @@
                 android:textStyle="italic" />
         </LinearLayout>
 
-        <Button
+        <ImageButton
             android:id="@+id/viewPlayer_playPause"
             android:layout_marginRight="5dp"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:text="P" />
+            android:src="@drawable/ic_play"
+            android:background="@null"/>
 
     </LinearLayout>
 
