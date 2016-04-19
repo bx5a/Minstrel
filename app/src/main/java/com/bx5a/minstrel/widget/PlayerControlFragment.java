@@ -18,6 +18,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.bx5a.minstrel.R;
+import com.bx5a.minstrel.player.CurrentTimeUpdaterService;
 import com.bx5a.minstrel.player.MasterPlayer;
 import com.bx5a.minstrel.player.Playlist;
 
@@ -45,6 +46,20 @@ public class PlayerControlFragment extends Fragment {
             mainHandler.post(myRunnable);
         }
     };
+    private BroadcastReceiver currentTimeChangedReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // on main thread
+            Handler mainHandler = new Handler(context.getMainLooper());
+            Runnable myRunnable = new Runnable() {
+                @Override
+                public void run() {
+                    updateSeekBar();
+                }
+            };
+            mainHandler.post(myRunnable);
+        }
+    };
 
     @Override
     public View onCreateView(LayoutInflater layoutInflater, ViewGroup viewGroup, Bundle bundle) {
@@ -58,10 +73,32 @@ public class PlayerControlFragment extends Fragment {
         // connect the receivers
         IntentFilter currentSongIntentFilter = new IntentFilter("Minstrel.playlistChanged");
         getActivity().registerReceiver(playlistChangedReceiver, currentSongIntentFilter);
+        IntentFilter seekBarIntentFilter = new IntentFilter("Minstrel.currentTimeChanged");
+        getActivity().registerReceiver(currentTimeChangedReceiver, seekBarIntentFilter);
 
         // TODO: unregister receiver ?
 
         // button action
+        initPlayPause();
+        // swipe detector
+        initSongSwipe(view);
+        // seekBar update
+        initSeekBarUpdate();
+
+        return view;
+    }
+
+    private void initSeekBarUpdate() {
+        // init current time updater service
+        Intent intent = new Intent(getActivity(), CurrentTimeUpdaterService.class);
+        getActivity().startService(intent);
+    }
+
+    private void updateSeekBar() {
+        seekBar.setProgress((int) (MasterPlayer.getInstance().getCurrentPosition() * seekBar.getMax()));
+    }
+
+    private void initPlayPause() {
         playPauseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -73,30 +110,31 @@ public class PlayerControlFragment extends Fragment {
                 player.play();
             }
         });
+    }
 
-        // swipe detector
+    private void initSongSwipe(View view) {
         gestureDetector = new GestureDetector(getActivity(),
                 new GestureDetector.SimpleOnGestureListener() {
-            @Override
-            public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-                try {
-                    if (e1.getX() < e2.getX()) {
-                        MasterPlayer.getInstance().next();
+                    @Override
+                    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+                        try {
+                            if (e1.getX() < e2.getX()) {
+                                MasterPlayer.getInstance().next();
+                                return true;
+                            }
+                            MasterPlayer.getInstance().previous();
+                        } catch (IndexOutOfBoundsException exception) {
+                            Log.i("PlayerControlFragment", "Couldn't change song: " + exception.getMessage());
+                        }
                         return true;
                     }
-                    MasterPlayer.getInstance().previous();
-                } catch (IndexOutOfBoundsException exception) {
-                    Log.i("PlayerControlFragment", "Couldn't change song: " + exception.getMessage());
-                }
-                return true;
-            }
 
-            @Override
-            public boolean onDown(MotionEvent e) {
-                return true;
+                    @Override
+                    public boolean onDown(MotionEvent e) {
+                        return true;
 
-            }
-        });
+                    }
+                });
 
         view.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -104,8 +142,6 @@ public class PlayerControlFragment extends Fragment {
                 return gestureDetector.onTouchEvent(event);
             }
         });
-
-        return view;
     }
 
     private void displayCurrentAndNextSong() {

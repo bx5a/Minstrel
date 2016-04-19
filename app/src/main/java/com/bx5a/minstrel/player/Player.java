@@ -10,6 +10,7 @@ public interface Player {
     void resume();
     // position is a [0, 1] value
     void seekTo(float position);
+    float getCurrentPosition();
     boolean isPlaying();
 
 }

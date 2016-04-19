@@ -90,6 +90,15 @@ public class MasterPlayer {
         playlist.at(currentPlayableIndex).seekTo(position);
     }
 
+    public float getCurrentPosition() {
+        for (Player player: players) {
+            if (player.isPlaying()) {
+                return player.getCurrentPosition();
+            }
+        }
+        return 0;
+    }
+
     private void notifyPlaylistChanged() {
         if (context == null) {
             // TODO: assert ?

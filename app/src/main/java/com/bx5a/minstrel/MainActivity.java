@@ -1,5 +1,6 @@
 package com.bx5a.minstrel;
 
+import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
@@ -14,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
+import com.bx5a.minstrel.player.CurrentTimeUpdaterService;
 import com.bx5a.minstrel.player.MasterPlayer;
 import com.bx5a.minstrel.widget.PlaylistFragment;
 import com.bx5a.minstrel.widget.SearchFragment;
@@ -41,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
 
         // init master player
         MasterPlayer.getInstance().setContext(this);
+
         // init youtube using that popup
         YouTubePlayerSupportFragment fragment = (YouTubePlayerSupportFragment) getSupportFragmentManager().findFragmentById(R.id.youtube_fragment);
         fragment.initialize(DeveloperKey.DEVELOPER_KEY, new YouTubePlayer.OnInitializedListener() {

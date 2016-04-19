@@ -26,7 +26,6 @@ public class YoutubePlayer implements Player {
         this.youtubePlayer = youtubePlayer;
         // hide built in controls player
         this.youtubePlayer.setPlayerStyle(YouTubePlayer.PlayerStyle.CHROMELESS);
-
         this.youtubePlayer.setPlayerStateChangeListener(new YouTubePlayer.PlayerStateChangeListener() {
             @Override
             public void onLoading() {
@@ -88,6 +87,10 @@ public class YoutubePlayer implements Player {
     public void seekTo(float position) {
         int millis = (int) (position * youtubePlayer.getDurationMillis());
         youtubePlayer.seekToMillis(millis);
+    }
+
+    public float getCurrentPosition() {
+        return (float)(youtubePlayer.getCurrentTimeMillis()) / youtubePlayer.getDurationMillis();
     }
 
     public boolean isPlaying() {
