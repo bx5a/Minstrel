@@ -48,10 +48,22 @@
     </LinearLayout>
 
     <!-- Side panel -->
-    <com.bx5a.minstrel.widget.CustomSearchView
+    <LinearLayout
+        android:orientation="vertical"
         android:id="@+id/activityMain_sidePanel"
         android:layout_width="300dp"
         android:layout_height="400dp"
         android:layout_gravity="start"
-        android:background="@color/colorAccent"/>
+        android:background="@color/colorAccent">
+        <Button
+            android:id="@+id/activityMain_searchButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/search"/>
+        <Button
+            android:id="@+id/activityMain_playlistButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/playlist"/>
+    </LinearLayout>
 </android.support.v4.widget.DrawerLayout>

@@ -64,6 +64,8 @@ public class PlaylistFragment extends Fragment {
             }
         });
 
+        displayPlaylist();
+
         return view;
     }
 

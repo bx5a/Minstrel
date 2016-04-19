@@ -1,5 +1,6 @@
 package com.bx5a.minstrel;
 
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -7,25 +8,27 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.PopupWindow;
+import android.widget.Button;
 
 import com.bx5a.minstrel.player.MasterPlayer;
 import com.bx5a.minstrel.widget.PlaylistFragment;
+import com.bx5a.minstrel.widget.SearchFragment;
 import com.bx5a.minstrel.youtube.DeveloperKey;
 import com.bx5a.minstrel.youtube.YoutubePlayer;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerSupportFragment;
 
+// TODO: opening the keyboard should hide the playerControlFragment. And closing it should reopen it
 public class MainActivity extends AppCompatActivity {
 
     private DrawerLayout drawerLayout;
+    private Button searchButton;
+    private Button playlistButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +36,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         drawerLayout = (DrawerLayout) findViewById(R.id.activityMain_drawer);
+        searchButton = (Button) findViewById(R.id.activityMain_searchButton);
+        playlistButton = (Button) findViewById(R.id.activityMain_playlistButton);
 
         // init master player
         MasterPlayer.getInstance().setContext(this);
@@ -50,9 +55,19 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // display playlist as default fragment
-        // TODO: should be opened when something is added to the playlist or when the PlayerControlFragment is pressed
-        displayPlaylist();
+        // menu buttons
+        searchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                displaySearch();
+            }
+        });
+        playlistButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                displayPlaylist();
+            }
+        });
     }
 
     @Override
@@ -66,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menuMain_search:
-                startSearchView();
+                openSidePanel();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -78,15 +93,29 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
     }
 
-    private void startSearchView() {
+    private void openSidePanel() {
         drawerLayout.openDrawer(Gravity.START);
     }
+    private void closeSidePanel() {
+        drawerLayout.closeDrawer(Gravity.START);
+    }
 
-    private void displayPlaylist() {
-        PlaylistFragment fragment = new PlaylistFragment();
+    private void displayFragment(Fragment fragment) {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.activityMain_topPlaceholder, fragment);
         transaction.addToBackStack(null);
         transaction.commit();
+    }
+
+    private void displayPlaylist() {
+        PlaylistFragment fragment = new PlaylistFragment();
+        displayFragment(fragment);
+        closeSidePanel();
+    }
+
+    private void displaySearch() {
+        SearchFragment fragment = new SearchFragment();
+        displayFragment(fragment);
+        closeSidePanel();
     }
 }

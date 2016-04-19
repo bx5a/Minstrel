@@ -5,6 +5,7 @@
         <item>Menu 2</item>
     </string-array>
     <string name="search">Search</string>
+    <string name="playlist">Playlist</string>
     <string name="search_hint">Search songs</string>
     <string name="view_count">%d views</string>
 </resources>
