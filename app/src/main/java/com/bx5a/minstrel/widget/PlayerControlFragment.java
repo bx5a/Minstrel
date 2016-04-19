@@ -7,7 +7,10 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.util.Log;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -26,6 +29,7 @@ public class PlayerControlFragment extends Fragment {
     private TextView nextSongText;
     private ImageButton playPauseButton;
     private SeekBar seekBar;
+    private GestureDetector gestureDetector;
 
     private BroadcastReceiver playlistChangedReceiver = new BroadcastReceiver() {
         @Override
@@ -67,6 +71,37 @@ public class PlayerControlFragment extends Fragment {
                     return;
                 }
                 player.play();
+            }
+        });
+
+        // swipe detector
+        gestureDetector = new GestureDetector(getActivity(),
+                new GestureDetector.SimpleOnGestureListener() {
+            @Override
+            public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+                try {
+                    if (e1.getX() < e2.getX()) {
+                        MasterPlayer.getInstance().next();
+                        return true;
+                    }
+                    MasterPlayer.getInstance().previous();
+                } catch (IndexOutOfBoundsException exception) {
+                    Log.i("PlayerControlFragment", "Couldn't change song: " + exception.getMessage());
+                }
+                return true;
+            }
+
+            @Override
+            public boolean onDown(MotionEvent e) {
+                return true;
+
+            }
+        });
+
+        view.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return gestureDetector.onTouchEvent(event);
             }
         });
 

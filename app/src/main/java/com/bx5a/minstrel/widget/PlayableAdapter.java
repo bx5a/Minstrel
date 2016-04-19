@@ -40,6 +40,9 @@ public class PlayableAdapter extends ArrayAdapter<Playable> {
         if (MasterPlayer.getInstance().getCurrentPlayableIndex() == position) {
             title.setTextColor(ContextCompat.getColor(getContext(), R.color.colorPrimaryDark));
             view.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
+        } else {
+            title.setTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
+            view.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.colorPrimaryDark));
         }
 
         title.setText(playable.title());
