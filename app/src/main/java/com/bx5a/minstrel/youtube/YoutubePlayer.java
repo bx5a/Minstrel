@@ -21,6 +21,33 @@ public class YoutubePlayer implements Player {
 
     public void setYoutubePlayer(YouTubePlayer youtubePlayer) {
         this.youtubePlayer = youtubePlayer;
+        this.youtubePlayer.setPlaybackEventListener(new YouTubePlayer.PlaybackEventListener() {
+            @Override
+            public void onPlaying() {
+
+            }
+
+            @Override
+            public void onPaused() {
+
+            }
+
+            @Override
+            public void onStopped() {
+                // that function is called is an error happened or song finishes
+                // TODO: MasterPlayer.getInstance().next(); (+ try/catch)
+            }
+
+            @Override
+            public void onBuffering(boolean b) {
+
+            }
+
+            @Override
+            public void onSeekTo(int i) {
+
+            }
+        });
     }
 
     public void load(YoutubeVideo video) throws IllegalStateException {

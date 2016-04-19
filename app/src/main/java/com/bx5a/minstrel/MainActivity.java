@@ -1,10 +1,12 @@
 package com.bx5a.minstrel;
 
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -22,6 +24,7 @@ import com.google.android.youtube.player.YouTubePlayerSupportFragment;
 
 public class MainActivity extends AppCompatActivity {
 
+    private DrawerLayout drawerLayout;
     private PopupWindow youtubeVideo;
     private View placeholder;
     private View popupView;
@@ -31,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        drawerLayout = (DrawerLayout) findViewById(R.id.activityMain_drawer);
         placeholder = findViewById(R.id.activityMain_videoPlaceholder);
 
         // init video popup
@@ -87,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startSearchView() {
-        // TODO: pop side panel
+        drawerLayout.openDrawer(Gravity.START);
     }
 
     private void displayPlaylist() {
