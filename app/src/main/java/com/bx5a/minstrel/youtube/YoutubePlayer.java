@@ -13,7 +13,6 @@ public class YoutubePlayer implements Player {
     private static YoutubePlayer ourInstance = new YoutubePlayer();
 
     private YouTubePlayer youtubePlayer;
-
     public static YoutubePlayer getInstance() {
         return ourInstance;
     }
@@ -25,15 +24,17 @@ public class YoutubePlayer implements Player {
 
     public void setYoutubePlayer(final YouTubePlayer youtubePlayer) {
         this.youtubePlayer = youtubePlayer;
+        // hide built in controls player
+        this.youtubePlayer.setPlayerStyle(YouTubePlayer.PlayerStyle.CHROMELESS);
         this.youtubePlayer.setPlayerStateChangeListener(new YouTubePlayer.PlayerStateChangeListener() {
             @Override
             public void onLoading() {
-                Log.i("YoutubePlayer", "Loading...");
+
             }
 
             @Override
             public void onLoaded(String s) {
-                Log.i("YoutubePlayer", "Loaded ! " + s);
+
             }
 
             @Override
@@ -71,7 +72,7 @@ public class YoutubePlayer implements Player {
             throw new IllegalStateException("Youtube player isn't initialized");
         }
         pause();
-        youtubePlayer.loadVideo(video.getId());
+        youtubePlayer.cueVideo(video.getId());
     }
 
     public void play() {
