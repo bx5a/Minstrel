@@ -7,9 +7,11 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.bx5a.minstrel.R;
@@ -48,6 +50,19 @@ public class PlaylistFragment extends Fragment {
         // connect the receivers
         IntentFilter currentSongIntentFilter = new IntentFilter("Minstrel.playlistChanged");
         getActivity().registerReceiver(playlistChangedReceiver, currentSongIntentFilter);
+
+        // on click on given item
+        playlistView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                try {
+                    MasterPlayer.getInstance().setCurrentPlayableIndex((int) id);
+                } catch (IndexOutOfBoundsException exception) {
+                    // shouldn't happen
+                    Log.e("PlaylistFragment", "Can't switch playable index: " + exception.getMessage());
+                }
+            }
+        });
 
         return view;
     }

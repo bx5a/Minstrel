@@ -18,6 +18,16 @@ public class MasterPlayer {
         return playlist;
     }
 
+    public void setCurrentPlayableIndex(int currentPlayableIndex) throws IndexOutOfBoundsException {
+        if(playlist.size() <= currentPlayableIndex || currentPlayableIndex < 0) {
+            throw new IndexOutOfBoundsException("No playable at index " + currentPlayableIndex);
+        }
+        pause();
+        this.currentPlayableIndex = currentPlayableIndex;
+        notifyPlaylistChanged();
+        play();
+    }
+
     public int getCurrentPlayableIndex() {
         return currentPlayableIndex;
     }
@@ -68,23 +78,11 @@ public class MasterPlayer {
     }
 
     public void next() throws IndexOutOfBoundsException {
-        if (playlist.size() <= currentPlayableIndex + 1) {
-            throw new IndexOutOfBoundsException("No next song available");
-        }
-        pause();
-        currentPlayableIndex++;
-        notifyPlaylistChanged();
-        play();
+        setCurrentPlayableIndex(currentPlayableIndex + 1);
     }
 
     public void previous() throws IndexOutOfBoundsException {
-        if (currentPlayableIndex == 0) {
-            throw new IndexOutOfBoundsException("No previous song available");
-        }
-        pause();
-        currentPlayableIndex--;
-        notifyPlaylistChanged();
-        play();
+        setCurrentPlayableIndex(currentPlayableIndex - 1);
     }
 
     // position is a [0, 1] value
