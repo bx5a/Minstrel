@@ -25,53 +25,24 @@ public class YoutubePlayer implements Player {
     public void setYoutubePlayer(final YouTubePlayer youtubePlayer) {
         this.youtubePlayer = youtubePlayer;
         // hide built in controls player
-        // this.youtubePlayer.setPlayerStyle(YouTubePlayer.PlayerStyle.CHROMELESS);
-        this.youtubePlayer.setPlaybackEventListener(new YouTubePlayer.PlaybackEventListener() {
-            @Override
-            public void onPlaying() {
-                Log.i("YoutubePlayer", "On Playing... ");
-            }
-
-            @Override
-            public void onPaused() {
-                Log.i("YoutubePlayer", "On Paused... ");
-            }
-
-            @Override
-            public void onStopped() {
-                Log.i("YoutubePlayer", "On Stopped... ");
-            }
-
-            @Override
-            public void onBuffering(boolean b) {
-                Log.i("YoutubePlayer", "On Buffering... ");
-            }
-
-            @Override
-            public void onSeekTo(int i) {
-                Log.i("YoutubePlayer", "On SeekTo... ");
-            }
-        });
+        this.youtubePlayer.setPlayerStyle(YouTubePlayer.PlayerStyle.CHROMELESS);
 
         this.youtubePlayer.setPlayerStateChangeListener(new YouTubePlayer.PlayerStateChangeListener() {
             @Override
             public void onLoading() {
-                Log.i("YoutubePlayer", "Loading... ");
             }
 
             @Override
             public void onLoaded(String s) {
-                Log.i("YoutubePlayer", "Loaded... ");
+                youtubePlayer.play();
             }
 
             @Override
             public void onAdStarted() {
-                Log.i("YoutubePlayer", "Ad Started !");
             }
 
             @Override
             public void onVideoStarted() {
-                Log.i("YoutubePlayer", "Started... ");
             }
 
             @Override
@@ -85,7 +56,6 @@ public class YoutubePlayer implements Player {
             }
 
             private void videoStopped() {
-                Log.i("YoutubePlayer", "Stopped... ");
                 try {
                     MasterPlayer.getInstance().next();
                 } catch (IndexOutOfBoundsException exception) {
