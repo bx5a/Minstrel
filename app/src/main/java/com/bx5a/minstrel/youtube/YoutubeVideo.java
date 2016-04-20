@@ -9,7 +9,6 @@ public class YoutubeVideo extends Video {
     @Override
     public void play() {
         YoutubePlayer.getInstance().load(this);
-        YoutubePlayer.getInstance().play();
     }
 
     @Override

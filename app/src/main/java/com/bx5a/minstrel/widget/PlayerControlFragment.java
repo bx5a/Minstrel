@@ -107,7 +107,7 @@ public class PlayerControlFragment extends Fragment {
                     player.pause();
                     return;
                 }
-                player.play();
+                player.resume();
             }
         });
     }

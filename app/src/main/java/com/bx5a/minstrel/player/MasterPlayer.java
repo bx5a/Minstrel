@@ -19,10 +19,10 @@ public class MasterPlayer {
     }
 
     public void setCurrentPlayableIndex(int currentPlayableIndex) throws IndexOutOfBoundsException {
+        pause();
         if(playlist.size() <= currentPlayableIndex || currentPlayableIndex < 0) {
             throw new IndexOutOfBoundsException("No playable at index " + currentPlayableIndex);
         }
-        pause();
         this.currentPlayableIndex = currentPlayableIndex;
         notifyPlaylistChanged();
         play();
@@ -58,14 +58,26 @@ public class MasterPlayer {
         }
         playlist.add(playable);
         notifyPlaylistChanged();
+
+        // if nothing was playing, start playback (also if we want to play now)
+        if (playlist.size() == 1) {
+            play();
+        }
     }
 
     public void play() throws IndexOutOfBoundsException {
         playlist.at(currentPlayableIndex).play();
+        notifyPlayStateChanged();
     }
 
     public void pause() throws IndexOutOfBoundsException {
         playlist.at(currentPlayableIndex).pause();
+        notifyPlayStateChanged();
+    }
+
+    public void resume() throws IndexOutOfBoundsException {
+        playlist.at(currentPlayableIndex).resume();
+        notifyPlayStateChanged();
     }
 
     public boolean isPlaying() {
@@ -77,7 +89,7 @@ public class MasterPlayer {
         return false;
     }
 
-    public void next() throws IndexOutOfBoundsException {
+    public void next() {
         setCurrentPlayableIndex(currentPlayableIndex + 1);
     }
 
@@ -106,6 +118,11 @@ public class MasterPlayer {
             return;
         }
         Intent notificationIntent = new Intent("Minstrel.playlistChanged");
+        context.sendBroadcast(notificationIntent);
+    }
+
+    private void notifyPlayStateChanged() {
+        Intent notificationIntent = new Intent("Minstrel.playStateChanged");
         context.sendBroadcast(notificationIntent);
     }
 

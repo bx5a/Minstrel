@@ -69,7 +69,7 @@ public class YoutubePlayer implements Player {
             throw new IllegalStateException("Youtube player isn't initialized");
         }
         pause();
-        youtubePlayer.cueVideo(video.getId());
+        youtubePlayer.loadVideo(video.getId());
     }
 
     public void play() {
