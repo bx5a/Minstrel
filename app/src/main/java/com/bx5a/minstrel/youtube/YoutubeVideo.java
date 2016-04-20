@@ -17,7 +17,7 @@ public class YoutubeVideo extends Video {
         if (playingId.isEmpty()) {
             return false;
         }
-        return getId() == playingId;
+        return getId().equals(playingId);
     }
 
     @Override
