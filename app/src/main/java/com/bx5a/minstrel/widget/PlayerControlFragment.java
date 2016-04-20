@@ -60,6 +60,20 @@ public class PlayerControlFragment extends Fragment {
             mainHandler.post(myRunnable);
         }
     };
+    private BroadcastReceiver playStateChangedReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // on main thread
+            Handler mainHandler = new Handler(context.getMainLooper());
+            Runnable myRunnable = new Runnable() {
+                @Override
+                public void run() {
+                    updatePlayState();
+                }
+            };
+            mainHandler.post(myRunnable);
+        }
+    };
 
     @Override
     public View onCreateView(LayoutInflater layoutInflater, ViewGroup viewGroup, Bundle bundle) {
@@ -75,6 +89,8 @@ public class PlayerControlFragment extends Fragment {
         getActivity().registerReceiver(playlistChangedReceiver, currentSongIntentFilter);
         IntentFilter seekBarIntentFilter = new IntentFilter("Minstrel.currentTimeChanged");
         getActivity().registerReceiver(currentTimeChangedReceiver, seekBarIntentFilter);
+        IntentFilter playStateIntentFilter = new IntentFilter("Minstrel.playStateChanged");
+        getActivity().registerReceiver(playStateChangedReceiver, playStateIntentFilter);
 
         // TODO: unregister receiver ?
 
@@ -110,6 +126,14 @@ public class PlayerControlFragment extends Fragment {
                 player.play();
             }
         });
+    }
+
+    private void updatePlayState() {
+        if (MasterPlayer.getInstance().isPlaying()) {
+            playPauseButton.setImageResource(R.drawable.ic_pause);
+            return;
+        }
+        playPauseButton.setImageResource(R.drawable.ic_play);
     }
 
     private void initSongSwipe(View view) {

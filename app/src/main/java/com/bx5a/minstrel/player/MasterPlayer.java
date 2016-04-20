@@ -72,12 +72,10 @@ public class MasterPlayer {
             playable.load();
         }
         playable.play();
-        notifyPlayStateChanged();
     }
 
     public void pause() throws IndexOutOfBoundsException {
         playlist.at(currentPlayableIndex).pause();
-        notifyPlayStateChanged();
     }
 
     public boolean isPlaying() {
@@ -121,7 +119,12 @@ public class MasterPlayer {
         context.sendBroadcast(notificationIntent);
     }
 
-    private void notifyPlayStateChanged() {
+    public void notifyPlayStateChanged() {
+        if (context == null) {
+            // TODO: assert ?
+            Log.e("MasterPlayer", "Couldn't notify because context isn't set");
+            return;
+        }
         Intent notificationIntent = new Intent("Minstrel.playStateChanged");
         context.sendBroadcast(notificationIntent);
     }

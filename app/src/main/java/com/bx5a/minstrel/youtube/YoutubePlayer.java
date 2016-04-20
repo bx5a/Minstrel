@@ -33,6 +33,33 @@ public class YoutubePlayer implements Player {
         this.youtubePlayer = youtubePlayer;
         // hide built in controls player
         this.youtubePlayer.setPlayerStyle(YouTubePlayer.PlayerStyle.CHROMELESS);
+        this.youtubePlayer.setPlaybackEventListener(new YouTubePlayer.PlaybackEventListener() {
+            @Override
+            public void onPlaying() {
+                MasterPlayer.getInstance().notifyPlayStateChanged();
+            }
+
+            @Override
+            public void onPaused() {
+                MasterPlayer.getInstance().notifyPlayStateChanged();
+            }
+
+            @Override
+            public void onStopped() {
+                MasterPlayer.getInstance().notifyPlayStateChanged();
+            }
+
+            @Override
+            public void onBuffering(boolean b) {
+
+            }
+
+            @Override
+            public void onSeekTo(int i) {
+
+            }
+        });
+
         this.youtubePlayer.setPlayerStateChangeListener(new YouTubePlayer.PlayerStateChangeListener() {
             @Override
             public void onLoading() {
