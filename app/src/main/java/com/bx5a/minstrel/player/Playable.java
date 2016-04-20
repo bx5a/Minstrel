@@ -4,11 +4,13 @@ package com.bx5a.minstrel.player;
  * Created by guillaume on 25/03/2016.
  */
 public interface Playable {
+    void load();
+
+    boolean isLoaded();
+
     void play();
 
     void pause();
-
-    void resume();
 
     String title();
 

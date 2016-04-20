@@ -13,6 +13,8 @@ public class YoutubePlayer implements Player {
     private static YoutubePlayer ourInstance = new YoutubePlayer();
 
     private YouTubePlayer youtubePlayer;
+    private String loadedId;
+
     public static YoutubePlayer getInstance() {
         return ourInstance;
     }
@@ -20,6 +22,11 @@ public class YoutubePlayer implements Player {
     private YoutubePlayer() {
         youtubePlayer = null;
         MasterPlayer.getInstance().registerPlayer(this);
+        loadedId = new String("");
+    }
+
+    public String getLoadedId() {
+        return loadedId;
     }
 
     public void setYoutubePlayer(final YouTubePlayer youtubePlayer) {
@@ -34,6 +41,7 @@ public class YoutubePlayer implements Player {
             @Override
             public void onLoaded(String s) {
                 youtubePlayer.play();
+                loadedId = s;
             }
 
             @Override
@@ -55,6 +63,7 @@ public class YoutubePlayer implements Player {
             }
 
             private void videoStopped() {
+                loadedId = "";
                 try {
                     MasterPlayer.getInstance().next();
                 } catch (IndexOutOfBoundsException exception) {

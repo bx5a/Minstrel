@@ -59,6 +59,7 @@ public class MasterPlayer {
         playlist.add(playable);
         notifyPlaylistChanged();
 
+        // TODO: find a way to generalize that very unusual behavior
         // if nothing was playing, start playback (also if we want to play now)
         if (playlist.size() == 1) {
             play();
@@ -66,17 +67,16 @@ public class MasterPlayer {
     }
 
     public void play() throws IndexOutOfBoundsException {
-        playlist.at(currentPlayableIndex).play();
+        Playable playable = playlist.at(currentPlayableIndex);
+        if (!playable.isLoaded()) {
+            playable.load();
+        }
+        playable.play();
         notifyPlayStateChanged();
     }
 
     public void pause() throws IndexOutOfBoundsException {
         playlist.at(currentPlayableIndex).pause();
-        notifyPlayStateChanged();
-    }
-
-    public void resume() throws IndexOutOfBoundsException {
-        playlist.at(currentPlayableIndex).resume();
         notifyPlayStateChanged();
     }
 

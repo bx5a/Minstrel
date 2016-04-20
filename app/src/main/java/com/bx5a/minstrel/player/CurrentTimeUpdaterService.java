@@ -14,9 +14,11 @@ public class CurrentTimeUpdaterService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         while (true) {
-            Intent notificationIntent = new Intent("Minstrel.currentTimeChanged");
-            sendBroadcast(notificationIntent);
-
+            // if player isn't playing, time didn't update
+            if (MasterPlayer.getInstance().isPlaying()) {
+                Intent notificationIntent = new Intent("Minstrel.currentTimeChanged");
+                sendBroadcast(notificationIntent);
+            }
             try {
                 Thread.sleep(1000);  // every seconds is enough
             } catch (InterruptedException e) {
