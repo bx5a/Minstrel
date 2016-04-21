@@ -99,8 +99,12 @@ public class PlayerControlFragment extends Fragment {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                float progress = (float)(seekBar.getProgress()) / seekBar.getMax();
-                MasterPlayer.getInstance().seekTo(progress);
+                float progress = (float) (seekBar.getProgress()) / seekBar.getMax();
+                try {
+                    MasterPlayer.getInstance().seekTo(progress);
+                } catch (IndexOutOfBoundsException exception) {
+                    Log.i("PlayerControlFragment", "Can't seek: " + exception.getMessage());
+                }
             }
         });
     }
@@ -113,12 +117,16 @@ public class PlayerControlFragment extends Fragment {
         playPauseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MasterPlayer player = MasterPlayer.getInstance();
-                if (player.isPlaying()) {
-                    player.pause();
-                    return;
+                try {
+                    MasterPlayer player = MasterPlayer.getInstance();
+                    if (player.isPlaying()) {
+                        player.pause();
+                        return;
+                    }
+                    player.play();
+                } catch (IndexOutOfBoundsException exception) {
+                    Log.i("PlayerControlFragment", "Can't play/pause: " + exception.getMessage());
                 }
-                player.play();
             }
         });
     }
