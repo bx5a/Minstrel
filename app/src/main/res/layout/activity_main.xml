@@ -32,7 +32,7 @@
             <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="170dp">
+                android:layout_height="wrap_content">
                 <fragment
                     android:name="com.bx5a.minstrel.widget.PlayerControlFragment"
                     android:id="@+id/activityMain_playerControls"

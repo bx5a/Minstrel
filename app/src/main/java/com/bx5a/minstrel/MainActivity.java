@@ -14,6 +14,7 @@ import android.view.View;
 
 import com.bx5a.minstrel.legacy.SoftKeyboardHandledLayout;
 import com.bx5a.minstrel.widget.ImageAndTextButton;
+import com.bx5a.minstrel.widget.PlayerControlFragment;
 import com.bx5a.minstrel.widget.PlaylistFragment;
 import com.bx5a.minstrel.widget.SearchFragment;
 import com.bx5a.minstrel.youtube.DeveloperKey;
@@ -28,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     private SoftKeyboardHandledLayout drawerLayout;
     private ImageAndTextButton searchButton;
     private ImageAndTextButton playlistButton;
+    private PlayerControlFragment playerControls;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
         drawerLayout = (SoftKeyboardHandledLayout) findViewById(R.id.activityMain_drawer);
         searchButton = (ImageAndTextButton) findViewById(R.id.activityMain_searchButton);
         playlistButton = (ImageAndTextButton) findViewById(R.id.activityMain_playlistButton);
+        playerControls = (PlayerControlFragment) getSupportFragmentManager().findFragmentById(R.id.activityMain_playerControls);
 
         // init youtube using that popup
         YouTubePlayerSupportFragment fragment = (YouTubePlayerSupportFragment) getSupportFragmentManager().findFragmentById(R.id.youtube_fragment);
@@ -69,12 +72,12 @@ public class MainActivity extends AppCompatActivity {
         drawerLayout.setOnSoftKeyboardVisibilityChangeListener(new SoftKeyboardHandledLayout.SoftKeyboardVisibilityChangeListener() {
             @Override
             public void onSoftKeyboardShow() {
-
+                getSupportFragmentManager().beginTransaction().hide(playerControls).commit();
             }
 
             @Override
             public void onSoftKeyboardHide() {
-
+                getSupportFragmentManager().beginTransaction().show(playerControls).commit();
             }
         });
     }
