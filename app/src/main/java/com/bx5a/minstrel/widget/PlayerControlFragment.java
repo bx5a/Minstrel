@@ -1,6 +1,8 @@
 package com.bx5a.minstrel.widget;
 
 import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -77,6 +79,9 @@ public class PlayerControlFragment extends Fragment {
     }
 
     private void initSeekBar() {
+        // TODO: should be done in xml but it's so much more work...
+        seekBar.getProgressDrawable().setColorFilter(Color.BLACK, android.graphics.PorterDuff.Mode.MULTIPLY);
+        seekBar.getThumb().mutate().setAlpha(0);
         // init current time updater service
         Intent intent = new Intent(getActivity(), CurrentTimeUpdaterService.class);
         getActivity().startService(intent);
