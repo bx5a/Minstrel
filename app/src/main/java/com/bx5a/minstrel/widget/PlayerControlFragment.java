@@ -1,11 +1,7 @@
 package com.bx5a.minstrel.widget;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -66,6 +62,8 @@ public class PlayerControlFragment extends Fragment {
                 updateSeekBar();
             }
         });
+
+        displayCurrentAndNextSong();
 
         return view;
     }
@@ -137,6 +135,10 @@ public class PlayerControlFragment extends Fragment {
     private void displayCurrentAndNextSong() {
         Playlist playlist = MasterPlayer.getInstance().getPlaylist();
         int currentSongIndex = MasterPlayer.getInstance().getCurrentPlayableIndex();
+
+        // default values
+        currentSongText.setText("");
+        nextSongText.setText("");
 
         if (currentSongIndex < playlist.size()) {
             currentSongText.setText(playlist.at(currentSongIndex).title());
