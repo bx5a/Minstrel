@@ -44,7 +44,7 @@ public class PlayerControlFragment extends Fragment {
         // swipe detector
         initSongSwipe(view);
         // seekBar update
-        initSeekBarUpdate();
+        initSeekBar();
 
         // init event listener
         eventListener = new MasterPlayerEventListener() {
@@ -76,10 +76,28 @@ public class PlayerControlFragment extends Fragment {
         MasterPlayer.getInstance().removeMasterPlayerEventListener(eventListener);
     }
 
-    private void initSeekBarUpdate() {
+    private void initSeekBar() {
         // init current time updater service
         Intent intent = new Intent(getActivity(), CurrentTimeUpdaterService.class);
         getActivity().startService(intent);
+        // on click
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                float progress = (float)(seekBar.getProgress()) / seekBar.getMax();
+                MasterPlayer.getInstance().seekTo(progress);
+            }
+        });
     }
 
     private void updateSeekBar() {
