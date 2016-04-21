@@ -14,6 +14,7 @@ import android.view.View;
 
 import com.bx5a.minstrel.legacy.SoftKeyboardHandledLayout;
 import com.bx5a.minstrel.player.History;
+import com.bx5a.minstrel.widget.HistoryFragment;
 import com.bx5a.minstrel.widget.ImageAndTextButton;
 import com.bx5a.minstrel.widget.PlayerControlFragment;
 import com.bx5a.minstrel.widget.PlaylistFragment;
@@ -83,6 +84,8 @@ public class MainActivity extends AppCompatActivity {
                 getSupportFragmentManager().beginTransaction().show(playerControls).commit();
             }
         });
+
+        displayHistory();
     }
 
     @Override
@@ -137,6 +140,12 @@ public class MainActivity extends AppCompatActivity {
 
     private void displaySearch() {
         SearchFragment fragment = new SearchFragment();
+        displayFragment(fragment);
+        closeSidePanel();
+    }
+
+    private void displayHistory() {
+        HistoryFragment fragment = new HistoryFragment();
         displayFragment(fragment);
         closeSidePanel();
     }

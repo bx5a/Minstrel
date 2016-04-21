@@ -74,27 +74,31 @@ public class History {
             throw new NullPointerException("Context needs to be set in History before using it");
         }
 
-        String classType = playable.getClass().toString();
+        String classType = playable.getClass().getName();
         String id = playable.getId();
 
         LocalSQLiteOpenHelper helper = new LocalSQLiteOpenHelper(context);
-        SQLiteDatabase db = helper.getWritableDatabase();
+        SQLiteDatabase readableDb = helper.getReadableDatabase();
 
         ContentValues values = new ContentValues();
         values.put("classType", classType);
         values.put("playableId", id);
         values.put("date", System.currentTimeMillis());
 
-        if (exists(helper.getReadableDatabase(), classType, id)) {
-            String where = "classType = " + classType + " and playableId = " + id;
-            db.update("History", values, where, null);
-            return;
+        String where = "classType=\"" + classType + "\" and playableId=\"" + id + "\"";
+        boolean entryExists = exists(readableDb, where);
+        readableDb.close();
+
+        SQLiteDatabase writableDb = helper.getWritableDatabase();
+        if (entryExists) {
+            writableDb.update("History", values, where, null);
+        } else {
+            writableDb.insert("History", null, values);
         }
-        db.insert("History", null, values);
+        writableDb.close();
     }
 
-    private boolean exists(SQLiteDatabase db, String classType, String id) {
-        String where = "classType = " + classType + " and playableId = " + id;
+    private boolean exists(SQLiteDatabase db, String where) {
         Cursor cursor = db.query(true, "History", new String[]{"id"}, where, null, null, null, "date", null);
 
         boolean exists = (cursor.getCount() != 0);
