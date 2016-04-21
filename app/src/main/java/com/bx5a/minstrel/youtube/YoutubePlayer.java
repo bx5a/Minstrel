@@ -29,6 +29,12 @@ public class YoutubePlayer implements Player {
         return loadedId;
     }
 
+    public void reset() {
+        MasterPlayer.getInstance().unregisterPlayer(this);
+        youtubePlayer = null;
+        loadedId = new String("");
+    }
+
     public void setYoutubePlayer(final YouTubePlayer youtubePlayer) {
         this.youtubePlayer = youtubePlayer;
         // hide built in controls player

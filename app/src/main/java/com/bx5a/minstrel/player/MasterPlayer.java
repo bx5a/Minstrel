@@ -1,9 +1,5 @@
 package com.bx5a.minstrel.player;
 
-import android.content.Context;
-import android.content.Intent;
-import android.util.Log;
-
 import java.util.ArrayList;
 
 // Singleton
@@ -11,8 +7,8 @@ public class MasterPlayer {
     private static MasterPlayer instance;
     private Playlist playlist;
     private int currentPlayableIndex;
-    private Context context;
     private ArrayList<Player> players;
+    private ArrayList<MasterPlayerEventListener> listeners;
 
     public Playlist getPlaylist() {
         return playlist;
@@ -42,12 +38,8 @@ public class MasterPlayer {
     private MasterPlayer() {
         playlist = new Playlist();
         currentPlayableIndex = 0;
-        context = null;
         players = new ArrayList<>();
-    }
-
-    public void setContext(Context context) {
-        this.context = context;
+        listeners = new ArrayList<>();
     }
 
     public void enqueue(Playable playable, Position position) {
@@ -109,27 +101,33 @@ public class MasterPlayer {
         return 0;
     }
 
+    public void registerPlayer(Player player) {
+        players.add(player);
+    }
+
+    public void unregisterPlayer(Player player) {
+        players.remove(player);
+    }
+
+    public void addMasterPlayerEventListener(MasterPlayerEventListener listener) {
+        listeners.add(listener);
+    }
+
     private void notifyPlaylistChanged() {
-        if (context == null) {
-            // TODO: assert ?
-            Log.e("MasterPlayer", "Couldn't notify because context isn't set");
-            return;
+        for (MasterPlayerEventListener listener : listeners) {
+            listener.onPlaylistChange();
         }
-        Intent notificationIntent = new Intent("Minstrel.playlistChanged");
-        context.sendBroadcast(notificationIntent);
     }
 
     public void notifyPlayStateChanged() {
-        if (context == null) {
-            // TODO: assert ?
-            Log.e("MasterPlayer", "Couldn't notify because context isn't set");
-            return;
+        for (MasterPlayerEventListener listener : listeners) {
+            listener.onPlayStateChange();
         }
-        Intent notificationIntent = new Intent("Minstrel.playStateChanged");
-        context.sendBroadcast(notificationIntent);
     }
 
-    public void registerPlayer(Player player) {
-        players.add(player);
+    public void notifyCurrentTimeChanged() {
+        for (MasterPlayerEventListener listener : listeners) {
+            listener.onCurrentTimeChange();
+        }
     }
 }

@@ -39,9 +39,6 @@ public class MainActivity extends AppCompatActivity {
         searchButton = (ImageAndTextButton) findViewById(R.id.activityMain_searchButton);
         playlistButton = (ImageAndTextButton) findViewById(R.id.activityMain_playlistButton);
 
-        // init master player
-        MasterPlayer.getInstance().setContext(this);
-
         // init youtube using that popup
         YouTubePlayerSupportFragment fragment = (YouTubePlayerSupportFragment) getSupportFragmentManager().findFragmentById(R.id.youtube_fragment);
         fragment.initialize(DeveloperKey.DEVELOPER_KEY, new YouTubePlayer.OnInitializedListener() {
@@ -69,6 +66,12 @@ public class MainActivity extends AppCompatActivity {
                 displayPlaylist();
             }
         });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        YoutubePlayer.getInstance().reset();
     }
 
     @Override

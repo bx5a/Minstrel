@@ -2,6 +2,8 @@ package com.bx5a.minstrel.player;
 
 import android.app.IntentService;
 import android.content.Intent;
+import android.os.Handler;
+import android.os.Looper;
 
 /**
  * Created by guillaume on 19/04/2016.
@@ -16,8 +18,15 @@ public class CurrentTimeUpdaterService extends IntentService {
         while (true) {
             // if player isn't playing, time didn't update
             if (MasterPlayer.getInstance().isPlaying()) {
-                Intent notificationIntent = new Intent("Minstrel.currentTimeChanged");
-                sendBroadcast(notificationIntent);
+                // on main thread
+                Handler handler = new Handler(Looper.getMainLooper());
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        // notify
+                        MasterPlayer.getInstance().notifyCurrentTimeChanged();
+                    }
+                });
             }
             try {
                 Thread.sleep(1000);  // every seconds is enough

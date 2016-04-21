@@ -20,6 +20,7 @@ import android.widget.TextView;
 import com.bx5a.minstrel.R;
 import com.bx5a.minstrel.player.CurrentTimeUpdaterService;
 import com.bx5a.minstrel.player.MasterPlayer;
+import com.bx5a.minstrel.player.MasterPlayerEventListener;
 import com.bx5a.minstrel.player.Playlist;
 
 /**
@@ -32,49 +33,6 @@ public class PlayerControlFragment extends Fragment {
     private SeekBar seekBar;
     private GestureDetector gestureDetector;
 
-    private BroadcastReceiver playlistChangedReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            // on main thread
-            Handler mainHandler = new Handler(context.getMainLooper());
-            Runnable myRunnable = new Runnable() {
-                @Override
-                public void run() {
-                    displayCurrentAndNextSong();
-                }
-            };
-            mainHandler.post(myRunnable);
-        }
-    };
-    private BroadcastReceiver currentTimeChangedReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            // on main thread
-            Handler mainHandler = new Handler(context.getMainLooper());
-            Runnable myRunnable = new Runnable() {
-                @Override
-                public void run() {
-                    updateSeekBar();
-                }
-            };
-            mainHandler.post(myRunnable);
-        }
-    };
-    private BroadcastReceiver playStateChangedReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            // on main thread
-            Handler mainHandler = new Handler(context.getMainLooper());
-            Runnable myRunnable = new Runnable() {
-                @Override
-                public void run() {
-                    updatePlayState();
-                }
-            };
-            mainHandler.post(myRunnable);
-        }
-    };
-
     @Override
     public View onCreateView(LayoutInflater layoutInflater, ViewGroup viewGroup, Bundle bundle) {
         View view = layoutInflater.inflate(R.layout.fragment_player, null);
@@ -84,22 +42,30 @@ public class PlayerControlFragment extends Fragment {
         playPauseButton = (ImageButton) view.findViewById(R.id.viewPlayer_playPause);
         seekBar = (SeekBar) view.findViewById(R.id.viewPlayer_seekBar);
 
-        // connect the receivers
-        IntentFilter currentSongIntentFilter = new IntentFilter("Minstrel.playlistChanged");
-        getActivity().registerReceiver(playlistChangedReceiver, currentSongIntentFilter);
-        IntentFilter seekBarIntentFilter = new IntentFilter("Minstrel.currentTimeChanged");
-        getActivity().registerReceiver(currentTimeChangedReceiver, seekBarIntentFilter);
-        IntentFilter playStateIntentFilter = new IntentFilter("Minstrel.playStateChanged");
-        getActivity().registerReceiver(playStateChangedReceiver, playStateIntentFilter);
-
-        // TODO: unregister receiver ?
-
         // button action
         initPlayPause();
         // swipe detector
         initSongSwipe(view);
         // seekBar update
         initSeekBarUpdate();
+
+        // init event listener
+        MasterPlayer.getInstance().addMasterPlayerEventListener(new MasterPlayerEventListener() {
+            @Override
+            public void onPlayStateChange() {
+                updatePlayState();
+            }
+
+            @Override
+            public void onPlaylistChange() {
+                displayCurrentAndNextSong();
+            }
+
+            @Override
+            public void onCurrentTimeChange() {
+                updateSeekBar();
+            }
+        });
 
         return view;
     }
