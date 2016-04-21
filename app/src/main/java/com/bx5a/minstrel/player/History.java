@@ -46,7 +46,9 @@ public class History {
                 null, null, null, null, "date", null);
 
         ArrayList<Playable> playableList = new ArrayList<>();
-        while(cursor.moveToNext()) {
+        // we order from most recent to older
+        cursor.moveToLast();
+        for (int index = cursor.getCount() - 1; index >= 0; index--) {
             String stringClass = cursor.getString(cursor.getColumnIndex("classType"));
             String playableId = cursor.getString(cursor.getColumnIndex("playableId"));
             try {
@@ -61,6 +63,8 @@ public class History {
             } catch (IllegalAccessException e) {
                 Log.i("History", "Illegal access to " + stringClass + " : " + e.getMessage());
             }
+
+            cursor.moveToPrevious();
         }
 
         cursor.close();
