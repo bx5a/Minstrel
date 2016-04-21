@@ -1,5 +1,7 @@
 package com.bx5a.minstrel.player;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 
 // Singleton

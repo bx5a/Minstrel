@@ -21,7 +21,6 @@ public class YoutubePlayer implements Player {
 
     private YoutubePlayer() {
         youtubePlayer = null;
-        MasterPlayer.getInstance().registerPlayer(this);
         loadedId = new String("");
     }
 
@@ -104,6 +103,8 @@ public class YoutubePlayer implements Player {
                 }
             }
         });
+
+        MasterPlayer.getInstance().registerPlayer(this);
     }
 
     public void load(YoutubeVideo video) throws IllegalStateException {
