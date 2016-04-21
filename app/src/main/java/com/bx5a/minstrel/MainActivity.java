@@ -2,7 +2,6 @@ package com.bx5a.minstrel;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 
 import android.os.Bundle;
@@ -13,7 +12,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.bx5a.minstrel.player.MasterPlayer;
+import com.bx5a.minstrel.legacy.SoftKeyboardHandledLayout;
 import com.bx5a.minstrel.widget.ImageAndTextButton;
 import com.bx5a.minstrel.widget.PlaylistFragment;
 import com.bx5a.minstrel.widget.SearchFragment;
@@ -26,7 +25,7 @@ import com.google.android.youtube.player.YouTubePlayerSupportFragment;
 // TODO: opening the keyboard should hide the playerControlFragment. And closing it should reopen it
 public class MainActivity extends AppCompatActivity {
 
-    private DrawerLayout drawerLayout;
+    private SoftKeyboardHandledLayout drawerLayout;
     private ImageAndTextButton searchButton;
     private ImageAndTextButton playlistButton;
 
@@ -35,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        drawerLayout = (DrawerLayout) findViewById(R.id.activityMain_drawer);
+        drawerLayout = (SoftKeyboardHandledLayout) findViewById(R.id.activityMain_drawer);
         searchButton = (ImageAndTextButton) findViewById(R.id.activityMain_searchButton);
         playlistButton = (ImageAndTextButton) findViewById(R.id.activityMain_playlistButton);
 
@@ -64,6 +63,18 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 displayPlaylist();
+            }
+        });
+
+        drawerLayout.setOnSoftKeyboardVisibilityChangeListener(new SoftKeyboardHandledLayout.SoftKeyboardVisibilityChangeListener() {
+            @Override
+            public void onSoftKeyboardShow() {
+
+            }
+
+            @Override
+            public void onSoftKeyboardHide() {
+
             }
         });
     }

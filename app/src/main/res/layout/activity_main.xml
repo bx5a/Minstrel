@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.DrawerLayout
+<com.bx5a.minstrel.legacy.SoftKeyboardHandledLayout
     xmlns:image_and_text="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
@@ -73,4 +73,4 @@
             image_and_text:text="@string/playlist"/>
 
     </LinearLayout>
-</android.support.v4.widget.DrawerLayout>
+</com.bx5a.minstrel.legacy.SoftKeyboardHandledLayout>
