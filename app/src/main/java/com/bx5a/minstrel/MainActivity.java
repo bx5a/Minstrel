@@ -1,6 +1,5 @@
 package com.bx5a.minstrel;
 
-import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
@@ -13,10 +12,9 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 
-import com.bx5a.minstrel.player.CurrentTimeUpdaterService;
 import com.bx5a.minstrel.player.MasterPlayer;
+import com.bx5a.minstrel.widget.ImageAndTextButton;
 import com.bx5a.minstrel.widget.PlaylistFragment;
 import com.bx5a.minstrel.widget.SearchFragment;
 import com.bx5a.minstrel.youtube.DeveloperKey;
@@ -29,8 +27,8 @@ import com.google.android.youtube.player.YouTubePlayerSupportFragment;
 public class MainActivity extends AppCompatActivity {
 
     private DrawerLayout drawerLayout;
-    private Button searchButton;
-    private Button playlistButton;
+    private ImageAndTextButton searchButton;
+    private ImageAndTextButton playlistButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,8 +36,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         drawerLayout = (DrawerLayout) findViewById(R.id.activityMain_drawer);
-        searchButton = (Button) findViewById(R.id.activityMain_searchButton);
-        playlistButton = (Button) findViewById(R.id.activityMain_playlistButton);
+        searchButton = (ImageAndTextButton) findViewById(R.id.activityMain_searchButton);
+        playlistButton = (ImageAndTextButton) findViewById(R.id.activityMain_playlistButton);
 
         // init master player
         MasterPlayer.getInstance().setContext(this);
