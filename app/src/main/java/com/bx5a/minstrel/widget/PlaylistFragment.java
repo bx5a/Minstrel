@@ -19,6 +19,7 @@ import com.bx5a.minstrel.player.Playlist;
  */
 public class PlaylistFragment extends Fragment {
     private ListView playlistView;
+    private MasterPlayerEventListener eventListener;
 
     @Override
     public View onCreateView(LayoutInflater layoutInflater, ViewGroup viewGroup, Bundle bundle) {
@@ -26,7 +27,7 @@ public class PlaylistFragment extends Fragment {
         playlistView = (ListView) view.findViewById(R.id.fragmentPlaylist_list);
 
         // event listener
-        MasterPlayer.getInstance().addMasterPlayerEventListener(new MasterPlayerEventListener() {
+        eventListener =  new MasterPlayerEventListener() {
             @Override
             public void onPlayStateChange() {
 
@@ -41,7 +42,8 @@ public class PlaylistFragment extends Fragment {
             public void onCurrentTimeChange() {
 
             }
-        });
+        };
+        MasterPlayer.getInstance().addMasterPlayerEventListener(eventListener);
 
         // on click on given item
         playlistView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -59,6 +61,12 @@ public class PlaylistFragment extends Fragment {
         displayPlaylist();
 
         return view;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        MasterPlayer.getInstance().removeMasterPlayerEventListener(eventListener);
     }
 
     private void displayPlaylist() {

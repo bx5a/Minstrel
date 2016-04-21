@@ -28,6 +28,7 @@ public class PlayerControlFragment extends Fragment {
     private ImageButton playPauseButton;
     private SeekBar seekBar;
     private GestureDetector gestureDetector;
+    private MasterPlayerEventListener eventListener;
 
     @Override
     public View onCreateView(LayoutInflater layoutInflater, ViewGroup viewGroup, Bundle bundle) {
@@ -46,7 +47,7 @@ public class PlayerControlFragment extends Fragment {
         initSeekBarUpdate();
 
         // init event listener
-        MasterPlayer.getInstance().addMasterPlayerEventListener(new MasterPlayerEventListener() {
+        eventListener = new MasterPlayerEventListener() {
             @Override
             public void onPlayStateChange() {
                 updatePlayState();
@@ -61,11 +62,18 @@ public class PlayerControlFragment extends Fragment {
             public void onCurrentTimeChange() {
                 updateSeekBar();
             }
-        });
+        };
+        MasterPlayer.getInstance().addMasterPlayerEventListener(eventListener);
 
         displayCurrentAndNextSong();
 
         return view;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        MasterPlayer.getInstance().removeMasterPlayerEventListener(eventListener);
     }
 
     private void initSeekBarUpdate() {

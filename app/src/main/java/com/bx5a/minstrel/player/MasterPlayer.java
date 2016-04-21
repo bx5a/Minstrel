@@ -113,6 +113,10 @@ public class MasterPlayer {
         listeners.add(listener);
     }
 
+    public void removeMasterPlayerEventListener(MasterPlayerEventListener listener) {
+        listeners.remove(listener);
+    }
+
     private void notifyPlaylistChanged() {
         for (MasterPlayerEventListener listener : listeners) {
             listener.onPlaylistChange();
