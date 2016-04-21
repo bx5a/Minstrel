@@ -1,10 +1,8 @@
 package com.bx5a.minstrel.youtube;
 
 import android.content.Context;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
-import com.bx5a.minstrel.LocalSQLiteOpenHelper;
 import com.bx5a.minstrel.player.Playable;
 
 import java.io.IOException;
@@ -23,7 +21,7 @@ public class YoutubeVideo implements Playable {
     private String duration;
 
     public static ArrayList<YoutubeVideo> search(Context context, String keywords) {
-        // TODO: should be a singleton ?
+        // TODO: should search engine be singleton ?
         YoutubeSearchEngine youtubeSearchEngine = new YoutubeSearchEngine(context);
         List<YoutubeVideo> videos = youtubeSearchEngine.search(keywords);
         if (videos == null) {
@@ -37,28 +35,27 @@ public class YoutubeVideo implements Playable {
         return items;
     }
 
-    /*public static List<YoutubeVideo> history(Context context) {
+    @Override
+    public void initFromId(String id, Context context) {
+        ArrayList<String> ids = new ArrayList<>();
+        ids.add(id);
         YoutubeSearchEngine searchEngine = new YoutubeSearchEngine(context);
-        LocalSQLiteOpenHelper helper = new LocalSQLiteOpenHelper(context);
-        SQLiteDatabase db = helper.getReadableDatabase();
-
-        Cursor cursor = db.query(true, "PlayedYoutubeVideo", new String[]{"id", "videoId"},
-                null, null, null, null, "id", null);
-
-        ArrayList<String> videoIds = new ArrayList<>();
-        while(cursor.moveToNext()) {
-            // create video from videoId
-            videoIds.add(cursor.getString(cursor.getColumnIndex("videoId")));
-        }
-        cursor.close();
-        db.close();
-
         try {
-            return searchEngine.getVideoDetails(videoIds);
+            List<YoutubeVideo> videos = searchEngine.getVideoDetails(ids);
+            if (videos.size() != 1) {
+                Log.e("YoutubeVideo", "Couldn't initialize from id: search engine error");
+                return;
+            }
+            YoutubeVideo video = videos.get(0);
+            setId(id);
+            setTitle(video.getTitle());
+            setDuration(video.duration);
+            setThumbnailURL(video.thumbnailURL);
+            setViewCount(video.viewCount);
         } catch (IOException e) {
-            return new ArrayList<>();
+            Log.e("YoutubeVideo", "Couldn't initialize from id: " + e.getMessage());
         }
-    }*/
+    }
 
     @Override
     public void load() {
@@ -94,20 +91,21 @@ public class YoutubeVideo implements Playable {
         YoutubePlayer.getInstance().seekTo(position);
     }
 
-    public String getDuration() {
-        return duration;
-    }
-
-    public void setDuration(String duration) {
-        this.duration = duration;
-    }
-
+    @Override
     public String getId() {
         return id;
     }
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getDuration() {
+        return duration;
+    }
+
+    public void setDuration(String duration) {
+        this.duration = duration;
     }
 
     public String getTitle() {
