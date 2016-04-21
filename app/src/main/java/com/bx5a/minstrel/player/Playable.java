@@ -23,4 +23,7 @@ public interface Playable {
     void seekTo(float position);
 
     String getId();
+
+    // can return an empty string if no thumbnail available
+    String getThumbnailURL();
 }

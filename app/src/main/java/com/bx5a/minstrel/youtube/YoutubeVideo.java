@@ -96,6 +96,11 @@ public class YoutubeVideo implements Playable {
         return id;
     }
 
+    @Override
+    public String getThumbnailURL() {
+        return thumbnailURL;
+    }
+
     public void setId(String id) {
         this.id = id;
     }
@@ -114,10 +119,6 @@ public class YoutubeVideo implements Playable {
 
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    public String getThumbnailURL() {
-        return thumbnailURL;
     }
 
     public void setThumbnailURL(String thumbnailURL) {

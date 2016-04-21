@@ -5,10 +5,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bx5a.minstrel.R;
 import com.bx5a.minstrel.player.Playable;
+import com.bx5a.minstrel.utils.DisplayImageTask;
 
 import java.util.List;
 
@@ -37,6 +39,8 @@ public class HistoryAdapter extends ArrayAdapter<Playable> {
 
         TextView title = (TextView) view.findViewById(R.id.listItemHistory_title);
         title.setText(playable.title());
+        ImageView image = (ImageView) view.findViewById(R.id.listItemHistory_thumbnail);
+        new DisplayImageTask(playable.getThumbnailURL(), image).execute();
 
         return view;
     }
