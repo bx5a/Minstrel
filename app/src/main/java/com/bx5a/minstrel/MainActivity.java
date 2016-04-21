@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.bx5a.minstrel.legacy.SoftKeyboardHandledLayout;
+import com.bx5a.minstrel.player.History;
 import com.bx5a.minstrel.widget.ImageAndTextButton;
 import com.bx5a.minstrel.widget.PlayerControlFragment;
 import com.bx5a.minstrel.widget.PlaylistFragment;
@@ -23,7 +24,6 @@ import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerSupportFragment;
 
-// TODO: opening the keyboard should hide the playerControlFragment. And closing it should reopen it
 public class MainActivity extends AppCompatActivity {
 
     private SoftKeyboardHandledLayout drawerLayout;
@@ -40,6 +40,9 @@ public class MainActivity extends AppCompatActivity {
         searchButton = (ImageAndTextButton) findViewById(R.id.activityMain_searchButton);
         playlistButton = (ImageAndTextButton) findViewById(R.id.activityMain_playlistButton);
         playerControls = (PlayerControlFragment) getSupportFragmentManager().findFragmentById(R.id.activityMain_playerControls);
+
+        // init History
+        History.getInstance().setContext(this);
 
         // init youtube using that popup
         YouTubePlayerSupportFragment fragment = (YouTubePlayerSupportFragment) getSupportFragmentManager().findFragmentById(R.id.youtube_fragment);
@@ -86,6 +89,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         YoutubePlayer.getInstance().reset();
+        History.getInstance().setContext(null);
     }
 
     @Override

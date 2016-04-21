@@ -1,5 +1,6 @@
 package com.bx5a.minstrel.player;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -14,7 +15,29 @@ import java.util.List;
  * Created by guillaume on 21/04/2016.
  */
 public class History {
-    public static List<Playable> get(Context context) {
+    private static History instance;
+    private Context context;
+
+    public static History getInstance() {
+        if (instance == null) {
+            instance = new History();
+        }
+        return instance;
+    }
+
+    public History() {
+        context = null;
+    }
+
+    public void setContext(Context context) {
+        this.context = context;
+    }
+
+    public List<Playable> get() throws NullPointerException {
+        if (context == null) {
+            throw new NullPointerException("Context needs to be set in History before using it");
+        }
+
         LocalSQLiteOpenHelper helper = new LocalSQLiteOpenHelper(context);
         SQLiteDatabase db = helper.getReadableDatabase();
 
@@ -22,7 +45,7 @@ public class History {
                 new String[]{"id", "classType", "playableId", "date"},
                 null, null, null, null, "date", null);
 
-        ArrayList<Playable> playables = new ArrayList<>();
+        ArrayList<Playable> playableList = new ArrayList<>();
         while(cursor.moveToNext()) {
             String stringClass = cursor.getString(cursor.getColumnIndex("classType"));
             String playableId = cursor.getString(cursor.getColumnIndex("playableId"));
@@ -30,7 +53,7 @@ public class History {
                 Class<?> className = Class.forName(stringClass);
                 Playable playable = (Playable) className.newInstance();
                 playable.initFromId(playableId, context);
-                playables.add(playable);
+                playableList.add(playable);
             } catch (ClassNotFoundException e) {
                 Log.i("History", "Class not found : " + stringClass);
             } catch (InstantiationException e) {
@@ -43,10 +66,41 @@ public class History {
         cursor.close();
         db.close();
 
-        return playables;
+        return playableList;
     }
 
-    public static void store(Playable playable) {
-        // TODO: develop !
+    public void store(Playable playable)  throws NullPointerException {
+        if (context == null) {
+            throw new NullPointerException("Context needs to be set in History before using it");
+        }
+
+        String classType = playable.getClass().toString();
+        String id = playable.getId();
+
+        LocalSQLiteOpenHelper helper = new LocalSQLiteOpenHelper(context);
+        SQLiteDatabase db = helper.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put("classType", classType);
+        values.put("playableId", id);
+        values.put("date", System.currentTimeMillis());
+
+        if (exists(helper.getReadableDatabase(), classType, id)) {
+            String where = "classType = " + classType + " and playableId = " + id;
+            db.update("History", values, where, null);
+            return;
+        }
+        db.insert("History", null, values);
+    }
+
+    private boolean exists(SQLiteDatabase db, String classType, String id) {
+        String where = "classType = " + classType + " and playableId = " + id;
+        Cursor cursor = db.query(true, "History", new String[]{"id"}, where, null, null, null, "date", null);
+
+        boolean exists = (cursor.getCount() != 0);
+
+        cursor.close();
+        db.close();
+        return exists;
     }
 }

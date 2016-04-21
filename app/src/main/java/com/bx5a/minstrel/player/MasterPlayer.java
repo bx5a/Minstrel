@@ -64,6 +64,11 @@ public class MasterPlayer {
         Playable playable = playlist.at(currentPlayableIndex);
         if (!playable.isLoaded()) {
             playable.load();
+            try {
+                History.getInstance().store(playable);
+            } catch (NullPointerException exception) {
+                Log.i("MasterPlayer", "Couldn't store playable: " + exception.getMessage());
+            }
         }
         playable.play();
     }
