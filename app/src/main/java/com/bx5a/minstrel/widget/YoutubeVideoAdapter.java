@@ -12,7 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bx5a.minstrel.R;
-import com.bx5a.minstrel.Video;
+import com.bx5a.minstrel.youtube.YoutubeVideo;
 
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -22,11 +22,11 @@ import java.util.List;
 /**
  * Created by guillaume on 22/03/2016.
  */
-public class VideoAdapter extends ArrayAdapter<Video> {
+public class YoutubeVideoAdapter extends ArrayAdapter<YoutubeVideo> {
 
     Context context;
 
-    public VideoAdapter(Context context, List<Video> videos) {
+    public YoutubeVideoAdapter(Context context, List<YoutubeVideo> videos) {
         super(context, -1, videos);
         this.context = context;
     }
@@ -39,7 +39,7 @@ public class VideoAdapter extends ArrayAdapter<Video> {
                     (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             view = layoutInflater.inflate(R.layout.listitem_video, null);
         }
-        Video video = getItem(position);
+        YoutubeVideo video = getItem(position);
 
         view.setTag(video);
 

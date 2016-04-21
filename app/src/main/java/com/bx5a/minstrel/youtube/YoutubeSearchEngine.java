@@ -49,7 +49,7 @@ public class YoutubeSearchEngine {
         return ids;
     }
 
-    private List<YoutubeVideo> getVideoDetails(List<String> videoIds) throws IOException {
+    public List<YoutubeVideo> getVideoDetails(List<String> videoIds) throws IOException {
         Joiner stringJoiner = Joiner.on(',');
         String videoId = stringJoiner.join(videoIds);
         YouTube.Videos.List query =

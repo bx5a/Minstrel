@@ -11,9 +11,10 @@ import android.widget.ListView;
 import android.widget.SearchView;
 
 import com.bx5a.minstrel.R;
-import com.bx5a.minstrel.Video;
 import com.bx5a.minstrel.player.MasterPlayer;
+import com.bx5a.minstrel.player.Playable;
 import com.bx5a.minstrel.player.Position;
+import com.bx5a.minstrel.youtube.YoutubeVideo;
 
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
@@ -60,8 +61,8 @@ public class CustomSearchView extends LinearLayout {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Object o = view.getTag();
                 if (o != null) {
-                    Video video = (Video) o;
-                    addVideoToPlayer(video);
+                    Playable playable = (Playable) o;
+                    addPlayableToPlayer(playable);
                 }
             }
         });
@@ -88,8 +89,8 @@ public class CustomSearchView extends LinearLayout {
         });
     }
 
-    private void addVideoToPlayer(Video video) {
-        MasterPlayer.getInstance().enqueue(video, Position.Next);
+    private void addPlayableToPlayer(Playable playable) {
+        MasterPlayer.getInstance().enqueue(playable, Position.Next);
     }
 
     private void asyncSearch(String keywords) {
@@ -99,7 +100,7 @@ public class CustomSearchView extends LinearLayout {
         // TODO: when destroying should shutdown() and awaitTermination()
     }
 
-    private void searchFinished(ArrayList<Video> videos) {
+    private void searchFinished(ArrayList<YoutubeVideo> videos) {
         // if we are asking for a next search, don't update the list. The next one will update it
         if (nextSearch != null) {
             asyncSearch(nextSearch);
@@ -112,11 +113,11 @@ public class CustomSearchView extends LinearLayout {
         clearPendingSearch();
     }
 
-    private void updateList(ArrayList<Video> videos) {
+    private void updateList(ArrayList<YoutubeVideo> videos) {
         if (videos == null) {
             return;
         }
-        resultList.setAdapter(new VideoAdapter(getContext(), videos));
+        resultList.setAdapter(new YoutubeVideoAdapter(getContext(), videos));
     }
 
     private void cancelPendingSearch() {
@@ -139,7 +140,7 @@ public class CustomSearchView extends LinearLayout {
     class AsyncVideosSearch implements Runnable {
         private CustomSearchView search;
         private String keywords;
-        private ArrayList<Video> videos;
+        private ArrayList<YoutubeVideo> videos;
 
         public AsyncVideosSearch(CustomSearchView search, String searchKeywords) {
             super();
@@ -154,7 +155,7 @@ public class CustomSearchView extends LinearLayout {
             if (Thread.currentThread().isInterrupted()) {
                 return;
             }
-            videos = Video.searchYoutube(search.getContext(), keywords);
+            videos = YoutubeVideo.search(search.getContext(), keywords);
 
             // notify on main thread
             if (Thread.currentThread().isInterrupted()) {
