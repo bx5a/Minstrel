@@ -8,4 +8,5 @@
     <string name="playlist">Playlist</string>
     <string name="search_hint">Search songs</string>
     <string name="view_count">%d views</string>
+    <string name="history">Previously played</string>
 </resources>
