@@ -1,6 +1,7 @@
 package com.bx5a.minstrel.youtube;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.bx5a.minstrel.R;
 import com.google.api.client.http.HttpRequest;
@@ -14,7 +15,15 @@ import com.google.api.services.youtube.model.SearchResult;
 import com.google.api.services.youtube.model.Video;
 import com.google.api.services.youtube.model.VideoListResponse;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
+import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -77,6 +86,12 @@ public class YoutubeSearchEngine {
     }
 
     public List<YoutubeVideo> search(String keywords) {
+        // update keywords using highest score suggested one
+        List<String> suggestedKeywords = autoComplete(keywords);
+        if (suggestedKeywords.size() != 0) {
+            keywords = suggestedKeywords.get(0);
+        }
+
         // search with given keyword
         List<String> videoIds;
         try {
@@ -95,6 +110,43 @@ public class YoutubeSearchEngine {
             e.printStackTrace();
             return null;
         }
+    }
 
+    // suggestion api
+    private List<String> autoComplete(String keyword) {
+        ArrayList<String> suggestions = new ArrayList<>();
+
+        String path = "complete/search";
+        String query = "client=firefox&ds=yt&q=" + keyword;
+
+        try {
+            URL suggestionApiUrl = new URL("http", "suggestqueries.google.com", path + "?" + query);
+
+            // open a connection to the autocompletion engine
+            HttpURLConnection connection = (HttpURLConnection) suggestionApiUrl.openConnection();
+            InputStream in = new BufferedInputStream(connection.getInputStream());
+
+            // read
+            InputStreamReader reader = new InputStreamReader(in);
+            int c;
+            String readQuery = "";
+            while ((c = reader.read()) != -1) {
+                readQuery = readQuery + (char)c;
+            }
+
+            // response is an array of size 2: 0 = keyword / 1 = array of response
+            JSONArray array = new JSONArray(readQuery).getJSONArray(1);
+            for (int index = 0; index < array.length(); index++) {
+                suggestions.add(array.getString(index));
+            }
+
+            connection.disconnect();
+        } catch (IOException e) {
+            Log.w("YoutubeSearchEngine", "Can't autocomplete " + keyword + " : " + e.getMessage());
+        } catch (JSONException e) {
+            Log.w("YoutubeSearchEngine", "Can't parse json for keyword " + keyword + " : " + e.getMessage());
+        }
+
+        return suggestions;
     }
 }
