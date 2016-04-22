@@ -20,7 +20,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="Title"
-            android:textSize="15dp"
+            android:textSize="13dp"
             android:singleLine="true"
             android:textColor="@color/colorAccent"
             android:id="@+id/listItemHistory_title"/>

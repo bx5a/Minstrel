@@ -41,14 +41,13 @@ public class History {
         LocalSQLiteOpenHelper helper = new LocalSQLiteOpenHelper(context);
         SQLiteDatabase db = helper.getReadableDatabase();
 
+        // we order from most recent to older. Get only the first 20 entries
         Cursor cursor = db.query(true, "History",
                 new String[]{"id", "classType", "playableId", "date"},
-                null, null, null, null, "date", null);
+                null, null, null, null, "date DESC", "20");
 
         ArrayList<Playable> playableList = new ArrayList<>();
-        // we order from most recent to older
-        cursor.moveToLast();
-        for (int index = cursor.getCount() - 1; index >= 0; index--) {
+        while (cursor.moveToNext()) {
             String stringClass = cursor.getString(cursor.getColumnIndex("classType"));
             String playableId = cursor.getString(cursor.getColumnIndex("playableId"));
             try {
@@ -63,8 +62,6 @@ public class History {
             } catch (IllegalAccessException e) {
                 Log.i("History", "Illegal access to " + stringClass + " : " + e.getMessage());
             }
-
-            cursor.moveToPrevious();
         }
 
         cursor.close();
