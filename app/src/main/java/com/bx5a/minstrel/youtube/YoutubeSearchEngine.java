@@ -32,6 +32,7 @@ import java.util.List;
  */
 public class YoutubeSearchEngine {
     private YouTube youtube;
+    private final long kMaxResultNumber = 15;
 
     public YoutubeSearchEngine(Context context) {
         youtube = new YouTube.Builder(new NetHttpTransport(), new JacksonFactory(),
@@ -49,6 +50,7 @@ public class YoutubeSearchEngine {
         query.setType("video");
         query.setFields("items(id/videoId)");
         query.setQ(keywords);
+        query.setMaxResults(kMaxResultNumber);
         SearchListResponse response = query.execute();
 
         List<String> ids = new ArrayList<>();
