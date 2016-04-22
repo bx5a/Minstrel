@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by guillaume on 24/03/2016.
@@ -101,12 +103,23 @@ public class YoutubeVideo implements Playable {
         return thumbnailURL;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    @Override
+    public String duration() {
+        // youtube duration is ISO 8601 string (format is PT[MINUTES]M[SECONDS]S)
+        Pattern pattern = Pattern.compile("PT(.*)M(.*)S");
+        Matcher matcher = pattern.matcher(getDuration());
+        if (matcher.matches()) {
+            return matcher.group(1) + ":" + matcher.group(2);
+        }
+        return duration;
     }
 
     public String getDuration() {
         return duration;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public void setDuration(String duration) {

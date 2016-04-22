@@ -13,6 +13,8 @@ import com.bx5a.minstrel.player.Playable;
 import com.bx5a.minstrel.player.MasterPlayer;
 import com.bx5a.minstrel.player.Playlist;
 
+import org.w3c.dom.Text;
+
 /**
  * Created by guillaume on 13/04/2016.
  */
@@ -37,15 +39,19 @@ public class PlayableAdapter extends ArrayAdapter<Playable> {
         view.setTag(playable);
 
         TextView title = (TextView) view.findViewById(R.id.listItemPlayable_title);
+        TextView duration = (TextView) view.findViewById(R.id.listItemPlayable_duration);
         if (MasterPlayer.getInstance().getCurrentPlayableIndex() == position) {
+            duration.setTextColor(ContextCompat.getColor(getContext(), R.color.colorPrimaryDark));
             title.setTextColor(ContextCompat.getColor(getContext(), R.color.colorPrimaryDark));
             view.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
         } else {
+            duration.setTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
             title.setTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
             view.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.colorPrimaryDark));
         }
 
         title.setText(playable.title());
+        duration.setText(playable.duration());
 
         return view;
     }

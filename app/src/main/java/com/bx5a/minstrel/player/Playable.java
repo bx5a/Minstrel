@@ -26,4 +26,6 @@ public interface Playable {
 
     // can return an empty string if no thumbnail available
     String getThumbnailURL();
+
+    String duration();
 }
