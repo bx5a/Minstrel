@@ -109,7 +109,11 @@ public class YoutubeVideo implements Playable {
         Pattern pattern = Pattern.compile("PT(.*)M(.*)S");
         Matcher matcher = pattern.matcher(getDuration());
         if (matcher.matches()) {
-            return matcher.group(1) + ":" + matcher.group(2);
+            String seconds = matcher.group(2);
+            if (seconds.length() == 1) {
+                seconds = "0" + seconds;
+            }
+            return matcher.group(1) + ":" + seconds;
         }
         return duration;
     }
