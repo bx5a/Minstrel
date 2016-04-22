@@ -21,7 +21,7 @@ import com.bx5a.minstrel.player.Playable;
 import com.bx5a.minstrel.player.Position;
 import com.bx5a.minstrel.widget.HistoryFragment;
 import com.bx5a.minstrel.widget.ImageAndTextButton;
-import com.bx5a.minstrel.widget.PlayerControlFragment;
+import com.bx5a.minstrel.widget.PlayerControlBarFragment;
 import com.bx5a.minstrel.widget.PlaylistFragment;
 import com.bx5a.minstrel.widget.SearchFragment;
 import com.bx5a.minstrel.widget.UndoDialogFragment;
@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
     private ImageAndTextButton searchButton;
     private ImageAndTextButton playlistButton;
     private ImageAndTextButton historyButton;
-    private PlayerControlFragment playerControls;
+    private PlayerControlBarFragment playerControls;
     private UndoDialogFragment undoDialogFragment;
     private final int kAutoDismissMilliseconds = 2000;
 
@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
         searchButton = (ImageAndTextButton) findViewById(R.id.activityMain_searchButton);
         playlistButton = (ImageAndTextButton) findViewById(R.id.activityMain_playlistButton);
         historyButton = (ImageAndTextButton) findViewById(R.id.activityMain_historyButton);
-        playerControls = (PlayerControlFragment) getSupportFragmentManager().findFragmentById(R.id.activityMain_playerControls);
+        playerControls = (PlayerControlBarFragment) getSupportFragmentManager().findFragmentById(R.id.activityMain_playerControls);
 
         initHistory();
         initYoutubePlayer();

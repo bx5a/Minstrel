@@ -24,7 +24,7 @@ import com.bx5a.minstrel.player.Playlist;
 /**
  * Created by guillaume on 11/04/2016.
  */
-public class PlayerControlFragment extends Fragment {
+public class PlayerControlBarFragment extends Fragment {
     private TextView currentSongText;
     private TextView nextSongText;
     private ImageButton playPauseButton;
@@ -35,7 +35,7 @@ public class PlayerControlFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater layoutInflater, ViewGroup viewGroup, Bundle bundle) {
-        View view = layoutInflater.inflate(R.layout.fragment_player, null);
+        View view = layoutInflater.inflate(R.layout.fragment_player_bar, null);
 
         currentSongText = (TextView) view.findViewById(R.id.viewPlayer_currentSong);
         nextSongText = (TextView) view.findViewById(R.id.viewPlayer_nextSong);
@@ -114,7 +114,7 @@ public class PlayerControlFragment extends Fragment {
                 try {
                     MasterPlayer.getInstance().seekTo(progress);
                 } catch (IndexOutOfBoundsException exception) {
-                    Log.i("PlayerControlFragment", "Can't seek: " + exception.getMessage());
+                    Log.i("PlayerControlBarFragment", "Can't seek: " + exception.getMessage());
                 }
             }
         });
@@ -136,7 +136,7 @@ public class PlayerControlFragment extends Fragment {
                     }
                     player.play();
                 } catch (IndexOutOfBoundsException exception) {
-                    Log.i("PlayerControlFragment", "Can't play/pause: " + exception.getMessage());
+                    Log.i("PlayerControlBarFragment", "Can't play/pause: " + exception.getMessage());
                 }
             }
         });
@@ -162,7 +162,7 @@ public class PlayerControlFragment extends Fragment {
                             }
                             MasterPlayer.getInstance().next();
                         } catch (IndexOutOfBoundsException exception) {
-                            Log.i("PlayerControlFragment", "Couldn't change song: " + exception.getMessage());
+                            Log.i("PlayerControlBarFragment", "Couldn't change song: " + exception.getMessage());
                         }
                         return true;
                     }
