@@ -146,10 +146,10 @@ public class PlayerControlFragment extends Fragment {
                     public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
                         try {
                             if (e1.getX() < e2.getX()) {
-                                MasterPlayer.getInstance().next();
+                                MasterPlayer.getInstance().previous();
                                 return true;
                             }
-                            MasterPlayer.getInstance().previous();
+                            MasterPlayer.getInstance().next();
                         } catch (IndexOutOfBoundsException exception) {
                             Log.i("PlayerControlFragment", "Couldn't change song: " + exception.getMessage());
                         }
