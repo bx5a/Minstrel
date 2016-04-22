@@ -36,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
     private SoftKeyboardHandledLayout drawerLayout;
     private ImageAndTextButton searchButton;
     private ImageAndTextButton playlistButton;
+    private ImageAndTextButton historyButton;
     private PlayerControlFragment playerControls;
     private UndoDialogFragment undoDialogFragment;
     private final int kAutoDismissMilliseconds = 2000;
@@ -48,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
         drawerLayout = (SoftKeyboardHandledLayout) findViewById(R.id.activityMain_drawer);
         searchButton = (ImageAndTextButton) findViewById(R.id.activityMain_searchButton);
         playlistButton = (ImageAndTextButton) findViewById(R.id.activityMain_playlistButton);
+        historyButton = (ImageAndTextButton) findViewById(R.id.activityMain_historyButton);
         playerControls = (PlayerControlFragment) getSupportFragmentManager().findFragmentById(R.id.activityMain_playerControls);
 
         initHistory();
@@ -126,6 +128,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 displayPlaylist();
+            }
+        });
+        historyButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                displayHistory();
             }
         });
     }

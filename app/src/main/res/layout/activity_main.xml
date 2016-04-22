@@ -59,6 +59,13 @@
         android:background="@color/colorAccent">
 
         <com.bx5a.minstrel.widget.ImageAndTextButton
+            android:id="@+id/activityMain_historyButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            image_and_text:src="@drawable/ic_history"
+            image_and_text:text="@string/myMusic"/>
+
+        <com.bx5a.minstrel.widget.ImageAndTextButton
             android:id="@+id/activityMain_searchButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
