@@ -1,7 +1,6 @@
 package com.bx5a.minstrel.widget;
 
 import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -10,6 +9,7 @@ import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
@@ -31,6 +31,7 @@ public class PlayerControlFragment extends Fragment {
     private SeekBar seekBar;
     private GestureDetector gestureDetector;
     private MasterPlayerEventListener eventListener;
+    private OnClickListener onClickListener;
 
     @Override
     public View onCreateView(LayoutInflater layoutInflater, ViewGroup viewGroup, Bundle bundle) {
@@ -40,6 +41,12 @@ public class PlayerControlFragment extends Fragment {
         nextSongText = (TextView) view.findViewById(R.id.viewPlayer_nextSong);
         playPauseButton = (ImageButton) view.findViewById(R.id.viewPlayer_playPause);
         seekBar = (SeekBar) view.findViewById(R.id.viewPlayer_seekBar);
+        onClickListener = new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        };
 
         // button action
         initPlayPause();
@@ -78,6 +85,10 @@ public class PlayerControlFragment extends Fragment {
         MasterPlayer.getInstance().removeMasterPlayerEventListener(eventListener);
     }
 
+    public void setOnClickListener(OnClickListener onClickListener) {
+        this.onClickListener = onClickListener;
+    }
+
     private void initSeekBar() {
         // TODO: should be done in xml but it's so much more work...
         seekBar.getProgressDrawable().setColorFilter(Color.BLACK, android.graphics.PorterDuff.Mode.MULTIPLY);
@@ -114,7 +125,7 @@ public class PlayerControlFragment extends Fragment {
     }
 
     private void initPlayPause() {
-        playPauseButton.setOnClickListener(new View.OnClickListener() {
+        playPauseButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 try {
@@ -139,7 +150,7 @@ public class PlayerControlFragment extends Fragment {
         playPauseButton.setImageResource(R.drawable.ic_play);
     }
 
-    private void initSongSwipe(View view) {
+    private void initSongSwipe(final View view) {
         gestureDetector = new GestureDetector(getActivity(),
                 new GestureDetector.SimpleOnGestureListener() {
                     @Override
@@ -160,6 +171,12 @@ public class PlayerControlFragment extends Fragment {
                     public boolean onDown(MotionEvent e) {
                         return true;
 
+                    }
+
+                    @Override
+                    public boolean onSingleTapConfirmed(MotionEvent e) {
+                        onClickListener.onClick(view);
+                        return super.onSingleTapConfirmed(e);
                     }
                 });
 

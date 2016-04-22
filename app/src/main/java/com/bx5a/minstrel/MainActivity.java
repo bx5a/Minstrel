@@ -85,6 +85,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // player control pressed
+        playerControls.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                displayPlaylist();
+            }
+        });
+
         displayHistory();
     }
 
