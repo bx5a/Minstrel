@@ -6,11 +6,37 @@ import java.util.ArrayList;
 
 // Singleton
 public class MasterPlayer {
+    // event listener for playable enqueued
+    public interface OnPlayableEnqueuedListener {
+        void onEnqueued(Playable playable, Position position);
+    }
+
     private static MasterPlayer instance;
     private Playlist playlist;
     private int currentPlayableIndex;
     private ArrayList<Player> players;
     private ArrayList<MasterPlayerEventListener> listeners;
+    private OnPlayableEnqueuedListener onEnqueuedListener;
+
+    public static MasterPlayer getInstance() {
+        if (instance == null) {
+            instance = new MasterPlayer();
+        }
+        return instance;
+    }
+
+    private MasterPlayer() {
+        playlist = new Playlist();
+        currentPlayableIndex = 0;
+        players = new ArrayList<>();
+        listeners = new ArrayList<>();
+        onEnqueuedListener = new OnPlayableEnqueuedListener() {
+            @Override
+            public void onEnqueued(Playable playable, Position position) {
+
+            }
+        };
+    }
 
     public Playlist getPlaylist() {
         return playlist;
@@ -26,37 +52,42 @@ public class MasterPlayer {
         play();
     }
 
+    public void setOnEnqueuedListener(OnPlayableEnqueuedListener onEnqueuedListener) {
+        this.onEnqueuedListener = onEnqueuedListener;
+    }
+
     public int getCurrentPlayableIndex() {
         return currentPlayableIndex;
-    }
-
-    public static MasterPlayer getInstance() {
-        if (instance == null) {
-            instance = new MasterPlayer();
-        }
-        return instance;
-    }
-
-    private MasterPlayer() {
-        playlist = new Playlist();
-        currentPlayableIndex = 0;
-        players = new ArrayList<>();
-        listeners = new ArrayList<>();
     }
 
     public void enqueue(Playable playable, Position position) {
         if (position == Position.Next && playlist.size() != 0) {
             playlist.add(playable, currentPlayableIndex + 1);
             notifyPlaylistChanged();
+            onEnqueuedListener.onEnqueued(playable, position);
             return;
         }
         playlist.add(playable);
         notifyPlaylistChanged();
+        onEnqueuedListener.onEnqueued(playable, position);
 
         // TODO: find a way to generalize that very unusual behavior
         // if nothing was playing, start playback (also if we want to play now)
         if (playlist.size() == 1) {
             play();
+        }
+    }
+
+    public void dequeue(Playable playable, Position position) throws IndexOutOfBoundsException {
+        int indexToRemove = currentPlayableIndex;
+        if (position == Position.Next && playlist.size() != 1) {
+            indexToRemove = currentPlayableIndex + 1;
+        }
+
+        // only remove if we have the right playable at that index
+        if (playlist.at(indexToRemove).getId() == playable.getId()) {
+            playlist.remove(indexToRemove);
+            notifyPlaylistChanged();
         }
     }
 

@@ -26,6 +26,21 @@ public class PlaylistFragment extends Fragment {
         View view = layoutInflater.inflate(R.layout.fragment_playlist, null);
         playlistView = (ListView) view.findViewById(R.id.fragmentPlaylist_list);
 
+        initMasterPlayerEventListener();
+        initItemEvents();
+
+        displayPlaylist();
+
+        return view;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        MasterPlayer.getInstance().removeMasterPlayerEventListener(eventListener);
+    }
+
+    private void initMasterPlayerEventListener() {
         // event listener
         eventListener =  new MasterPlayerEventListener() {
             @Override
@@ -44,7 +59,9 @@ public class PlaylistFragment extends Fragment {
             }
         };
         MasterPlayer.getInstance().addMasterPlayerEventListener(eventListener);
+    }
 
+    private void initItemEvents() {
         // on click on given item
         playlistView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -57,16 +74,6 @@ public class PlaylistFragment extends Fragment {
                 }
             }
         });
-
-        displayPlaylist();
-
-        return view;
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        MasterPlayer.getInstance().removeMasterPlayerEventListener(eventListener);
     }
 
     private void displayPlaylist() {
