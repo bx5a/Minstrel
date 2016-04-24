@@ -10,4 +10,5 @@
     <string name="view_count">%d views</string>
     <string name="history">Previously played</string>
     <string name="myMusic">My music</string>
+    <string name="undo">Undo</string>
 </resources>

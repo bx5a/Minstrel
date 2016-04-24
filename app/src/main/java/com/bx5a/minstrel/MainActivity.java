@@ -168,10 +168,10 @@ public class MainActivity extends AppCompatActivity {
         MasterPlayer.getInstance().setOnEnqueuedListener(new MasterPlayer.OnPlayableEnqueuedListener() {
             @Override
             public void onEnqueued(final Playable playable, final Position position) {
-                undoDialogFragment.setText(playable.title() + " enqueued.");
-                undoDialogFragment.setOnClickListener(new DialogInterface.OnClickListener() {
+                undoDialogFragment.setText("Added to list");
+                undoDialogFragment.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
+                    public void onClick(View v) {
                         MasterPlayer.getInstance().dequeue(playable, position);
                     }
                 });
