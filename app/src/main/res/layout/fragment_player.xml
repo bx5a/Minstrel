@@ -88,9 +88,15 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal"
-        android:layout_marginLeft="80dp"
-        android:layout_marginRight="80dp"
+        android:layout_marginLeft="60dp"
+        android:layout_marginRight="60dp"
         android:layout_marginBottom="20dp">
+        <!-- placeholder to center -->
+        <LinearLayout
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_width="0px"/>
+        <!-- -->
         <ImageButton
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -116,5 +122,13 @@
             android:layout_width="0px"
             android:background="@null"
             android:id="@+id/fragmentPlayer_next"/>
+        <ImageButton
+            android:layout_marginLeft="10dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_width="0px"
+            android:src="@drawable/ic_playlistwhite"
+            android:background="@null"
+            android:id="@+id/fragmentPlayer_playlist" />
     </LinearLayout>
 </LinearLayout>

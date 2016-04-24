@@ -17,8 +17,6 @@ import com.bx5a.minstrel.player.Playable;
 import com.bx5a.minstrel.player.Playlist;
 import com.bx5a.minstrel.utils.DisplayImageTask;
 
-import org.w3c.dom.Text;
-
 /**
  * Created by guillaume on 22/04/2016.
  */
@@ -32,7 +30,9 @@ public class PlayerControlFragment extends Fragment {
     private ImageButton previous;
     private ImageButton playPause;
     private ImageButton next;
+    private ImageButton playlist;
     private MasterPlayerEventListener playerEventListener;
+    private View.OnClickListener onPlaylistClickListener;
 
     @Override
     public View onCreateView(LayoutInflater layoutInflater, ViewGroup viewGroup, Bundle bundle) {
@@ -47,6 +47,7 @@ public class PlayerControlFragment extends Fragment {
         previous = (ImageButton) view.findViewById(R.id.fragmentPlayer_previous);
         playPause = (ImageButton) view.findViewById(R.id.fragmentPlayer_playPause);
         next = (ImageButton) view.findViewById(R.id.fragmentPlayer_next);
+        playlist = (ImageButton) view.findViewById(R.id.fragmentPlayer_playlist);
 
         connectPlayerEvents();
         connectButtonEvents();
@@ -60,6 +61,10 @@ public class PlayerControlFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         MasterPlayer.getInstance().removeMasterPlayerEventListener(playerEventListener);
+    }
+
+    public void setOnPlaylistClickListener(View.OnClickListener listener) {
+        onPlaylistClickListener = listener;
     }
 
     private void connectButtonEvents() {
@@ -83,6 +88,14 @@ public class PlayerControlFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 MasterPlayer.getInstance().next();
+            }
+        });
+        playlist.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (onPlaylistClickListener != null) {
+                    onPlaylistClickListener.onClick(v);
+                }
             }
         });
     }

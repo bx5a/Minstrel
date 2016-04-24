@@ -223,6 +223,14 @@ public class MainActivity extends AppCompatActivity {
     private void displayPlayerControls() {
         PlayerControlFragment fragment = new PlayerControlFragment();
         displayFragment(fragment);
+
+        fragment.setOnPlaylistClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                displayPlaylist();
+            }
+        });
+
         closeSidePanel();
     }
 }
