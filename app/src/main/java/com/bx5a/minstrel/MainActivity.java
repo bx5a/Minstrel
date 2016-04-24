@@ -22,6 +22,7 @@ import com.bx5a.minstrel.player.Position;
 import com.bx5a.minstrel.widget.HistoryFragment;
 import com.bx5a.minstrel.widget.ImageAndTextButton;
 import com.bx5a.minstrel.widget.PlayerControlBarFragment;
+import com.bx5a.minstrel.widget.PlayerControlFragment;
 import com.bx5a.minstrel.widget.PlaylistFragment;
 import com.bx5a.minstrel.widget.SearchFragment;
 import com.bx5a.minstrel.widget.UndoDialogFragment;
@@ -156,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
         playerControls.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                displayPlaylist();
+                displayPlayerControls();
             }
         });
     }
@@ -208,6 +209,12 @@ public class MainActivity extends AppCompatActivity {
 
     private void displayHistory() {
         HistoryFragment fragment = new HistoryFragment();
+        displayFragment(fragment);
+        closeSidePanel();
+    }
+
+    private void displayPlayerControls() {
+        PlayerControlFragment fragment = new PlayerControlFragment();
         displayFragment(fragment);
         closeSidePanel();
     }

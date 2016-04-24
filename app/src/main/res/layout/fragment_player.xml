@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- don't understand why but ListView is necessary or width won't match_parent ... -->
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"/>
+    <!--    -->
+
+
+    <!-- Thumbnails and titles -->
+    <LinearLayout
+        android:layout_marginTop="30dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginBottom="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+        <FrameLayout
+            android:layout_width="1dp"
+            android:layout_height="70dp"
+            android:layout_weight="1"
+            android:layout_gravity="center"
+            android:layout_marginRight="5dp">
+            <ImageView
+                android:id="@+id/fragmentPlayer_previousThumbnail"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:alpha="50"/>
+            <TextView
+                android:id="@+id/fragmentPlayer_previousTitle"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:textAlignment="center"
+                android:singleLine="true"
+                android:textSize="12dp"
+                android:textColor="@color/colorAccent"/>
+        </FrameLayout>
+
+        <RelativeLayout
+            android:layout_weight="3"
+            android:layout_width="1dp"
+            android:layout_height="200dp">
+            <ImageView
+                android:id="@+id/fragmentPlayer_currentThumbnail"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+            <TextView
+                android:id="@+id/fragmentPlayer_currentTitle"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:textAlignment="center"
+                android:singleLine="true"
+                android:textStyle="bold"
+                android:textColor="@color/colorAccent"/>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_weight="1"
+            android:layout_width="1dp"
+            android:layout_height="70dp"
+            android:layout_gravity="center"
+            android:layout_marginLeft="5dp">
+            <ImageView
+                android:id="@+id/fragmentPlayer_nextThumbnail"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:alpha="50"/>
+            <TextView
+                android:id="@+id/fragmentPlayer_nextTitle"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:textAlignment="center"
+                android:singleLine="true"
+                android:textSize="12dp"
+                android:textColor="@color/colorAccent"/>
+        </RelativeLayout>
+    </LinearLayout>
+
+
+    <!-- Controls -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:layout_marginLeft="80dp"
+        android:layout_marginRight="80dp"
+        android:layout_marginBottom="20dp">
+        <ImageButton
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:src="@drawable/ic_previous"
+            android:layout_width="0px"
+            android:background="@null"
+            android:id="@+id/fragmentPlayer_previous"/>
+        <LinearLayout
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:layout_width="0px"
+            android:gravity="center">
+            <ImageButton
+                android:layout_height="110dp"
+                android:layout_width="110dp"
+                android:background="@drawable/ic_playwhite"
+                android:id="@+id/fragmentPlayer_playPause"/>
+        </LinearLayout>
+        <ImageButton
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:src="@drawable/ic_next"
+            android:layout_width="0px"
+            android:background="@null"
+            android:id="@+id/fragmentPlayer_next"/>
+    </LinearLayout>
+</LinearLayout>
