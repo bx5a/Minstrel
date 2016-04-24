@@ -173,6 +173,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         MasterPlayer.getInstance().dequeue(playable, position);
+                        undoDialogFragment.dismiss();
                     }
                 });
                 undoDialogFragment.show(getSupportFragmentManager(), "Undo");
