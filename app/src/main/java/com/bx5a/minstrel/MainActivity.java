@@ -1,5 +1,6 @@
 package com.bx5a.minstrel;
 
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -176,7 +177,13 @@ public class MainActivity extends AppCompatActivity {
                 });
                 undoDialogFragment.show(getSupportFragmentManager(), "Undo");
 
-                // auto dismiss in 1 second
+                // dismiss if clicked outside
+                Dialog dialog = undoDialogFragment.getDialog();
+                if (dialog != null) {
+                    dialog.setCanceledOnTouchOutside(true);
+                }
+
+                // auto dismiss
                 Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {
                     @Override
