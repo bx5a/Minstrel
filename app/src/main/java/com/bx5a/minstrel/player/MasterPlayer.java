@@ -139,6 +139,27 @@ public class MasterPlayer {
         return 0;
     }
 
+    public void reorder(int playableIndex, Position position) {
+        Playable playable = playlist.at(playableIndex);
+        remove(playableIndex);
+        if (position == Position.Last) {
+            playlist.add(playable);
+            notifyPlaylistChanged();
+            return;
+        }
+        playlist.add(playable, currentPlayableIndex + 1);
+        notifyPlaylistChanged();
+    }
+
+    public void remove(int playableIndex) {
+        playlist.remove(playableIndex);
+        // update playable index if necessary
+        if (playableIndex < currentPlayableIndex) {
+            currentPlayableIndex--;
+        }
+        notifyPlaylistChanged();
+    }
+
     public void registerPlayer(Player player) {
         players.add(player);
     }

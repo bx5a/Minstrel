@@ -12,6 +12,7 @@ import android.widget.ListView;
 import com.bx5a.minstrel.R;
 import com.bx5a.minstrel.player.MasterPlayerEventListener;
 import com.bx5a.minstrel.player.MasterPlayer;
+import com.bx5a.minstrel.player.Playable;
 import com.bx5a.minstrel.player.Playlist;
 
 /**
@@ -72,6 +73,20 @@ public class PlaylistFragment extends Fragment {
                     // shouldn't happen
                     Log.e("PlaylistFragment", "Can't switch playable index: " + exception.getMessage());
                 }
+            }
+        });
+        playlistView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                try {
+                    Playable playable = MasterPlayer.getInstance().getPlaylist().at((int)id);
+                    PlayableDialogFragment fragment = new PlayableDialogFragment();
+                    fragment.initForPlaylist(getContext(), playable, position);
+                    fragment.show(getActivity().getSupportFragmentManager(), "Enqueue");
+                } catch (IndexOutOfBoundsException exception) {
+                    Log.w("PlaylistFragment", "Can't get long pressed playable: " + exception.getMessage());
+                }
+                return true;
             }
         });
     }

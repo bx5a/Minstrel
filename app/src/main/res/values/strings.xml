@@ -11,4 +11,11 @@
     <string name="history">Previously played</string>
     <string name="myMusic">My music</string>
     <string name="undo">Undo</string>
+    <string name="enqueue_now">Play now</string>
+    <string name="enqueue_next">Play next</string>
+    <string name="enqueue_last">Play last</string>
+    <string name="playable_now">Play now</string>
+    <string name="playable_next">Move next</string>
+    <string name="playable_last">Move last</string>
+    <string name="playable_remove">Remove</string>
 </resources>

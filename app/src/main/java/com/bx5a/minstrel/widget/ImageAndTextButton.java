@@ -18,6 +18,7 @@ import com.bx5a.minstrel.R;
  */
 public class ImageAndTextButton extends LinearLayout {
     private LinearLayout button;
+    private TextView textView;
 
     public ImageAndTextButton(Context context) {
         super(context);
@@ -39,7 +40,7 @@ public class ImageAndTextButton extends LinearLayout {
 
         button = (LinearLayout) findViewById(R.id.imageAndTextButton_button);
         ImageView image = (ImageView) findViewById(R.id.imageAndTextButton_image);
-        TextView text = (TextView) findViewById(R.id.imageAndTextButton_text);
+        textView = (TextView) findViewById(R.id.imageAndTextButton_text);
 
         TypedArray attributes = context.obtainStyledAttributes(attrs, R.styleable.ImageAndTextButton);
         String textValue = attributes.getString(R.styleable.ImageAndTextButton_text);
@@ -47,13 +48,17 @@ public class ImageAndTextButton extends LinearLayout {
         ColorStateList textColor = attributes.getColorStateList(R.styleable.ImageAndTextButton_textColor);
 
         image.setImageDrawable(srcValue);
-        text.setText(textValue);
-        text.setTextColor(textColor);
+        textView.setText(textValue);
+        textView.setTextColor(textColor);
     }
 
     @Override
     public void setOnClickListener(OnClickListener l) {
         super.setOnClickListener(l);
         button.setOnClickListener(l);
+    }
+
+    public void setText(String text) {
+        textView.setText(text);
     }
 }
