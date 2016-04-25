@@ -17,11 +17,11 @@ import java.util.List;
 /**
  * Created by guillaume on 22/03/2016.
  */
-public class YoutubeVideoAdapter extends ArrayAdapter<YoutubeVideo> {
+public class SearchItemAdapter extends ArrayAdapter<YoutubeVideo> {
 
     Context context;
 
-    public YoutubeVideoAdapter(Context context, List<YoutubeVideo> videos) {
+    public SearchItemAdapter(Context context, List<YoutubeVideo> videos) {
         super(context, -1, videos);
         this.context = context;
     }

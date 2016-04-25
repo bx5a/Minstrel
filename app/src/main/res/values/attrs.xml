@@ -3,5 +3,6 @@
     <declare-styleable name="ImageAndTextButton">
         <attr name="src" format="integer"/>
         <attr name="text" format="string"/>
+        <attr name="textColor" format="integer"/>
     </declare-styleable>
 </resources>

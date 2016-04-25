@@ -5,7 +5,6 @@ import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.bx5a.minstrel.R;
@@ -13,15 +12,13 @@ import com.bx5a.minstrel.player.Playable;
 import com.bx5a.minstrel.player.MasterPlayer;
 import com.bx5a.minstrel.player.Playlist;
 
-import org.w3c.dom.Text;
-
 /**
  * Created by guillaume on 13/04/2016.
  */
-public class PlayableAdapter extends ArrayAdapter<Playable> {
+public class PlaylistAdapter extends PlayableAdapter {
     private Context context;
 
-    public PlayableAdapter(Context context, Playlist playlist) {
+    public PlaylistAdapter(Context context, Playlist playlist) {
         super(context, -1, playlist.getList());
         this.context = context;
     }
@@ -32,7 +29,7 @@ public class PlayableAdapter extends ArrayAdapter<Playable> {
         if (view == null) {
             LayoutInflater layoutInflater =
                     (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            view = layoutInflater.inflate(R.layout.listitem_playable, null);
+            view = layoutInflater.inflate(R.layout.listitem_playlist, null);
         }
         Playable playable = getItem(position);
 

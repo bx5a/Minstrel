@@ -1,7 +1,9 @@
 package com.bx5a.minstrel.widget;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -42,9 +44,11 @@ public class ImageAndTextButton extends LinearLayout {
         TypedArray attributes = context.obtainStyledAttributes(attrs, R.styleable.ImageAndTextButton);
         String textValue = attributes.getString(R.styleable.ImageAndTextButton_text);
         Drawable srcValue = attributes.getDrawable(R.styleable.ImageAndTextButton_src);
+        ColorStateList textColor = attributes.getColorStateList(R.styleable.ImageAndTextButton_textColor);
 
         image.setImageDrawable(srcValue);
         text.setText(textValue);
+        text.setTextColor(textColor);
     }
 
     @Override
