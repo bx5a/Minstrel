@@ -78,6 +78,6 @@ public class PlaylistFragment extends Fragment {
 
     private void displayPlaylist() {
         Playlist playlist = MasterPlayer.getInstance().getPlaylist();
-        playlistView.setAdapter(new PlayableAdapter(getContext(), playlist));
+        playlistView.setAdapter(new PlaylistAdapter(getContext(), playlist));
     }
 }

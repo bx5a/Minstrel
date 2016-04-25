@@ -5,6 +5,7 @@ import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.bx5a.minstrel.R;
@@ -12,10 +13,12 @@ import com.bx5a.minstrel.player.Playable;
 import com.bx5a.minstrel.player.MasterPlayer;
 import com.bx5a.minstrel.player.Playlist;
 
+import java.util.ArrayList;
+
 /**
  * Created by guillaume on 13/04/2016.
  */
-public class PlaylistAdapter extends PlayableAdapter {
+public class PlaylistAdapter extends ArrayAdapter<Playable> {
     private Context context;
 
     public PlaylistAdapter(Context context, Playlist playlist) {

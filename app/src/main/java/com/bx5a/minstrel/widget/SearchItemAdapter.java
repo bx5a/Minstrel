@@ -32,7 +32,7 @@ public class SearchItemAdapter extends ArrayAdapter<YoutubeVideo> {
         if (view == null) {
             LayoutInflater layoutInflater =
                     (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            view = layoutInflater.inflate(R.layout.listitem_video, null);
+            view = layoutInflater.inflate(R.layout.listitem_search, null);
         }
         YoutubeVideo video = getItem(position);
 

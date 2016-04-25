@@ -117,7 +117,7 @@ public class CustomSearchView extends LinearLayout {
         if (videos == null) {
             return;
         }
-        resultList.setAdapter(new YoutubeVideoAdapter(getContext(), videos));
+        resultList.setAdapter(new SearchItemAdapter(getContext(), videos));
     }
 
     private void cancelPendingSearch() {
