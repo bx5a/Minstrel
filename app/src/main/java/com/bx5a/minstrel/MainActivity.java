@@ -105,18 +105,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initYoutubePlayer() {
-        YouTubePlayerSupportFragment fragment = (YouTubePlayerSupportFragment) getSupportFragmentManager().findFragmentById(R.id.youtube_fragment);
-        fragment.initialize(DeveloperKey.DEVELOPER_KEY, new YouTubePlayer.OnInitializedListener() {
-            @Override
-            public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer youTubePlayer, boolean b) {
-                YoutubePlayer.getInstance().setYoutubePlayer(youTubePlayer);
-            }
-
-            @Override
-            public void onInitializationFailure(YouTubePlayer.Provider provider, YouTubeInitializationResult youTubeInitializationResult) {
-                Log.e("Youtube", youTubeInitializationResult.toString());
-            }
-        });
+        YoutubePlayer player = YoutubePlayer.getInstance();
+        player.setPlayerFragment((YouTubePlayerSupportFragment) getSupportFragmentManager().findFragmentById(R.id.youtube_fragment));
     }
 
     private void initMenuActions() {

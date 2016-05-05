@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.bx5a.minstrel.player.Playable;
+import com.bx5a.minstrel.player.Player;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -60,7 +61,7 @@ public class YoutubeVideo implements Playable {
     }
 
     @Override
-    public void load() {
+    public void load() throws IllegalStateException {
         YoutubePlayer.getInstance().load(this);
     }
 
@@ -74,12 +75,12 @@ public class YoutubeVideo implements Playable {
     }
 
     @Override
-    public void play() {
+    public void play() throws IllegalStateException {
         YoutubePlayer.getInstance().play();
     }
 
     @Override
-    public void pause() {
+    public void pause() throws IllegalStateException {
         YoutubePlayer.getInstance().pause();
     }
 
@@ -89,7 +90,7 @@ public class YoutubeVideo implements Playable {
     }
 
     @Override
-    public void seekTo(float position) {
+    public void seekTo(float position) throws IllegalStateException {
         YoutubePlayer.getInstance().seekTo(position);
     }
 
@@ -116,6 +117,11 @@ public class YoutubeVideo implements Playable {
             return matcher.group(1) + ":" + seconds;
         }
         return duration;
+    }
+
+    @Override
+    public Player getPlayer() {
+        return YoutubePlayer.getInstance();
     }
 
     public String getDuration() {

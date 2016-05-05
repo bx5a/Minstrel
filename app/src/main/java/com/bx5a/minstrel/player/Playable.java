@@ -9,18 +9,18 @@ public interface Playable {
     // Let you initialize only for its id
     void initFromId(String id, Context context);
 
-    void load();
+    void load() throws IllegalStateException;
 
     boolean isLoaded();
 
-    void play();
+    void play() throws IllegalStateException;
 
-    void pause();
+    void pause() throws IllegalStateException;
 
     String title();
 
     // position is a value [0, 1]. 0 being the beginning of the song and 1 the end
-    void seekTo(float position);
+    void seekTo(float position) throws IllegalStateException;
 
     String getId();
 
@@ -28,4 +28,6 @@ public interface Playable {
     String getThumbnailURL();
 
     String duration();
+
+    Player getPlayer();
 }

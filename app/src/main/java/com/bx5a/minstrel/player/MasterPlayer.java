@@ -93,6 +93,24 @@ public class MasterPlayer {
 
     public void play() throws IndexOutOfBoundsException {
         Playable playable = playlist.at(currentPlayableIndex);
+
+        // initialize player if required
+        if (!playable.getPlayer().isInitialized()) {
+            playable.getPlayer().initialize(new Player.OnInitializedListener() {
+                @Override
+                public void onInitializationSuccess() {
+                    play();
+                }
+
+                @Override
+                public void onInitializationFailure(String reason) {
+                    Log.e("MasterPlayer", "Can't play current index: " + reason + ". Moving to next");
+                    next();
+                }
+            });
+            return;
+        }
+
         if (!playable.isLoaded()) {
             playable.load();
             try {
