@@ -93,6 +93,9 @@ public class SearchFragment extends Fragment {
             }
         });
 
+        // open search view
+        searchView.setIconified(false);
+
         return view;
     }
 
