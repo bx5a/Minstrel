@@ -1,6 +1,7 @@
 package com.bx5a.minstrel.widget;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,8 +10,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bx5a.minstrel.R;
+import com.bx5a.minstrel.youtube.ThumbnailManager;
 import com.bx5a.minstrel.youtube.YoutubeVideo;
-import com.bx5a.minstrel.utils.DisplayImageTask;
 
 import java.util.List;
 
@@ -40,12 +41,18 @@ public class SearchItemAdapter extends ArrayAdapter<YoutubeVideo> {
 
         TextView title = (TextView) view.findViewById(R.id.listItemVideo_title);
         TextView viewCount = (TextView) view.findViewById(R.id.listItemVideo_viewCount);
-        ImageView thumbnail = (ImageView) view.findViewById(R.id.listItemVideo_thumbnail);
+        final ImageView thumbnail = (ImageView) view.findViewById(R.id.listItemVideo_thumbnail);
 
         title.setText(video.getTitle());
         viewCount.setText(
                 String.format(context.getString(R.string.view_count), video.getViewCount()));
-        new DisplayImageTask(video.getThumbnailURL(), thumbnail).execute();
+
+        ThumbnailManager.getInstance().retreive(video.getThumbnailURL(), new ThumbnailManager.BitmapAvailableListener() {
+            @Override
+            public void onBitmapAvailable(Bitmap bitmap) {
+                thumbnail.setImageBitmap(bitmap);
+            }
+        });
 
         return view;
     }

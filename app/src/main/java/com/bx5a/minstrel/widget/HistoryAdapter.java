@@ -1,6 +1,7 @@
 package com.bx5a.minstrel.widget;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,7 +11,7 @@ import android.widget.TextView;
 
 import com.bx5a.minstrel.R;
 import com.bx5a.minstrel.player.Playable;
-import com.bx5a.minstrel.utils.DisplayImageTask;
+import com.bx5a.minstrel.youtube.ThumbnailManager;
 
 import java.util.List;
 
@@ -39,8 +40,15 @@ public class HistoryAdapter extends ArrayAdapter<Playable> {
 
         TextView title = (TextView) view.findViewById(R.id.listItemHistory_title);
         title.setText(playable.title());
-        ImageView image = (ImageView) view.findViewById(R.id.listItemHistory_thumbnail);
-        new DisplayImageTask(playable.getThumbnailURL(), image).execute();
+        final ImageView image = (ImageView) view.findViewById(R.id.listItemHistory_thumbnail);
+
+        // display thumbnail
+        ThumbnailManager.getInstance().retreive(playable.getThumbnailURL(), new ThumbnailManager.BitmapAvailableListener() {
+            @Override
+            public void onBitmapAvailable(Bitmap bitmap) {
+                image.setImageBitmap(bitmap);
+            }
+        });
 
         return view;
     }

@@ -1,5 +1,6 @@
 package com.bx5a.minstrel.widget;
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -15,7 +16,7 @@ import com.bx5a.minstrel.player.MasterPlayer;
 import com.bx5a.minstrel.player.MasterPlayerEventListener;
 import com.bx5a.minstrel.player.Playable;
 import com.bx5a.minstrel.player.Playlist;
-import com.bx5a.minstrel.utils.DisplayImageTask;
+import com.bx5a.minstrel.youtube.ThumbnailManager;
 
 /**
  * Created by guillaume on 22/04/2016.
@@ -137,7 +138,7 @@ public class PlayerControlFragment extends Fragment {
         updateThumbnail(playlist, currentIndex + 1, nextThumbnail, nextTitle);
     }
 
-    private void updateThumbnail(Playlist playlist, int playableIndex, ImageView image, TextView text) {
+    private void updateThumbnail(Playlist playlist, int playableIndex, final ImageView image, TextView text) {
         // reset to blank
         image.setImageResource(android.R.color.transparent);
         text.setText("");
@@ -145,7 +146,12 @@ public class PlayerControlFragment extends Fragment {
         try {
             Playable playable = playlist.at(playableIndex);
             text.setText(playable.title());
-            new DisplayImageTask(playable.getThumbnailURL(), image).execute();
+            ThumbnailManager.getInstance().retreive(playable.getThumbnailURL(), new ThumbnailManager.BitmapAvailableListener() {
+                @Override
+                public void onBitmapAvailable(Bitmap bitmap) {
+                    image.setImageBitmap(bitmap);
+                }
+            });
         } catch (IndexOutOfBoundsException exception) {
             Log.w("PlayerControlFragment", "Can't update thumbnail: " + exception.getMessage());
         }
