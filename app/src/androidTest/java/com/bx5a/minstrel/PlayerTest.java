@@ -1,7 +1,5 @@
 package com.bx5a.minstrel;
 
-import android.app.Instrumentation;
-import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.Espresso;
 import android.support.test.espresso.IdlingResource;
 import android.support.test.filters.LargeTest;
@@ -22,7 +20,10 @@ import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.longClick;
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.matcher.ViewMatchers.isAssignableFrom;
+import static android.support.test.espresso.matcher.ViewMatchers.isRoot;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static com.bx5a.minstrel.OrientationChangeAction.orientationLandscape;
+import static com.bx5a.minstrel.OrientationChangeAction.orientationPortrait;
 import static org.hamcrest.Matchers.anything;
 
 
@@ -59,11 +60,11 @@ public class PlayerTest {
 
         // fix: make the soft keyboard disappear since closeSoftKeyboard doesn't work
         pressBack();
-        Espresso.unregisterIdlingResources(timeIdlingResource);
 
         // click on first and second item
         onData(anything()).inAdapterView(withId(R.id.viewSearch_resultList)).atPosition(0).perform(click());
         onData(anything()).inAdapterView(withId(R.id.viewSearch_resultList)).atPosition(1).perform(click());
+        Espresso.unregisterIdlingResources(timeIdlingResource);
 
         // fix again: Can't seem to access menu
         pressBack();
@@ -72,5 +73,8 @@ public class PlayerTest {
         onView(withId(R.id.activityMain_playlistButton)).perform(click());
         // remove currently playing song
         onData(anything()).inAdapterView(withId(R.id.fragmentPlaylist_list)).atPosition(0).perform(longClick());
+
+        onView(isRoot()).perform(orientationLandscape());
+        onView(isRoot()).perform(orientationPortrait());
     }
 }
