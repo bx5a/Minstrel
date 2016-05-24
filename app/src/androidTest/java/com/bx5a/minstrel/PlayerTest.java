@@ -20,10 +20,7 @@ import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.longClick;
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.matcher.ViewMatchers.isAssignableFrom;
-import static android.support.test.espresso.matcher.ViewMatchers.isRoot;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
-import static com.bx5a.minstrel.OrientationChangeAction.orientationLandscape;
-import static com.bx5a.minstrel.OrientationChangeAction.orientationPortrait;
 import static org.hamcrest.Matchers.anything;
 
 
@@ -73,8 +70,5 @@ public class PlayerTest {
         onView(withId(R.id.activityMain_playlistButton)).perform(click());
         // remove currently playing song
         onData(anything()).inAdapterView(withId(R.id.fragmentPlaylist_list)).atPosition(0).perform(longClick());
-
-        onView(isRoot()).perform(orientationLandscape());
-        onView(isRoot()).perform(orientationPortrait());
     }
 }
