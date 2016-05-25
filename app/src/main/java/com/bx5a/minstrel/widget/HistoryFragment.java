@@ -40,6 +40,10 @@ public class HistoryFragment extends Fragment {
     }
 
     private void updateWithList(List<Playable> playableList) {
+        // don't update if not visible
+        if (!isVisible()) {
+            return;
+        }
         this.playableList = playableList;
         historyView.setAdapter(new HistoryAdapter(getContext(), playableList));
         connectEvents();

@@ -43,6 +43,12 @@ public class MainActivity extends AppCompatActivity {
     private UndoDialogFragment undoDialogFragment;
     private final int kAutoDismissMilliseconds = 2000;
 
+    // fragments
+    private PlaylistFragment playlistFragment;
+    private SearchFragment searchFragment;
+    private HistoryFragment historyFragment;
+    private PlayerControlFragment playerControlFragment;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
         initMenuActions();
         initPlayerControl();
         initUndoDialog();
+        initFragments();
 
         displayHistory();
     }
@@ -98,6 +105,20 @@ public class MainActivity extends AppCompatActivity {
     }
     private void closeSidePanel() {
         drawerLayout.closeDrawer(Gravity.START);
+    }
+
+    private void initFragments() {
+        historyFragment = new HistoryFragment();
+        searchFragment = new SearchFragment();
+        playlistFragment = new PlaylistFragment();
+        playerControlFragment = new PlayerControlFragment();
+
+        playerControlFragment.setOnPlaylistClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                displayPlaylist();
+            }
+        });
     }
 
     private void initHistory() {
@@ -194,34 +215,22 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void displayPlaylist() {
-        PlaylistFragment fragment = new PlaylistFragment();
-        displayFragment(fragment);
+        displayFragment(playlistFragment);
         closeSidePanel();
     }
 
     private void displaySearch() {
-        SearchFragment fragment = new SearchFragment();
-        displayFragment(fragment);
+        displayFragment(searchFragment);
         closeSidePanel();
     }
 
     private void displayHistory() {
-        HistoryFragment fragment = new HistoryFragment();
-        displayFragment(fragment);
+        displayFragment(historyFragment);
         closeSidePanel();
     }
 
     private void displayPlayerControls() {
-        PlayerControlFragment fragment = new PlayerControlFragment();
-        displayFragment(fragment);
-
-        fragment.setOnPlaylistClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                displayPlaylist();
-            }
-        });
-
+        displayFragment(playerControlFragment);
         closeSidePanel();
     }
 }
