@@ -16,7 +16,7 @@ import com.bx5a.minstrel.player.MasterPlayer;
 import com.bx5a.minstrel.player.MasterPlayerEventListener;
 import com.bx5a.minstrel.player.Playable;
 import com.bx5a.minstrel.player.Playlist;
-import com.bx5a.minstrel.youtube.ThumbnailManager;
+import com.bx5a.minstrel.utils.ThumbnailManager;
 
 /**
  * Created by guillaume on 22/04/2016.

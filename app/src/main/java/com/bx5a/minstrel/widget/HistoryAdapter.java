@@ -11,7 +11,7 @@ import android.widget.TextView;
 
 import com.bx5a.minstrel.R;
 import com.bx5a.minstrel.player.Playable;
-import com.bx5a.minstrel.youtube.ThumbnailManager;
+import com.bx5a.minstrel.utils.ThumbnailManager;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package com.bx5a.minstrel.youtube;
+package com.bx5a.minstrel.utils;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
