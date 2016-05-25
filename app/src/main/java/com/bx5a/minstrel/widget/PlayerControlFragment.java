@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bx5a.minstrel.R;
@@ -49,6 +50,12 @@ public class PlayerControlFragment extends Fragment {
         playPause = (ImageButton) view.findViewById(R.id.fragmentPlayer_playPause);
         next = (ImageButton) view.findViewById(R.id.fragmentPlayer_next);
         playlist = (ImageButton) view.findViewById(R.id.fragmentPlayer_playlist);
+
+        // TODO: understand why those 2 lines are necessary to match parent
+        LinearLayout rootLayout = (LinearLayout) view.findViewById(R.id.fragmentPlayer_rootLayout);
+        rootLayout.setLayoutParams(
+                new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                                              LinearLayout.LayoutParams.MATCH_PARENT));
 
         connectPlayerEvents();
         connectButtonEvents();
