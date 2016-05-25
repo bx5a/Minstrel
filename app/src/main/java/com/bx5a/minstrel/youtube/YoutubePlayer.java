@@ -40,6 +40,8 @@ public class YoutubePlayer implements Player {
 
     public void setPlayerFragment(YouTubePlayerSupportFragment playerFragment) {
         this.playerFragment = playerFragment;
+        // player needs to be reinitialized
+        this.youtubePlayer = null;
     }
 
     public boolean isInitialized() {
