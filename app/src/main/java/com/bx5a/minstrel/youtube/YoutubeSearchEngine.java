@@ -119,7 +119,7 @@ public class YoutubeSearchEngine {
         ArrayList<String> suggestions = new ArrayList<>();
 
         String path = "complete/search";
-        String query = "client=firefox&ds=yt&q=" + keyword;
+        String query = "client=firefox&ds=yt&q=" + keyword.replace(" ", "+");
 
         try {
             URL suggestionApiUrl = new URL("http", "suggestqueries.google.com", path + "?" + query);
