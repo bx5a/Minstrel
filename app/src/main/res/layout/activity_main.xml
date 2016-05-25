@@ -55,43 +55,33 @@
         android:id="@+id/activityMain_sidePanel"
         android:layout_width="300dp"
         android:layout_height="match_parent"
-        android:layout_gravity="start">
+        android:layout_gravity="start"
+        android:background="@color/colorAccent"
+        android:layout_marginBottom="110dp">
 
-        <LinearLayout
-            android:orientation="vertical"
+        <com.bx5a.minstrel.widget.ImageAndTextButton
+            android:id="@+id/activityMain_historyButton"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:background="@color/colorAccent">
-            <com.bx5a.minstrel.widget.ImageAndTextButton
-                android:id="@+id/activityMain_historyButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                image_and_text:src="@drawable/ic_history"
-                image_and_text:text="@string/myMusic"
-                image_and_text:textColor="@color/colorPrimary"/>
+            android:layout_height="wrap_content"
+            image_and_text:src="@drawable/ic_history"
+            image_and_text:text="@string/myMusic"
+            image_and_text:textColor="@color/colorPrimary"/>
 
-            <com.bx5a.minstrel.widget.ImageAndTextButton
-                android:id="@+id/activityMain_searchButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                image_and_text:src="@drawable/ic_search"
-                image_and_text:text="@string/search"
-                image_and_text:textColor="@color/colorPrimary"/>
-
-            <com.bx5a.minstrel.widget.ImageAndTextButton
-                android:id="@+id/activityMain_playlistButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                image_and_text:src="@drawable/ic_playlist"
-                image_and_text:text="@string/playlist"
-                image_and_text:textColor="@color/colorPrimary"/>
-        </LinearLayout>
-
-        <LinearLayout
+        <com.bx5a.minstrel.widget.ImageAndTextButton
+            android:id="@+id/activityMain_searchButton"
             android:layout_width="match_parent"
-            android:layout_height="110dp"
-            android:background="@android:color/transparent"/>
+            android:layout_height="wrap_content"
+            image_and_text:src="@drawable/ic_search"
+            image_and_text:text="@string/search"
+            image_and_text:textColor="@color/colorPrimary"/>
+
+        <com.bx5a.minstrel.widget.ImageAndTextButton
+            android:id="@+id/activityMain_playlistButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            image_and_text:src="@drawable/ic_playlist"
+            image_and_text:text="@string/playlist"
+            image_and_text:textColor="@color/colorPrimary"/>
 
     </LinearLayout>
 </com.bx5a.minstrel.legacy.SoftKeyboardHandledLayout>
