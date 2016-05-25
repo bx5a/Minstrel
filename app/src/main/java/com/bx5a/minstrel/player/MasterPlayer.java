@@ -170,6 +170,10 @@ public class MasterPlayer {
     }
 
     public void remove(int playableIndex) {
+        if (playableIndex == currentPlayableIndex) {
+            next();
+        }
+
         playlist.remove(playableIndex);
         // update playable index if necessary
         if (playableIndex < currentPlayableIndex) {
