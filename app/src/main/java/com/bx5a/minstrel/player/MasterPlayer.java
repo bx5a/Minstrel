@@ -42,7 +42,7 @@ public class MasterPlayer {
         return playlist;
     }
 
-    public void setCurrentPlayableIndex(int currentPlayableIndex) throws IndexOutOfBoundsException {
+    public void setCurrentPlayableIndex(int currentPlayableIndex) throws IndexOutOfBoundsException, IllegalStateException {
         pause();
         if(playlist.size() <= currentPlayableIndex || currentPlayableIndex < 0) {
             throw new IndexOutOfBoundsException("No playable at index " + currentPlayableIndex);
@@ -60,7 +60,7 @@ public class MasterPlayer {
         return currentPlayableIndex;
     }
 
-    public void enqueue(Playable playable, Position position) {
+    public void enqueue(Playable playable, Position position) throws IndexOutOfBoundsException, IllegalStateException {
         if (position == Position.Next && playlist.size() != 0) {
             playlist.add(playable, currentPlayableIndex + 1);
             notifyPlaylistChanged();
@@ -78,7 +78,7 @@ public class MasterPlayer {
         }
     }
 
-    public void dequeue(Playable playable, Position position) throws IndexOutOfBoundsException {
+    public void dequeue(Playable playable, Position position) throws IndexOutOfBoundsException, IllegalStateException {
         int indexToRemove = currentPlayableIndex;
         if (position == Position.Next && playlist.size() != 1) {
             indexToRemove = currentPlayableIndex + 1;
@@ -91,7 +91,7 @@ public class MasterPlayer {
         }
     }
 
-    public void play() throws IndexOutOfBoundsException {
+    public void play() throws IndexOutOfBoundsException, IllegalStateException {
         Playable playable = playlist.at(currentPlayableIndex);
 
         // initialize player if required
@@ -122,7 +122,7 @@ public class MasterPlayer {
         playable.play();
     }
 
-    public void pause() throws IndexOutOfBoundsException {
+    public void pause() throws IndexOutOfBoundsException, IllegalStateException {
         playlist.at(currentPlayableIndex).pause();
     }
 
@@ -144,7 +144,7 @@ public class MasterPlayer {
     }
 
     // position is a [0, 1] value
-    public void seekTo(float position) throws IndexOutOfBoundsException {
+    public void seekTo(float position) throws IndexOutOfBoundsException, IllegalStateException {
         playlist.at(currentPlayableIndex).seekTo(position);
     }
 

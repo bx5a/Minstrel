@@ -114,7 +114,9 @@ public class PlayerControlBarFragment extends Fragment {
                 try {
                     MasterPlayer.getInstance().seekTo(progress);
                 } catch (IndexOutOfBoundsException exception) {
-                    Log.i("PlayerControlBarFragment", "Can't seek: " + exception.getMessage());
+                    Log.i("PlayerControlFragment", "Can't seek: " + exception.getMessage());
+                } catch (IllegalStateException exception) {
+                    Log.i("PlayerControlFragment", "Can't seek: " + exception.getMessage());
                 }
             }
         });
@@ -136,7 +138,9 @@ public class PlayerControlBarFragment extends Fragment {
                     }
                     player.play();
                 } catch (IndexOutOfBoundsException exception) {
-                    Log.i("PlayerControlBarFragment", "Can't play/pause: " + exception.getMessage());
+                    Log.i("PlayerControlFragment", "Can't play/pause: " + exception.getMessage());
+                } catch (IllegalStateException exception) {
+                    Log.i("PlayerControlFragment", "Can't play/pause: " + exception.getMessage());
                 }
             }
         });
@@ -162,7 +166,9 @@ public class PlayerControlBarFragment extends Fragment {
                             }
                             MasterPlayer.getInstance().next();
                         } catch (IndexOutOfBoundsException exception) {
-                            Log.i("PlayerControlBarFragment", "Couldn't change song: " + exception.getMessage());
+                            Log.i("PlayerControlFragment", "Couldn't change song: " + exception.getMessage());
+                        } catch (IllegalStateException exception) {
+                            Log.i("PlayerControlFragment", "Couldn't change song: " + exception.getMessage());
                         }
                         return true;
                     }

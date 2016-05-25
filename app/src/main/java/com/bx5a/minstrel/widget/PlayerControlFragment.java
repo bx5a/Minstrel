@@ -79,23 +79,35 @@ public class PlayerControlFragment extends Fragment {
         previous.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MasterPlayer.getInstance().previous();
+                try {
+                    MasterPlayer.getInstance().previous();
+                } catch (IllegalStateException exception) {
+                    Log.w("PlayerControlFragment", "Can't move to previous: " + exception.getMessage());
+                }
             }
         });
         playPause.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (MasterPlayer.getInstance().isPlaying()) {
-                    MasterPlayer.getInstance().pause();
-                    return;
+                try {
+                    if (MasterPlayer.getInstance().isPlaying()) {
+                        MasterPlayer.getInstance().pause();
+                        return;
+                    }
+                    MasterPlayer.getInstance().play();
+                } catch (IllegalStateException exception) {
+                    Log.w("PlayerControlFragment", "Can't play: " + exception.getMessage());
                 }
-                MasterPlayer.getInstance().play();
             }
         });
         next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MasterPlayer.getInstance().next();
+                try {
+                    MasterPlayer.getInstance().next();
+                } catch (IllegalStateException exception) {
+                    Log.w("PlayerControlFragment", "Can't move to next: " + exception.getMessage());
+                }
             }
         });
         playlist.setOnClickListener(new View.OnClickListener() {
