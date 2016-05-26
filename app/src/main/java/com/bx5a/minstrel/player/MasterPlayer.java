@@ -91,7 +91,7 @@ public class MasterPlayer {
         }
     }
 
-    public void play() throws IndexOutOfBoundsException, IllegalStateException {
+    public void playAt(final float seekValue) throws IndexOutOfBoundsException, IllegalStateException {
         Playable playable = playlist.at(currentPlayableIndex);
 
         // initialize player if required
@@ -99,7 +99,7 @@ public class MasterPlayer {
             playable.getPlayer().initialize(new Player.OnInitializedListener() {
                 @Override
                 public void onInitializationSuccess() {
-                    play();
+                    playAt(seekValue);
                 }
 
                 @Override
@@ -119,7 +119,16 @@ public class MasterPlayer {
                 Log.i("MasterPlayer", "Couldn't store playable: " + exception.getMessage());
             }
         }
+
+        if (seekValue != 0) {
+            seekTo(seekValue);
+        }
+
         playable.play();
+    }
+
+    public void play() throws IndexOutOfBoundsException, IllegalStateException {
+        playAt(0);
     }
 
     public void pause() throws IndexOutOfBoundsException, IllegalStateException {

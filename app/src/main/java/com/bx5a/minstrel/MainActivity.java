@@ -49,6 +49,9 @@ public class MainActivity extends AppCompatActivity {
     private HistoryFragment historyFragment;
     private PlayerControlFragment playerControlFragment;
 
+    private final String kWasPlayingKey = "wasPlaying";
+    private final String kPositionAtDestroyKey = "seekPosition";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,6 +78,22 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
         YoutubePlayer.getInstance().reset();
         History.getInstance().setContext(null);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(kWasPlayingKey, MasterPlayer.getInstance().isPlaying());
+        outState.putFloat(kPositionAtDestroyKey, MasterPlayer.getInstance().getCurrentPosition());
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        if (!savedInstanceState.getBoolean(kWasPlayingKey)) {
+            return;
+        }
+        MasterPlayer.getInstance().playAt(savedInstanceState.getFloat(kPositionAtDestroyKey));
     }
 
     @Override

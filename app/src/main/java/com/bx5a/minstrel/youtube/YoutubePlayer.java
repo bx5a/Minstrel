@@ -6,8 +6,9 @@ import com.bx5a.minstrel.player.MasterPlayer;
 import com.bx5a.minstrel.player.Player;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
-import com.google.android.youtube.player.YouTubePlayerFragment;
 import com.google.android.youtube.player.YouTubePlayerSupportFragment;
+
+import java.util.LinkedList;
 
 /**
  * Created by guillaume on 11/04/2016.
@@ -19,6 +20,76 @@ public class YoutubePlayer implements Player {
     private String loadedId;
     private YouTubePlayerSupportFragment playerFragment;
 
+    // In youtube API, the load method is asynchronous. Therefore, doing
+    // player.load(id);
+    // player.seekTo(0.5);
+    // would fail because it wouldn't wait until the song is loaded before playing it. To still
+    // allow playing right after loading, the PlayerStateChangeListener let us define what we want
+    // to do when everything is loaded.
+    // In our system we want to be able to queue load and seekTo requests without worrying about the
+    // asynchronous system. To do so, we use a TaskQueue: A queue that will execute the next request
+    // when it finishes
+    // TODO: move the TaskQueue system to utils
+    private interface TaskCompletionListener {
+        void onTaskCompleted();
+    }
+
+    private abstract class Task {
+        private TaskCompletionListener completionListener;
+
+        public Task() {
+            completionListener = null;
+        }
+
+        abstract void start();
+
+        public void markAsComplete() {
+            if (completionListener == null) {
+                return;
+            }
+            completionListener.onTaskCompleted();
+        }
+
+        public void setTaskCompletionListener(TaskCompletionListener listener) {
+            completionListener = listener;
+        }
+    }
+    private class TaskQueue {
+        private LinkedList<Task> tasks;
+
+        public TaskQueue() {
+            tasks = new LinkedList<>();
+        }
+
+        public void queueTask(Task task) {
+            task.setTaskCompletionListener(new TaskCompletionListener() {
+                @Override
+                public void onTaskCompleted() {
+                    // remove the completed task
+                    tasks.poll();
+                    startNextTask();
+                }
+            });
+            tasks.add(task);
+
+            // if we only have the task we've just added, we start it
+            if (tasks.size() == 1) {
+                startNextTask();
+            }
+        }
+
+        private void startNextTask() {
+            if (tasks.size() == 0) {
+                return;
+            }
+            tasks.getFirst().start();
+        }
+
+    }
+
+    private TaskQueue taskQueue;
+    private Task loadingTask;
+
     public static YoutubePlayer getInstance() {
         return ourInstance;
     }
@@ -26,6 +97,8 @@ public class YoutubePlayer implements Player {
     private YoutubePlayer() {
         youtubePlayer = null;
         loadedId = new String("");
+        taskQueue = new TaskQueue();
+        loadingTask = null;
     }
 
     public String getLoadedId() {
@@ -101,7 +174,6 @@ public class YoutubePlayer implements Player {
 
             @Override
             public void onLoaded(String s) {
-                youtubePlayer.play();
                 loadedId = s;
             }
 
@@ -111,6 +183,13 @@ public class YoutubePlayer implements Player {
 
             @Override
             public void onVideoStarted() {
+                if (loadingTask == null) {
+                    Log.e("YoutubePlayer", "On loaded called even if loadingTask isn't set");
+                    return;
+                }
+                Task currentTask = loadingTask;
+                loadingTask = null;
+                currentTask.markAsComplete();
             }
 
             @Override
@@ -136,34 +215,65 @@ public class YoutubePlayer implements Player {
         MasterPlayer.getInstance().registerPlayer(this);
     }
 
-    public void load(YoutubeVideo video) throws IllegalStateException {
+    public void load(final YoutubeVideo video) throws IllegalStateException {
         if (!isInitialized()) {
             throw new IllegalStateException("Youtube player isn't initialized");
         }
         pause();
-        youtubePlayer.loadVideo(video.getId());
+
+        loadingTask = new Task() {
+            @Override
+            void start() {
+                youtubePlayer.loadVideo(video.getId());
+                // task will be markedAsComplete by the playerStateChangeListener
+            }
+        };
+        taskQueue.queueTask(loadingTask);
     }
 
     public void play() throws IllegalStateException {
         if (!isInitialized()) {
             throw new IllegalStateException("Youtube player isn't initialized");
         }
-        youtubePlayer.play();
+        taskQueue.queueTask(new Task() {
+            @Override
+            void start() {
+                if (!youtubePlayer.isPlaying()) {
+                    youtubePlayer.play();
+                }
+                markAsComplete();
+            }
+        });
     }
 
     public void pause() throws IllegalStateException {
         if (!isInitialized()) {
             throw new IllegalStateException("Youtube player isn't initialized");
         }
-        youtubePlayer.pause();
+        taskQueue.queueTask(new Task() {
+            @Override
+            void start() {
+                if (youtubePlayer.isPlaying()) {
+                    youtubePlayer.pause();
+                }
+                markAsComplete();
+            }
+        });
     }
 
-    public void seekTo(float position) throws IllegalStateException {
+    public void seekTo(final float position) throws IllegalStateException {
         if (!isInitialized()) {
             throw new IllegalStateException("Youtube player isn't initialized");
         }
-        int millis = (int) (position * youtubePlayer.getDurationMillis());
-        youtubePlayer.seekToMillis(millis);
+        taskQueue.queueTask(new Task() {
+            @Override
+            void start() {
+                int millis = (int) (position * youtubePlayer.getDurationMillis());
+                youtubePlayer.seekToMillis(millis);
+                Log.i("SeekTo", String.valueOf(position));
+                markAsComplete();
+            }
+        });
     }
 
     public float getCurrentPosition() {
