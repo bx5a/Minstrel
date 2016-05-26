@@ -83,6 +83,8 @@ public class PlayerControlFragment extends Fragment {
                     MasterPlayer.getInstance().previous();
                 } catch (IllegalStateException exception) {
                     Log.w("PlayerControlFragment", "Can't move to previous: " + exception.getMessage());
+                } catch (IndexOutOfBoundsException exception) {
+                    Log.i("PlayerControlFragment", exception.getMessage());
                 }
             }
         });
@@ -97,6 +99,8 @@ public class PlayerControlFragment extends Fragment {
                     MasterPlayer.getInstance().play();
                 } catch (IllegalStateException exception) {
                     Log.w("PlayerControlFragment", "Can't play: " + exception.getMessage());
+                } catch (IndexOutOfBoundsException exception) {
+                    Log.i("PlayerControlFragment", exception.getMessage());
                 }
             }
         });
@@ -107,6 +111,8 @@ public class PlayerControlFragment extends Fragment {
                     MasterPlayer.getInstance().next();
                 } catch (IllegalStateException exception) {
                     Log.w("PlayerControlFragment", "Can't move to next: " + exception.getMessage());
+                } catch (IndexOutOfBoundsException exception) {
+                    Log.i("PlayerControlFragment", exception.getMessage());
                 }
             }
         });

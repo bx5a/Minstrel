@@ -2,12 +2,14 @@ package com.bx5a.minstrel.player;
 
 import android.content.Context;
 
+import java.io.IOException;
+
 /**
  * Created by guillaume on 25/03/2016.
  */
 public interface Playable {
     // Let you initialize only for its id
-    void initFromId(String id, Context context);
+    void initFromId(String id, Context context) throws IOException;
 
     void load() throws IllegalStateException;
 

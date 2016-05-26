@@ -8,6 +8,7 @@ import android.util.Log;
 
 import com.bx5a.minstrel.LocalSQLiteOpenHelper;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,6 +62,8 @@ public class History {
                 Log.i("History", "Couldn't instantiate " + stringClass + " : " + e.getMessage());
             } catch (IllegalAccessException e) {
                 Log.i("History", "Illegal access to " + stringClass + " : " + e.getMessage());
+            } catch (IOException e) {
+                Log.i("History", "Couldn't init playable " + stringClass + " : " + e.getMessage());
             }
         }
 

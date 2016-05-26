@@ -1,7 +1,6 @@
 package com.bx5a.minstrel.youtube;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.bx5a.minstrel.player.Playable;
 import com.bx5a.minstrel.player.Player;
@@ -39,25 +38,20 @@ public class YoutubeVideo implements Playable {
     }
 
     @Override
-    public void initFromId(String id, Context context) {
+    public void initFromId(String id, Context context) throws IOException {
         ArrayList<String> ids = new ArrayList<>();
         ids.add(id);
         YoutubeSearchEngine searchEngine = new YoutubeSearchEngine(context);
-        try {
-            List<YoutubeVideo> videos = searchEngine.getVideoDetails(ids);
-            if (videos.size() != 1) {
-                Log.e("YoutubeVideo", "Couldn't initialize from id: search engine error");
-                return;
-            }
-            YoutubeVideo video = videos.get(0);
-            setId(id);
-            setTitle(video.getTitle());
-            setDuration(video.duration);
-            setThumbnailURL(video.thumbnailURL);
-            setViewCount(video.viewCount);
-        } catch (IOException e) {
-            Log.e("YoutubeVideo", "Couldn't initialize from id: " + e.getMessage());
+        List<YoutubeVideo> videos = searchEngine.getVideoDetails(ids);
+        if (videos.size() != 1) {
+            throw new IOException("Couldn't initialize from id: search engine error");
         }
+        YoutubeVideo video = videos.get(0);
+        setId(id);
+        setTitle(video.getTitle());
+        setDuration(video.duration);
+        setThumbnailURL(video.thumbnailURL);
+        setViewCount(video.viewCount);
     }
 
     @Override
