@@ -15,24 +15,34 @@ import org.junit.runner.RunWith;
 
 import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.Espresso.pressBack;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.typeText;
+import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static android.support.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.anything;
+import static org.hamcrest.Matchers.containsString;
 
-
+/**
+ * Created by guillaume on 27/05/2016.
+ */
 @RunWith(AndroidJUnit4.class)
 @LargeTest
-public class PlayerTest {
+public class SearchTest {
     private String searchKeyword;
+    private String expectedResult;
 
     @Rule
     public ActivityTestRule<MainActivity> activityRule = new ActivityTestRule<>(MainActivity.class);
 
     @Before
     public void init() {
-        searchKeyword = "red hot";
+        searchKeyword = "C2C - Happy Ft.";
+        expectedResult = "C2C - Happy Ft. D.Martin";
     }
 
     @After
@@ -41,7 +51,7 @@ public class PlayerTest {
     }
 
     @Test
-    public void enqueue_sameActivity() {
+    public void search_sameActivity() {
         // pop side bar
         onView(withId(R.id.menuMain_search)).perform(click());
         // open search
@@ -49,24 +59,21 @@ public class PlayerTest {
         // type keyword
         onView(isAssignableFrom(EditText.class)).perform(typeText(searchKeyword));
 
-        // fix: force wait for search to be completed
+        // force wait for search to be completed
         IdlingResource timeIdlingResource = new ElapsedTimeIdlingResource(5000);
         Espresso.registerIdlingResources(timeIdlingResource);
 
-        // click on first item
-        onData(anything()).inAdapterView(withId(R.id.viewSearch_resultList)).atPosition(0).perform(click());
-        // fix: force wait cleanup
+        pressBack();
+
+        // check first item content
+        onData(anything())
+                .inAdapterView(withId(R.id.viewSearch_resultList))
+                .atPosition(0)
+                .check(matches(hasDescendant(
+                        allOf(withId(R.id.listItemVideo_title),
+                                withText(containsString(expectedResult))))));
+
+        // cleanup
         Espresso.unregisterIdlingResources(timeIdlingResource);
-
-        // wait for the undo button to disappear
-        IdlingResource undoButtonDisappearResource = new ElapsedTimeIdlingResource(1000);
-        Espresso.registerIdlingResources(undoButtonDisappearResource);
-        // click on second item
-        onData(anything()).inAdapterView(withId(R.id.viewSearch_resultList)).atPosition(1).perform(click());
-        Espresso.unregisterIdlingResources(undoButtonDisappearResource);
-
-        // go to playlist
-        onView(withId(R.id.menuMain_search)).perform(click());
-        onView(withId(R.id.activityMain_historyButton)).perform(click());
     }
 }
