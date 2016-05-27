@@ -13,6 +13,14 @@
         android:padding="15dp"
         android:textColor="@color/colorAccent"/>
 
+    <ProgressBar
+        android:id="@+id/fragmentHistory_progressBar"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="20dp"/>
+
     <GridView
         android:layout_width="match_parent"
         android:layout_height="match_parent"

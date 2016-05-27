@@ -9,6 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 
 import com.bx5a.minstrel.R;
 import com.bx5a.minstrel.player.History;
@@ -24,15 +26,20 @@ import java.util.List;
 public class HistoryFragment extends Fragment {
     private GridView historyView;
     private List<Playable> playableList;
+    private ProgressBar waitBar;
 
     @Override
     public View onCreateView(LayoutInflater layoutInflater, ViewGroup viewGroup, Bundle bundle) {
         View view = layoutInflater.inflate(R.layout.fragment_history, null);
         historyView = (GridView) view.findViewById(R.id.fragmentHistory_list);
+
+        waitBar = (ProgressBar) view.findViewById(R.id.fragmentHistory_progressBar);
+        waitBar.setIndeterminate(true);
+        waitBar.setVisibility(View.GONE);
+
         displayHistory();
         return view;
     }
-
 
     private void displayHistory() {
         AsyncUpdate update = new AsyncUpdate();
@@ -73,6 +80,13 @@ public class HistoryFragment extends Fragment {
     }
 
     class AsyncUpdate extends AsyncTask<History, Integer, List<Playable>> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            waitBar.setVisibility(View.VISIBLE);
+        }
+
         @Override
         protected List<Playable> doInBackground(History... params) {
             return params[0].get();
@@ -81,6 +95,7 @@ public class HistoryFragment extends Fragment {
         @Override
         protected void onPostExecute(List<Playable> playableList) {
             super.onPostExecute(playableList);
+            waitBar.setVisibility(View.GONE);
             updateWithList(playableList);
         }
     }
