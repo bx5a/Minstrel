@@ -120,11 +120,10 @@ public class MasterPlayer {
             }
         }
 
+        playable.play();
         if (seekValue != 0) {
             seekTo(seekValue);
         }
-
-        playable.play();
     }
 
     public void play() throws IndexOutOfBoundsException, IllegalStateException {

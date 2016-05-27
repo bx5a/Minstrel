@@ -1,6 +1,7 @@
 package com.bx5a.minstrel;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -14,6 +15,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 
 import com.bx5a.minstrel.legacy.SoftKeyboardHandledLayout;
 import com.bx5a.minstrel.player.History;
@@ -226,7 +228,22 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    // from http://stackoverflow.com/questions/1109022/close-hide-the-android-soft-keyboard
+    private void closeKeyboard() {
+        View view = getCurrentFocus();
+        if (view == null) {
+            Log.w("MainActivity", "Can't close keyboard: current focus view not found");
+            return;
+        }
+        InputMethodManager manager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        manager.hideSoftInputFromWindow(view.getWindowToken(), 0);
+
+        // show player controls
+        getSupportFragmentManager().beginTransaction().show(playerControls).commit();
+    }
+
     private void displayFragment(Fragment fragment) {
+        closeKeyboard();
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.activityMain_topPlaceholder, fragment);
         transaction.addToBackStack(null);

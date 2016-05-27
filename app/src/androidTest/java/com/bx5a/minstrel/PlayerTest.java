@@ -44,26 +44,30 @@ public class PlayerTest {
 
     @Test
     public void enqueue_sameActivity() {
-        IdlingResource timeIdlingResource = new ElapsedTimeIdlingResource(5000);
-
         // pop side bar
         onView(withId(R.id.menuMain_search)).perform(click());
         // open search
         onView(withId(R.id.activityMain_searchButton)).perform(click());
         // type keyword
         onView(isAssignableFrom(EditText.class)).perform(typeText(searchKeyword));
+
         // fix: force wait for search to be completed
+        IdlingResource timeIdlingResource = new ElapsedTimeIdlingResource(5000);
         Espresso.registerIdlingResources(timeIdlingResource);
 
-        // fix: make the soft keyboard disappear since closeSoftKeyboard doesn't work
-        pressBack();
-
-        // click on first and second item
+        // click on first item
         onData(anything()).inAdapterView(withId(R.id.viewSearch_resultList)).atPosition(0).perform(click());
-        onData(anything()).inAdapterView(withId(R.id.viewSearch_resultList)).atPosition(1).perform(click());
+        // fix: force wait cleanup
         Espresso.unregisterIdlingResources(timeIdlingResource);
 
-        // fix again: Can't seem to access menu
+        // wait for the undo button to disappear
+        IdlingResource undoButtonDisappearResource = new ElapsedTimeIdlingResource(1000);
+        Espresso.registerIdlingResources(undoButtonDisappearResource);
+        // click on second item
+        onData(anything()).inAdapterView(withId(R.id.viewSearch_resultList)).atPosition(1).perform(click());
+        Espresso.unregisterIdlingResources(undoButtonDisappearResource);
+
+        // close keyboard
         pressBack();
 
         onView(withId(R.id.menuMain_search)).perform(click());
