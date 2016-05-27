@@ -62,11 +62,20 @@ public class MasterPlayer {
         return currentPlayableIndex;
     }
 
-    public void enqueue(Playable playable, Position position) throws IndexOutOfBoundsException, IllegalStateException {
-        int enqueuePosition = currentPlayableIndex;
-        if (position == Position.Next) {
-            enqueuePosition = Math.min(currentPlayableIndex + 1, playlist.size());
+    private int getIndexFromPosition(Position position) {
+        switch (position) {
+            case Current:
+                return currentPlayableIndex;
+            case Next:
+                return Math.min(currentPlayableIndex + 1, playlist.size());
+            case Last:
+                return playlist.size();
         }
+        return 0;
+    }
+
+    public void enqueue(Playable playable, Position position) throws IndexOutOfBoundsException, IllegalStateException {
+        int enqueuePosition = getIndexFromPosition(position);
         playlist.add(playable, enqueuePosition);
 
         if (!autoPlayNext) {
@@ -83,16 +92,7 @@ public class MasterPlayer {
     }
 
     public void dequeue(Playable playable, Position position) throws IndexOutOfBoundsException, IllegalStateException {
-        int indexToRemove = currentPlayableIndex;
-        if (position == Position.Next) {
-            indexToRemove = currentPlayableIndex + 1;
-            if (indexToRemove >= playlist.size()) {
-                indexToRemove = playlist.size() - 1;
-            }
-        } else if (position == Position.Last) {
-            indexToRemove = playlist.size() - 1;
-        }
-
+        int indexToRemove = getIndexFromPosition(position);
         // only remove if we have the right playable at that index
         if (playlist.at(indexToRemove).getId() == playable.getId()) {
             playlist.remove(indexToRemove);
