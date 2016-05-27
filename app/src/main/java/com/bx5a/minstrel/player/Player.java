@@ -21,5 +21,6 @@ public interface Player {
     void seekTo(float position);
     float getCurrentPosition();
     boolean isPlaying();
+    void unload();
 
 }

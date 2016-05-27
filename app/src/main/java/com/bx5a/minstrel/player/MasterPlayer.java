@@ -226,6 +226,12 @@ public class MasterPlayer {
         players.remove(player);
     }
 
+    public void unload() {
+        for (Player player : players) {
+            player.unload();
+        }
+    }
+
     public void addMasterPlayerEventListener(MasterPlayerEventListener listener) {
         listeners.add(listener);
     }

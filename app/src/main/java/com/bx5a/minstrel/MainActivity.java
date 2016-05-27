@@ -121,8 +121,9 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onPause() {
+        super.onPause();
+        MasterPlayer.getInstance().unload();
     }
 
     @Override

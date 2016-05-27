@@ -110,7 +110,11 @@ public class YoutubePlayer implements Player {
     public void reset() {
         MasterPlayer.getInstance().unregisterPlayer(this);
         youtubePlayer = null;
-        loadedId = new String("");
+        loadedId = "";
+    }
+
+    public void unload() {
+        loadedId = "";
     }
 
     public void setPlayerFragment(YouTubePlayerSupportFragment playerFragment) {
