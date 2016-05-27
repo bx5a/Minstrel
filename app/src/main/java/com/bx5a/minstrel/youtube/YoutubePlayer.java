@@ -270,7 +270,6 @@ public class YoutubePlayer implements Player {
             void start() {
                 int millis = (int) (position * youtubePlayer.getDurationMillis());
                 youtubePlayer.seekToMillis(millis);
-                Log.i("SeekTo", String.valueOf(position));
                 markAsComplete();
             }
         });

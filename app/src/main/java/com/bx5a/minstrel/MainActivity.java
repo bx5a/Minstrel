@@ -6,10 +6,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.os.Handler;
-import android.provider.Settings;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -18,7 +16,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 
@@ -27,7 +24,7 @@ import com.bx5a.minstrel.player.History;
 import com.bx5a.minstrel.player.MasterPlayer;
 import com.bx5a.minstrel.player.Playable;
 import com.bx5a.minstrel.player.Position;
-import com.bx5a.minstrel.utils.IdleManager;
+import com.bx5a.minstrel.utils.LowBrightnessOnIdleActivity;
 import com.bx5a.minstrel.widget.HistoryFragment;
 import com.bx5a.minstrel.widget.ImageAndTextButton;
 import com.bx5a.minstrel.widget.PlayerControlBarFragment;
@@ -38,7 +35,7 @@ import com.bx5a.minstrel.widget.UndoDialogFragment;
 import com.bx5a.minstrel.youtube.YoutubePlayer;
 import com.google.android.youtube.player.YouTubePlayerSupportFragment;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends LowBrightnessOnIdleActivity {
 
     private SoftKeyboardHandledLayout drawerLayout;
     private ImageAndTextButton searchButton;
@@ -57,9 +54,6 @@ public class MainActivity extends AppCompatActivity {
     private final String kWasPlayingKey = "wasPlaying";
     private final String kPositionAtDestroyKey = "seekPosition";
 
-    private final int kIdleTimeMilliseconds = 5000;  // 5 seconds
-    private float beforeIdleBrightness;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,7 +65,6 @@ public class MainActivity extends AppCompatActivity {
         historyButton = (ImageAndTextButton) findViewById(R.id.activityMain_historyButton);
         playerControls = (PlayerControlBarFragment) getSupportFragmentManager().findFragmentById(R.id.activityMain_playerControls);
 
-        initIdleManager();
         initBackground();
         initHistory();
         initYoutubePlayer();
@@ -144,44 +137,6 @@ public class MainActivity extends AppCompatActivity {
     }
     private void closeSidePanel() {
         drawerLayout.closeDrawer(Gravity.START);
-    }
-
-    private void initIdleManager() {
-        final Handler mainHandler = new Handler(getBaseContext().getMainLooper());
-        IdleManager idleManager = IdleManager.getInstance();
-        idleManager.setInactivityMillisecondsBeforeIdle(kIdleTimeMilliseconds);
-        idleManager.setIdleEventListener(new IdleManager.IdleEventListener() {
-            @Override
-            public void onIdleStart() {
-                mainHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        WindowManager.LayoutParams layoutParameters = getWindow().getAttributes();
-                        beforeIdleBrightness = layoutParameters.screenBrightness;
-                        layoutParameters.screenBrightness = 0;
-                        getWindow().setAttributes(layoutParameters);
-                    }
-                });
-            }
-
-            @Override
-            public void onIdleStop() {
-                mainHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        WindowManager.LayoutParams layoutParameters = getWindow().getAttributes();
-                        layoutParameters.screenBrightness = beforeIdleBrightness;
-                        getWindow().setAttributes(layoutParameters);
-                    }
-                });
-            }
-        });
-    }
-
-    @Override
-    public void onUserInteraction() {
-        super.onUserInteraction();
-        IdleManager.getInstance().resetIdleTimer();
     }
 
     private void initFragments() {
