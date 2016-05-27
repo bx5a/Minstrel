@@ -15,6 +15,7 @@ import com.bx5a.minstrel.R;
 import com.bx5a.minstrel.player.MasterPlayer;
 import com.bx5a.minstrel.player.Playable;
 import com.bx5a.minstrel.player.Position;
+import com.bx5a.minstrel.utils.IdleManager;
 import com.bx5a.minstrel.youtube.YoutubeVideo;
 
 import java.util.ArrayList;
@@ -88,6 +89,9 @@ public class SearchFragment extends Fragment {
 
             @Override
             public boolean onQueryTextChange(String newText) {
+                // TODO: should be done on LowBrightnessOnIdleActivity but I can't figure out where
+                // we get keyboard press notification
+                IdleManager.getInstance().resetIdleTimer();
                 asyncSearch(newText);
                 return true;
             }

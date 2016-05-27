@@ -18,6 +18,7 @@ import com.bx5a.minstrel.player.MasterPlayer;
 import com.bx5a.minstrel.player.Playable;
 import com.bx5a.minstrel.player.Position;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -89,7 +90,12 @@ public class HistoryFragment extends Fragment {
 
         @Override
         protected List<Playable> doInBackground(History... params) {
-            return params[0].get();
+            try {
+                return params[0].get();
+            } catch (NullPointerException e) {
+                Log.w("HistoryFragment", "Couldn't retrieve history: " + e.getMessage());
+                return new ArrayList<Playable>();
+            }
         }
 
         @Override
