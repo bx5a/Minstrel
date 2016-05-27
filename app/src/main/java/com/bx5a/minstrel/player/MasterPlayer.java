@@ -195,18 +195,19 @@ public class MasterPlayer {
     public void reorder(int playableIndex, Position position) {
         Playable playable = playlist.at(playableIndex);
         remove(playableIndex);
-        if (position == Position.Last) {
-            playlist.add(playable);
-            notifyPlaylistChanged();
-            return;
-        }
-        playlist.add(playable, currentPlayableIndex + 1);
+        playlist.add(playable, getIndexFromPosition(position));
         notifyPlaylistChanged();
     }
 
     public void remove(int playableIndex) {
         if (playableIndex == currentPlayableIndex) {
-            next();
+            // if that's not the last one
+            if (currentPlayableIndex + 1 != playlist.size()) {
+                next();
+            } else {
+                pause();
+                autoPlayNext = true;
+            }
         }
 
         playlist.remove(playableIndex);
