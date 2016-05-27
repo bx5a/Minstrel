@@ -59,14 +59,19 @@ public class PlayerTest {
         Espresso.unregisterIdlingResources(timeIdlingResource);
 
         // wait for the undo button to disappear
-        IdlingResource undoButtonDisappearResource = new ElapsedTimeIdlingResource(1000);
+        IdlingResource undoButtonDisappearResource = new ElapsedTimeIdlingResource(1500);
         Espresso.registerIdlingResources(undoButtonDisappearResource);
         // click on second item
         onData(anything()).inAdapterView(withId(R.id.viewSearch_resultList)).atPosition(1).perform(click());
         Espresso.unregisterIdlingResources(undoButtonDisappearResource);
 
+        // wait for the undo button to disappear
+        IdlingResource secondUndoButtonDisappearResource = new ElapsedTimeIdlingResource(1500);
+        Espresso.registerIdlingResources(secondUndoButtonDisappearResource);
+
         // go to playlist
         onView(withId(R.id.menuMain_search)).perform(click());
+        Espresso.unregisterIdlingResources(secondUndoButtonDisappearResource);
         onView(withId(R.id.activityMain_historyButton)).perform(click());
     }
 }
