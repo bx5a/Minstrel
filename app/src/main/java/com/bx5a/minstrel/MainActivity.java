@@ -2,6 +2,7 @@ package com.bx5a.minstrel;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
@@ -10,6 +11,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
@@ -121,6 +123,26 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
     @Override
     public void onResume() {
         super.onResume();
+    }
+
+    @Override
+    public void onBackPressed() {
+        // if we still have some back stack, just do the regular
+        if (getSupportFragmentManager().getBackStackEntryCount() != 0) {
+            super.onBackPressed();
+            return;
+        }
+
+        // if back stack is empty, pressing back will close the app. make sure that's what use wants
+        new AlertDialog.Builder(this)
+                .setTitle("Warning")
+                .setMessage("Closing the app will stop playback. Do you really want to exit ?")
+                .setNegativeButton(android.R.string.no, null)
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface arg0, int arg1) {
+                        MainActivity.super.onBackPressed();
+                    }
+                }).create().show();
     }
 
     private void initBackground() {
