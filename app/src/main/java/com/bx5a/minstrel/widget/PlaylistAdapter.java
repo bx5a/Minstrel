@@ -47,7 +47,7 @@ public class PlaylistAdapter extends ArrayAdapter<Playable> {
         } else {
             duration.setTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
             title.setTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
-            view.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.colorPrimaryDark));
+            view.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.transparent));
         }
 
         title.setText(playable.title());

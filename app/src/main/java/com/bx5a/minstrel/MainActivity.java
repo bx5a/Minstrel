@@ -3,6 +3,9 @@ package com.bx5a.minstrel;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Point;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -16,6 +19,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import com.bx5a.minstrel.legacy.SoftKeyboardHandledLayout;
 import com.bx5a.minstrel.player.History;
@@ -65,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
         historyButton = (ImageAndTextButton) findViewById(R.id.activityMain_historyButton);
         playerControls = (PlayerControlBarFragment) getSupportFragmentManager().findFragmentById(R.id.activityMain_playerControls);
 
+        initBackground();
         initHistory();
         initYoutubePlayer();
         initMenuActions();
@@ -119,6 +125,15 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
+    }
+
+    private void initBackground() {
+        Bitmap logo = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
+        Point screenSize = new Point();
+        getWindowManager().getDefaultDisplay().getSize(screenSize);
+        Bitmap scaledLogo = Bitmap.createScaledBitmap(logo, screenSize.x, screenSize.x, true);
+        ImageView backgroundLogo = (ImageView) findViewById(R.id.activityMain_backgroundLogo);
+        backgroundLogo.setImageBitmap(scaledLogo);
     }
 
     private void openSidePanel() {

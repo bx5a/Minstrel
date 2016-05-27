@@ -19,7 +19,16 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="top"
-            android:background="@color/colorPrimaryDark"/>
+            android:background="@color/colorPrimaryDark">
+            <ImageView
+                android:id="@+id/activityMain_backgroundLogo"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:alpha="0.1"
+                />
+        </RelativeLayout>
 
         <!-- bottom part -->
         <RelativeLayout
