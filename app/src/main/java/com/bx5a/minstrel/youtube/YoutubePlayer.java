@@ -19,6 +19,7 @@ public class YoutubePlayer implements Player {
     private YouTubePlayer youtubePlayer;
     private String loadedId;
     private YouTubePlayerSupportFragment playerFragment;
+    private OnPlayerStoppedListener playerStoppedListener;
 
     // In youtube API, the load method is asynchronous. Therefore, doing
     // player.load(id);
@@ -99,6 +100,7 @@ public class YoutubePlayer implements Player {
         loadedId = new String("");
         taskQueue = new TaskQueue();
         loadingTask = null;
+        playerStoppedListener = null;
     }
 
     public String getLoadedId() {
@@ -115,13 +117,16 @@ public class YoutubePlayer implements Player {
         this.playerFragment = playerFragment;
         // player needs to be reinitialized
         this.youtubePlayer = null;
+        this.playerStoppedListener = null;
     }
 
     public boolean isInitialized() {
         return youtubePlayer != null;
     }
 
-    public void initialize(final OnInitializedListener listener) {
+    public void initialize(final OnInitializedListener listener,
+                           OnPlayerStoppedListener playerStoppedListener) {
+        this.playerStoppedListener = playerStoppedListener;
         playerFragment.initialize(DeveloperKey.DEVELOPER_KEY, new YouTubePlayer.OnInitializedListener() {
             @Override
             public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer youTubePlayer, boolean b) {
@@ -204,10 +209,8 @@ public class YoutubePlayer implements Player {
 
             private void videoStopped() {
                 loadedId = "";
-                try {
-                    MasterPlayer.getInstance().next();
-                } catch (IndexOutOfBoundsException exception) {
-                    Log.i("YoutubePlayer", "Couldn't move to next song: " + exception.getMessage());
+                if (playerStoppedListener != null) {
+                    playerStoppedListener.onPlayerStopped();
                 }
             }
         });

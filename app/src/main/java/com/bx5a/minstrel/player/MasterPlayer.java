@@ -17,6 +17,7 @@ public class MasterPlayer {
     private ArrayList<Player> players;
     private ArrayList<MasterPlayerEventListener> listeners;
     private OnPlayableEnqueuedListener onEnqueuedListener;
+    private boolean autoPlayNext;
 
     public static MasterPlayer getInstance() {
         if (instance == null) {
@@ -36,6 +37,7 @@ public class MasterPlayer {
 
             }
         };
+        autoPlayNext = true;
     }
 
     public Playlist getPlaylist() {
@@ -61,27 +63,34 @@ public class MasterPlayer {
     }
 
     public void enqueue(Playable playable, Position position) throws IndexOutOfBoundsException, IllegalStateException {
-        if (position == Position.Next && playlist.size() != 0) {
-            playlist.add(playable, currentPlayableIndex + 1);
+        int enqueuePosition = currentPlayableIndex;
+        if (position == Position.Next) {
+            enqueuePosition = Math.min(currentPlayableIndex + 1, playlist.size());
+        }
+        playlist.add(playable, enqueuePosition);
+
+        if (!autoPlayNext) {
             notifyPlaylistChanged();
             onEnqueuedListener.onEnqueued(playable, position);
             return;
         }
-        playlist.add(playable);
-        notifyPlaylistChanged();
-        onEnqueuedListener.onEnqueued(playable, position);
 
-        // TODO: find a way to generalize that very unusual behavior
-        // if nothing was playing, start playback (also if we want to play now)
-        if (playlist.size() == 1) {
-            play();
-        }
+        currentPlayableIndex = enqueuePosition;
+        autoPlayNext = false;
+        play();
+        notifyPlaylistChanged();
+        onEnqueuedListener.onEnqueued(playable, Position.Current);
     }
 
     public void dequeue(Playable playable, Position position) throws IndexOutOfBoundsException, IllegalStateException {
         int indexToRemove = currentPlayableIndex;
-        if (position == Position.Next && playlist.size() != 1) {
+        if (position == Position.Next) {
             indexToRemove = currentPlayableIndex + 1;
+            if (indexToRemove >= playlist.size()) {
+                indexToRemove = playlist.size() - 1;
+            }
+        } else if (position == Position.Last) {
+            indexToRemove = playlist.size() - 1;
         }
 
         // only remove if we have the right playable at that index
@@ -99,13 +108,31 @@ public class MasterPlayer {
             playable.getPlayer().initialize(new Player.OnInitializedListener() {
                 @Override
                 public void onInitializationSuccess() {
-                    playAt(seekValue);
+                    try {
+                        playAt(seekValue);
+                    } catch (IndexOutOfBoundsException e) {
+                        Log.w("MasterPlayer", "Cant start playing: " + e.getMessage());
+                    }
                 }
 
                 @Override
                 public void onInitializationFailure(String reason) {
                     Log.e("MasterPlayer", "Can't play current index: " + reason + ". Moving to next");
                     next();
+                }
+            }, new Player.OnPlayerStoppedListener() {
+                @Override
+                public void onPlayerStopped() {
+                    // if playlist is empty now
+                    if (currentPlayableIndex == playlist.size() - 1) {
+                        autoPlayNext = true;
+                        return;
+                    }
+                    try {
+                        next();
+                    } catch (IndexOutOfBoundsException exception) {
+                        Log.i("MasterPlayer", "Couldn't move to next song: " + exception.getMessage());
+                    }
                 }
             });
             return;

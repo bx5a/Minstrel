@@ -8,9 +8,12 @@ public interface Player {
         void onInitializationSuccess();
         void onInitializationFailure(String reason);
     }
+    interface OnPlayerStoppedListener {
+        void onPlayerStopped();
+    }
 
     boolean isInitialized();
-    void initialize(OnInitializedListener listener);
+    void initialize(OnInitializedListener listener, OnPlayerStoppedListener playerStoppedListener);
 
     void play();
     void pause();
