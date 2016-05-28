@@ -55,4 +55,10 @@ public class LowBrightnessOnIdleActivity  extends AppCompatActivity {
         super.onUserInteraction();
         IdleManager.getInstance().resetIdleTimer();
     }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        IdleManager.getInstance().resetIdleTimer();
+    }
 }
