@@ -4,7 +4,9 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -57,6 +59,7 @@ public class PlayerControlFragment extends Fragment {
                 new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                                               LinearLayout.LayoutParams.MATCH_PARENT));
 
+        initSwipe(view.findViewById(R.id.fragmentPlayer_thumbnailLayout));
         connectPlayerEvents();
         connectButtonEvents();
         updateThumbnails();
@@ -69,6 +72,40 @@ public class PlayerControlFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         MasterPlayer.getInstance().removeMasterPlayerEventListener(playerEventListener);
+    }
+
+    private void initSwipe(View view) {
+        final GestureDetector gestureDetector = new GestureDetector(getActivity(),
+                new GestureDetector.SimpleOnGestureListener() {
+                    @Override
+                    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+                        try {
+                            if (e1.getX() < e2.getX()) {
+                                MasterPlayer.getInstance().previous();
+                                return true;
+                            }
+                            MasterPlayer.getInstance().next();
+                        } catch (IndexOutOfBoundsException exception) {
+                            Log.i("PlayerControlFragment", "Couldn't change song: " + exception.getMessage());
+                        } catch (IllegalStateException exception) {
+                            Log.i("PlayerControlFragment", "Couldn't change song: " + exception.getMessage());
+                        }
+                        return true;
+                    }
+
+                    @Override
+                    public boolean onDown(MotionEvent e) {
+                        return true;
+
+                    }
+                });
+
+        view.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return gestureDetector.onTouchEvent(event);
+            }
+        });
     }
 
     public void setOnPlaylistClickListener(View.OnClickListener listener) {
