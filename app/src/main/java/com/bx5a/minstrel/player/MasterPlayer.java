@@ -201,9 +201,12 @@ public class MasterPlayer {
 
     public void remove(int playableIndex) {
         if (playableIndex == currentPlayableIndex) {
-            // if that's not the last one
             if (currentPlayableIndex + 1 != playlist.size()) {
+                // if that's not the last one
                 next();
+            } else if (currentPlayableIndex - 1 >= 0) {
+                // if we have a previous one
+                previous();
             } else {
                 pause();
                 autoPlayNext = true;
