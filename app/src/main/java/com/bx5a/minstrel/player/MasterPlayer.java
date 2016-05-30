@@ -11,6 +11,7 @@ public class MasterPlayer {
     private ArrayList<Player> players;
     private ArrayList<MasterPlayerEventListener> listeners;
     private boolean autoPlayNext;
+    private boolean playlistFinished;
 
     public static MasterPlayer getInstance() {
         if (instance == null) {
@@ -38,6 +39,7 @@ public class MasterPlayer {
         });
 
         autoPlayNext = true;
+        playlistFinished = false;
     }
 
     public Playlist getPlaylist() {
@@ -60,10 +62,18 @@ public class MasterPlayer {
 
     public void enqueue(Playable playable, Position position) throws IndexOutOfBoundsException, IllegalStateException {
         playlistManager.enqueue(playable, position);
+
         if (!autoPlayNext) {
             return;
         }
         autoPlayNext = false;
+
+        // if playlist finished, we still have the last one selected. We need to move to next first
+        if (playlistFinished) {
+            playlistFinished = false;
+            next();
+            return;
+        }
         play();
     }
 
@@ -93,6 +103,7 @@ public class MasterPlayer {
                     // if playlist is empty now
                     if (playlistManager.getSelectedIndex() == playlistManager.size() - 1) {
                         autoPlayNext = true;
+                        playlistFinished = true;
                         return;
                     }
                     try {
