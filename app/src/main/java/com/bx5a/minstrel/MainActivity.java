@@ -25,6 +25,7 @@ import com.bx5a.minstrel.legacy.SoftKeyboardHandledLayout;
 import com.bx5a.minstrel.player.History;
 import com.bx5a.minstrel.player.MasterPlayer;
 import com.bx5a.minstrel.player.Playable;
+import com.bx5a.minstrel.player.PlaylistManager;
 import com.bx5a.minstrel.player.Position;
 import com.bx5a.minstrel.utils.LowBrightnessOnIdleActivity;
 import com.bx5a.minstrel.widget.HistoryFragment;
@@ -231,14 +232,15 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
 
     private void initUndoDialog() {
         undoDialogFragment = new UndoDialogFragment();
-        MasterPlayer.getInstance().setOnEnqueuedListener(new MasterPlayer.OnPlayableEnqueuedListener() {
+        MasterPlayer.getInstance().setPlaylistManagerEventListener(new PlaylistManager.EventListener() {
             @Override
-            public void onEnqueued(final Playable playable, final Position position) {
+            public void onEnqueued(final int index, final int selectedIndex) {
                 undoDialogFragment.setText("Added to list");
                 undoDialogFragment.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        MasterPlayer.getInstance().dequeue(playable, position);
+                        MasterPlayer.getInstance().remove(index);
+                        MasterPlayer.getInstance().setCurrentPlayableIndex(selectedIndex);
                         undoDialogFragment.dismiss();
                     }
                 });

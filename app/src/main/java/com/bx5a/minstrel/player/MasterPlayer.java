@@ -6,16 +6,10 @@ import java.util.ArrayList;
 
 // Singleton
 public class MasterPlayer {
-    // event listener for playable enqueued
-    public interface OnPlayableEnqueuedListener {
-        void onEnqueued(Playable playable, Position position);
-    }
-
     private static MasterPlayer instance;
     private PlaylistManager playlistManager;
     private ArrayList<Player> players;
     private ArrayList<MasterPlayerEventListener> listeners;
-    private OnPlayableEnqueuedListener onEnqueuedListener;
     private boolean autoPlayNext;
 
     public static MasterPlayer getInstance() {
@@ -29,12 +23,6 @@ public class MasterPlayer {
         playlistManager = new PlaylistManager(new Playlist());
         players = new ArrayList<>();
         listeners = new ArrayList<>();
-        onEnqueuedListener = new OnPlayableEnqueuedListener() {
-            @Override
-            public void onEnqueued(Playable playable, Position position) {
-
-            }
-        };
         autoPlayNext = true;
     }
 
@@ -42,15 +30,15 @@ public class MasterPlayer {
         return playlistManager.getPlaylist();
     }
 
+    public void setPlaylistManagerEventListener(PlaylistManager.EventListener eventListener) {
+        playlistManager.setEventListener(eventListener);
+    }
+
     public void setCurrentPlayableIndex(int currentPlayableIndex) throws IndexOutOfBoundsException, IllegalStateException {
         pause();
         playlistManager.move(currentPlayableIndex);
         notifyPlaylistChanged();
         play();
-    }
-
-    public void setOnEnqueuedListener(OnPlayableEnqueuedListener onEnqueuedListener) {
-        this.onEnqueuedListener = onEnqueuedListener;
     }
 
     public int getCurrentPlayableIndex() {
@@ -61,23 +49,11 @@ public class MasterPlayer {
         playlistManager.enqueue(playable, position);
         notifyPlaylistChanged();
         if (!autoPlayNext) {
-            onEnqueuedListener.onEnqueued(playable, position);
             return;
         }
         autoPlayNext = false;
         play();
         notifyPlaylistChanged();
-        onEnqueuedListener.onEnqueued(playable, Position.Current);
-    }
-
-    @Deprecated
-    public void dequeue(Playable playable, Position position) throws IndexOutOfBoundsException, IllegalStateException {
-        //int indexToRemove = getIndexFromPosition(position);
-        // only remove if we have the right playable at that index
-        //if (playlist.at(indexToRemove).getId() == playable.getId()) {
-        //    playlist.remove(indexToRemove);
-        //    notifyPlaylistChanged();
-        //}
     }
 
     public void playAt(final float seekValue) throws IndexOutOfBoundsException, IllegalStateException {
@@ -184,25 +160,7 @@ public class MasterPlayer {
     }
 
     public void remove(int playableIndex) {
-        //if (playableIndex == currentPlayableIndex) {
-        //    if (currentPlayableIndex + 1 != playlist.size()) {
-        //        // if that's not the last one
-        //        next();
-        //    } else if (currentPlayableIndex - 1 >= 0) {
-        //        // if we have a previous one
-        //        previous();
-        //    } else {
-        //        pause();
-        //        autoPlayNext = true;
-        //    }
-        //}
-
-        //playlist.remove(playableIndex);
-        // update playable index if necessary
-        //if (playableIndex < currentPlayableIndex) {
-        //    currentPlayableIndex--;
-        //}
-        playlistManager.remove(playlistManager.getSelectedIndex());
+        playlistManager.remove(playableIndex);
         notifyPlaylistChanged();
     }
 

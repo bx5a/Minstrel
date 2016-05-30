@@ -8,12 +8,23 @@ import java.security.InvalidParameterException;
 // the playlist manager represents common action you can made to a playlist when selected as
 // currently played
 public class PlaylistManager {
+    public interface EventListener {
+        void onEnqueued(int enqueuedIndex, int selectedIndex);
+    }
+
     private Playlist playlist;
     private int selectedIndex;
+    private EventListener eventListener;
 
     public PlaylistManager(Playlist playlist) {
         this.playlist = playlist;
         this.selectedIndex = 0;
+        this.eventListener = new EventListener() {
+            @Override
+            public void onEnqueued(int enqueuedInde, int selectedIndex) {
+
+            }
+        };
     }
 
     // returns the expected index from position. Can be invalid (<0 or >= size())
@@ -42,6 +53,10 @@ public class PlaylistManager {
     public void enqueue(Playable playable, Position position) {
         int index = getValidEnqueueIndexFromPosition(position);
         playlist.enqueue(playable, index);
+        if (index <= selectedIndex) {
+            selectedIndex = Math.min(index + 1, size() - 1);
+        }
+        eventListener.onEnqueued(index, selectedIndex);
     }
 
     public void remove(int index) throws IndexOutOfBoundsException {
@@ -102,5 +117,9 @@ public class PlaylistManager {
 
     public Playlist getPlaylist() {
         return playlist;
+    }
+
+    public void setEventListener(EventListener eventListener) {
+        this.eventListener = eventListener;
     }
 }
