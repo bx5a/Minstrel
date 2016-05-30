@@ -34,7 +34,21 @@ public class YoutubeSearchEngine {
     private YouTube youtube;
     private final long kMaxResultNumber = 15;
 
-    public YoutubeSearchEngine(Context context) {
+    private static YoutubeSearchEngine ourInstance = new YoutubeSearchEngine();
+
+    public static YoutubeSearchEngine getInstance() {
+        return ourInstance;
+    }
+
+    private YoutubeSearchEngine() {
+        youtube = null;
+    }
+
+    public boolean isInitialized() {
+        return youtube != null;
+    }
+
+    public void init(Context context) {
         youtube = new YouTube.Builder(new NetHttpTransport(), new JacksonFactory(),
                 new HttpRequestInitializer() {
                     @Override

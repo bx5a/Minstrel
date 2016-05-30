@@ -36,6 +36,7 @@ import com.bx5a.minstrel.widget.PlaylistFragment;
 import com.bx5a.minstrel.widget.SearchFragment;
 import com.bx5a.minstrel.widget.UndoDialogFragment;
 import com.bx5a.minstrel.youtube.YoutubePlayer;
+import com.bx5a.minstrel.youtube.YoutubeSearchEngine;
 import com.google.android.youtube.player.YouTubePlayerSupportFragment;
 
 public class MainActivity extends LowBrightnessOnIdleActivity {
@@ -182,6 +183,9 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
     }
 
     private void initYoutubePlayer() {
+        if (!YoutubeSearchEngine.getInstance().isInitialized()) {
+            YoutubeSearchEngine.getInstance().init(this);
+        }
         YoutubePlayer player = YoutubePlayer.getInstance();
         player.setPlayerFragment((YouTubePlayerSupportFragment) getSupportFragmentManager().findFragmentById(R.id.youtube_fragment));
     }
