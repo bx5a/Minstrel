@@ -12,8 +12,7 @@ public class MasterPlayer {
     }
 
     private static MasterPlayer instance;
-    private Playlist playlist;
-    private int currentPlayableIndex;
+    private PlaylistManager playlistManager;
     private ArrayList<Player> players;
     private ArrayList<MasterPlayerEventListener> listeners;
     private OnPlayableEnqueuedListener onEnqueuedListener;
@@ -27,8 +26,7 @@ public class MasterPlayer {
     }
 
     private MasterPlayer() {
-        playlist = new Playlist();
-        currentPlayableIndex = 0;
+        playlistManager = new PlaylistManager(new Playlist());
         players = new ArrayList<>();
         listeners = new ArrayList<>();
         onEnqueuedListener = new OnPlayableEnqueuedListener() {
@@ -41,15 +39,12 @@ public class MasterPlayer {
     }
 
     public Playlist getPlaylist() {
-        return playlist;
+        return playlistManager.getPlaylist();
     }
 
     public void setCurrentPlayableIndex(int currentPlayableIndex) throws IndexOutOfBoundsException, IllegalStateException {
         pause();
-        if(playlist.size() <= currentPlayableIndex || currentPlayableIndex < 0) {
-            throw new IndexOutOfBoundsException("No playable at index " + currentPlayableIndex);
-        }
-        this.currentPlayableIndex = currentPlayableIndex;
+        playlistManager.move(currentPlayableIndex);
         notifyPlaylistChanged();
         play();
     }
@@ -59,49 +54,34 @@ public class MasterPlayer {
     }
 
     public int getCurrentPlayableIndex() {
-        return currentPlayableIndex;
-    }
-
-    private int getIndexFromPosition(Position position) {
-        switch (position) {
-            case Current:
-                return currentPlayableIndex;
-            case Next:
-                return Math.min(currentPlayableIndex + 1, playlist.size());
-            case Last:
-                return playlist.size();
-        }
-        return 0;
+        return playlistManager.getSelectedIndex();
     }
 
     public void enqueue(Playable playable, Position position) throws IndexOutOfBoundsException, IllegalStateException {
-        int enqueuePosition = getIndexFromPosition(position);
-        playlist.add(playable, enqueuePosition);
-
+        playlistManager.enqueue(playable, position);
+        notifyPlaylistChanged();
         if (!autoPlayNext) {
-            notifyPlaylistChanged();
             onEnqueuedListener.onEnqueued(playable, position);
             return;
         }
-
-        currentPlayableIndex = enqueuePosition;
         autoPlayNext = false;
         play();
         notifyPlaylistChanged();
         onEnqueuedListener.onEnqueued(playable, Position.Current);
     }
 
+    @Deprecated
     public void dequeue(Playable playable, Position position) throws IndexOutOfBoundsException, IllegalStateException {
-        int indexToRemove = getIndexFromPosition(position);
+        //int indexToRemove = getIndexFromPosition(position);
         // only remove if we have the right playable at that index
-        if (playlist.at(indexToRemove).getId() == playable.getId()) {
-            playlist.remove(indexToRemove);
-            notifyPlaylistChanged();
-        }
+        //if (playlist.at(indexToRemove).getId() == playable.getId()) {
+        //    playlist.remove(indexToRemove);
+        //    notifyPlaylistChanged();
+        //}
     }
 
     public void playAt(final float seekValue) throws IndexOutOfBoundsException, IllegalStateException {
-        Playable playable = playlist.at(currentPlayableIndex);
+        final Playable playable = playlistManager.getSelected();
 
         // initialize player if required
         if (!playable.getPlayer().isInitialized()) {
@@ -124,7 +104,7 @@ public class MasterPlayer {
                 @Override
                 public void onPlayerStopped() {
                     // if playlist is empty now
-                    if (currentPlayableIndex == playlist.size() - 1) {
+                    if (playlistManager.getSelectedIndex() == playlistManager.size() - 1) {
                         autoPlayNext = true;
                         return;
                     }
@@ -158,7 +138,7 @@ public class MasterPlayer {
     }
 
     public void pause() throws IndexOutOfBoundsException, IllegalStateException {
-        playlist.at(currentPlayableIndex).pause();
+        playlistManager.getSelected().pause();
     }
 
     public boolean isPlaying() {
@@ -171,16 +151,22 @@ public class MasterPlayer {
     }
 
     public void next() {
-        setCurrentPlayableIndex(currentPlayableIndex + 1);
+        pause();
+        playlistManager.next();
+        notifyPlaylistChanged();
+        play();
     }
 
     public void previous() throws IndexOutOfBoundsException {
-        setCurrentPlayableIndex(currentPlayableIndex - 1);
+        pause();
+        playlistManager.previous();
+        notifyPlaylistChanged();
+        play();
     }
 
     // position is a [0, 1] value
     public void seekTo(float position) throws IndexOutOfBoundsException, IllegalStateException {
-        playlist.at(currentPlayableIndex).seekTo(position);
+        playlistManager.getSelected().seekTo(position);
     }
 
     public float getCurrentPosition() {
@@ -193,31 +179,30 @@ public class MasterPlayer {
     }
 
     public void reorder(int playableIndex, Position position) {
-        Playable playable = playlist.at(playableIndex);
-        remove(playableIndex);
-        playlist.add(playable, getIndexFromPosition(position));
+        playlistManager.reorder(playableIndex, position);
         notifyPlaylistChanged();
     }
 
     public void remove(int playableIndex) {
-        if (playableIndex == currentPlayableIndex) {
-            if (currentPlayableIndex + 1 != playlist.size()) {
-                // if that's not the last one
-                next();
-            } else if (currentPlayableIndex - 1 >= 0) {
-                // if we have a previous one
-                previous();
-            } else {
-                pause();
-                autoPlayNext = true;
-            }
-        }
+        //if (playableIndex == currentPlayableIndex) {
+        //    if (currentPlayableIndex + 1 != playlist.size()) {
+        //        // if that's not the last one
+        //        next();
+        //    } else if (currentPlayableIndex - 1 >= 0) {
+        //        // if we have a previous one
+        //        previous();
+        //    } else {
+        //        pause();
+        //        autoPlayNext = true;
+        //    }
+        //}
 
-        playlist.remove(playableIndex);
+        //playlist.remove(playableIndex);
         // update playable index if necessary
-        if (playableIndex < currentPlayableIndex) {
-            currentPlayableIndex--;
-        }
+        //if (playableIndex < currentPlayableIndex) {
+        //    currentPlayableIndex--;
+        //}
+        playlistManager.remove(playlistManager.getSelectedIndex());
         notifyPlaylistChanged();
     }
 

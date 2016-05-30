@@ -79,7 +79,7 @@ public class PlaylistFragment extends Fragment {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                 try {
-                    Playable playable = MasterPlayer.getInstance().getPlaylist().at((int)id);
+                    Playable playable = MasterPlayer.getInstance().getPlaylist().get((int)id);
                     PlayableDialogFragment fragment = new PlayableDialogFragment();
                     fragment.initForPlaylist(getContext(), playable, position);
                     fragment.show(getActivity().getSupportFragmentManager(), "Enqueue");

@@ -206,7 +206,7 @@ public class PlayerControlFragment extends Fragment {
         text.setText("");
         // update
         try {
-            Playable playable = playlist.at(playableIndex);
+            Playable playable = playlist.get(playableIndex);
             text.setText(playable.title());
             ThumbnailManager.getInstance().retreive(playable.getThumbnailURL(), new ThumbnailManager.BitmapAvailableListener() {
                 @Override

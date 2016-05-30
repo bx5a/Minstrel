@@ -203,10 +203,10 @@ public class PlayerControlBarFragment extends Fragment {
         nextSongText.setText("");
 
         if (currentSongIndex < playlist.size()) {
-            currentSongText.setText(playlist.at(currentSongIndex).title());
+            currentSongText.setText(playlist.get(currentSongIndex).title());
         }
         if (currentSongIndex + 1 < playlist.size()) {
-            nextSongText.setText(playlist.at(currentSongIndex + 1).title());
+            nextSongText.setText(playlist.get(currentSongIndex + 1).title());
         }
     }
 }

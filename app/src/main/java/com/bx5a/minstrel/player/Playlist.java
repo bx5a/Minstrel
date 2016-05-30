@@ -17,31 +17,27 @@ public class Playlist {
         return list;
     }
 
-    // Adds at last position
-    public void add(Playable obj) {
-        list.add(obj);
-    }
-
-    // similar to ArrayList add function
-    public void add(Playable obj, int index) throws IndexOutOfBoundsException {
-        if (index < 0 || index > list.size()) {
-            throw new IndexOutOfBoundsException("Can't insert at index " + index + " of playlist");
-        }
+    public void enqueue(Playable obj, int index) throws IndexOutOfBoundsException {
         list.add(index, obj);
     }
 
     public void remove(int index) throws IndexOutOfBoundsException {
-        if (index < 0 || index >= list.size()) {
-            throw new IndexOutOfBoundsException("Can't get index " + index + " of playlist");
-        }
         list.remove(index);
     }
     
-    public Playable at(int index) throws IndexOutOfBoundsException {
-        if (index < 0 || index >= list.size()) {
-            throw new IndexOutOfBoundsException("Can't get index " + index + " of playlist");
-        }
+    public Playable get(int index) throws IndexOutOfBoundsException {
         return list.get(index);
+    }
+
+    public void reorder(int sourceIndex, int destinationIndex) throws IndexOutOfBoundsException {
+        int afterRemoveDestinationIndex = destinationIndex;
+        if (sourceIndex < destinationIndex) {
+            afterRemoveDestinationIndex--;
+        }
+
+        Playable playable = list.get(sourceIndex);
+        list.remove(sourceIndex);
+        list.add(afterRemoveDestinationIndex, playable);
     }
 
     public int size() {
