@@ -240,7 +240,9 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
                     @Override
                     public void onClick(View v) {
                         MasterPlayer.getInstance().remove(index);
-                        MasterPlayer.getInstance().setCurrentPlayableIndex(selectedIndex);
+                        if (MasterPlayer.getInstance().getCurrentPlayableIndex() != selectedIndex) {
+                            MasterPlayer.getInstance().setCurrentPlayableIndex(selectedIndex);
+                        }
                         undoDialogFragment.dismiss();
                     }
                 });

@@ -71,6 +71,10 @@ public class PlaylistManager {
 
     public void remove(int index) throws IndexOutOfBoundsException {
         playlist.remove(index);
+        if (index < selectedIndex) {
+            move(selectedIndex - 1);
+        }
+
         if (index != selectedIndex) {
             return;
         }
@@ -87,8 +91,9 @@ public class PlaylistManager {
 
         // convert destination from enqueue index to get index
         destinationIndex = Math.max(destinationIndex - 1, 0);
-
-        if (sourceIndex == selectedIndex) {
+        if (sourceIndex < selectedIndex) {
+            move(selectedIndex - 1);
+        } else if (sourceIndex == selectedIndex) {
             move(destinationIndex);
         } else if (destinationIndex == selectedIndex) {
             move(selectedIndex - 1);
