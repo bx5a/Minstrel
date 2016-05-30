@@ -44,13 +44,16 @@ public class YoutubeSearchEngine {
                 }).setApplicationName(context.getString(R.string.app_name)).build();
     }
 
-    private List<String> searchVideoIds(String keywords) throws IOException {
+    private YouTube.Search.List initIdQuery() throws IOException {
         YouTube.Search.List query = youtube.search().list("id");
         query.setKey(DeveloperKey.DEVELOPER_KEY);
         query.setType("video");
         query.setFields("items(id/videoId)");
-        query.setQ(keywords);
         query.setMaxResults(kMaxResultNumber);
+        return query;
+    }
+
+    private List<String> executeIdQuery(YouTube.Search.List query) throws IOException {
         SearchListResponse response = query.execute();
 
         List<String> ids = new ArrayList<>();
@@ -58,6 +61,18 @@ public class YoutubeSearchEngine {
             ids.add(result.getId().getVideoId());
         }
         return ids;
+    }
+
+    private List<String> searchVideoIds(String keywords) throws IOException {
+        YouTube.Search.List query = initIdQuery();
+        query.setQ(keywords);
+        return executeIdQuery(query);
+    }
+
+    public List<String> relatedVideoIds(YoutubeVideo video) throws IOException {
+        YouTube.Search.List query = initIdQuery();
+        query.setRelatedToVideoId(video.getId());
+        return executeIdQuery(query);
     }
 
     public List<YoutubeVideo> getVideoDetails(List<String> videoIds) throws IOException {
