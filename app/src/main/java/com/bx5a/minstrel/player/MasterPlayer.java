@@ -78,6 +78,9 @@ public class MasterPlayer {
     }
 
     public void playAt(final float seekValue) throws IndexOutOfBoundsException, IllegalStateException {
+        autoPlayNext = false;
+        playlistFinished = false;
+
         final Playable playable = playlistManager.getSelected();
 
         // initialize player if required
