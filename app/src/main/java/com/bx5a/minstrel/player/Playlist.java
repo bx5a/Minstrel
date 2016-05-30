@@ -6,10 +6,21 @@ import java.util.ArrayList;
  * Created by guillaume on 16/04/2016.
  */
 public class Playlist {
+    public interface EventListener {
+        void onChanged();
+    }
+
     private ArrayList<Playable> list;
+    private EventListener eventListener;
 
     Playlist() {
         list = new ArrayList<>();
+        eventListener = new EventListener() {
+            @Override
+            public void onChanged() {
+
+            }
+        };
     }
 
     public ArrayList<Playable> getList() {
@@ -18,10 +29,12 @@ public class Playlist {
 
     public void enqueue(Playable obj, int index) throws IndexOutOfBoundsException {
         list.add(index, obj);
+        eventListener.onChanged();
     }
 
     public void remove(int index) throws IndexOutOfBoundsException {
         list.remove(index);
+        eventListener.onChanged();
     }
     
     public Playable get(int index) throws IndexOutOfBoundsException {
@@ -37,9 +50,14 @@ public class Playlist {
         Playable playable = list.get(sourceIndex);
         list.remove(sourceIndex);
         list.add(afterRemoveDestinationIndex, playable);
+        eventListener.onChanged();
     }
 
     public int size() {
         return list.size();
+    }
+
+    public void setEventListener(EventListener eventListener) {
+        this.eventListener = eventListener;
     }
 }

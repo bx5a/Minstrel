@@ -11,17 +11,27 @@ public class PlaylistManager {
     public interface EventListener {
         void onEnqueued(int enqueuedIndex, int selectedIndex);
     }
+    public interface SelectedIndexEventListener {
+        void onChanged();
+    }
 
     private Playlist playlist;
     private int selectedIndex;
     private EventListener eventListener;
+    private SelectedIndexEventListener selectedIndexEventListener;
 
     public PlaylistManager(Playlist playlist) {
         this.playlist = playlist;
         this.selectedIndex = 0;
         this.eventListener = new EventListener() {
             @Override
-            public void onEnqueued(int enqueuedInde, int selectedIndex) {
+            public void onEnqueued(int enqueuedIndex, int selectedIndex) {
+
+            }
+        };
+        this.selectedIndexEventListener = new SelectedIndexEventListener() {
+            @Override
+            public void onChanged() {
 
             }
         };
@@ -54,7 +64,7 @@ public class PlaylistManager {
         int index = getValidEnqueueIndexFromPosition(position);
         playlist.enqueue(playable, index);
         if (index <= selectedIndex) {
-            selectedIndex = Math.min(index + 1, size() - 1);
+            move(Math.min(index + 1, size() - 1));
         }
         eventListener.onEnqueued(index, selectedIndex);
     }
@@ -64,20 +74,24 @@ public class PlaylistManager {
         if (index != selectedIndex) {
             return;
         }
-        selectedIndex = getValidGetIndexFromPosition(Position.Next);
+        move(getValidGetIndexFromPosition(Position.Next));
     }
 
     public void reorder(int sourceIndex, Position destinationPosition) throws IndexOutOfBoundsException {
         int destinationIndex = getValidEnqueueIndexFromPosition(destinationPosition);
+        if (sourceIndex == destinationIndex) {
+            return;
+        }
+
         playlist.reorder(sourceIndex, destinationIndex);
 
         // convert destination from enqueue index to get index
         destinationIndex = Math.max(destinationIndex - 1, 0);
 
         if (sourceIndex == selectedIndex) {
-            selectedIndex = destinationIndex;
+            move(destinationIndex);
         } else if (destinationIndex == selectedIndex) {
-            selectedIndex--;
+            move(selectedIndex - 1);
         }
     }
 
@@ -102,6 +116,7 @@ public class PlaylistManager {
             throw new IndexOutOfBoundsException("index " + String.valueOf(index) + " invalid");
         }
         selectedIndex = index;
+        selectedIndexEventListener.onChanged();
     }
 
     public Playable getSelected() {
@@ -121,5 +136,9 @@ public class PlaylistManager {
 
     public void setEventListener(EventListener eventListener) {
         this.eventListener = eventListener;
+    }
+
+    public void setSelectedIndexEventListener(SelectedIndexEventListener selectedIndexEventListener) {
+        this.selectedIndexEventListener = selectedIndexEventListener;
     }
 }

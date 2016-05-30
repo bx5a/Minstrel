@@ -23,6 +23,20 @@ public class MasterPlayer {
         playlistManager = new PlaylistManager(new Playlist());
         players = new ArrayList<>();
         listeners = new ArrayList<>();
+
+        playlistManager.getPlaylist().setEventListener(new Playlist.EventListener() {
+            @Override
+            public void onChanged() {
+                notifyPlaylistChanged();
+            }
+        });
+        playlistManager.setSelectedIndexEventListener(new PlaylistManager.SelectedIndexEventListener() {
+            @Override
+            public void onChanged() {
+                notifyPlaylistChanged();
+            }
+        });
+
         autoPlayNext = true;
     }
 
@@ -37,7 +51,6 @@ public class MasterPlayer {
     public void setCurrentPlayableIndex(int currentPlayableIndex) throws IndexOutOfBoundsException, IllegalStateException {
         pause();
         playlistManager.move(currentPlayableIndex);
-        notifyPlaylistChanged();
         play();
     }
 
@@ -47,13 +60,11 @@ public class MasterPlayer {
 
     public void enqueue(Playable playable, Position position) throws IndexOutOfBoundsException, IllegalStateException {
         playlistManager.enqueue(playable, position);
-        notifyPlaylistChanged();
         if (!autoPlayNext) {
             return;
         }
         autoPlayNext = false;
         play();
-        notifyPlaylistChanged();
     }
 
     public void playAt(final float seekValue) throws IndexOutOfBoundsException, IllegalStateException {
@@ -129,14 +140,12 @@ public class MasterPlayer {
     public void next() {
         pause();
         playlistManager.next();
-        notifyPlaylistChanged();
         play();
     }
 
     public void previous() throws IndexOutOfBoundsException {
         pause();
         playlistManager.previous();
-        notifyPlaylistChanged();
         play();
     }
 
@@ -156,12 +165,10 @@ public class MasterPlayer {
 
     public void reorder(int playableIndex, Position position) {
         playlistManager.reorder(playableIndex, position);
-        notifyPlaylistChanged();
     }
 
     public void remove(int playableIndex) {
         playlistManager.remove(playableIndex);
-        notifyPlaylistChanged();
     }
 
     public void registerPlayer(Player player) {
