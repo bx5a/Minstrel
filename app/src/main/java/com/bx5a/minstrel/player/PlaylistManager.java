@@ -93,7 +93,7 @@ public class PlaylistManager {
         playlist.reorder(sourceIndex, destinationIndex);
 
         // convert destination from enqueue index to get index
-        destinationIndex = Math.max(destinationIndex - 1, 0);
+        destinationIndex = Math.min(destinationIndex, size() - 1);
         if (sourceIndex < selectedIndex) {
             move(selectedIndex - 1);
         } else if (sourceIndex == selectedIndex) {
