@@ -1,6 +1,9 @@
 package com.bx5a.minstrel.player;
 
+import android.util.Log;
+
 import java.security.InvalidParameterException;
+import java.util.List;
 
 /**
  * Created by guillaume on 30/05/2016.

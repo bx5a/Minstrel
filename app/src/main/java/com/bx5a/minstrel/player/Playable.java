@@ -3,6 +3,7 @@ package com.bx5a.minstrel.player;
 import android.content.Context;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Created by guillaume on 25/03/2016.
@@ -32,4 +33,9 @@ public interface Playable {
     String duration();
 
     Player getPlayer();
+
+    interface RelatedAvailableListener {
+        void onRelatedAvailable(List<Playable> related);
+    }
+    void asyncGetRelated(RelatedAvailableListener eventListener);
 }

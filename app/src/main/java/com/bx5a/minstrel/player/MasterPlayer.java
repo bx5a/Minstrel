@@ -3,6 +3,7 @@ package com.bx5a.minstrel.player;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.List;
 
 // Singleton
 public class MasterPlayer {
@@ -77,6 +78,19 @@ public class MasterPlayer {
         play();
     }
 
+    private void enqueueRelated(Playable playable, final Position position) {
+        playable.asyncGetRelated(new Playable.RelatedAvailableListener() {
+            @Override
+            public void onRelatedAvailable(List<Playable> related) {
+                if (related.size() == 0) {
+                    Log.w("PlaylistManager", "No related found can't auto enqueue");
+                    return;
+                }
+                enqueue(related.get(0), position);
+            }
+        });
+    }
+
     public void playAt(final float seekValue) throws IndexOutOfBoundsException, IllegalStateException {
         autoPlayNext = false;
         playlistFinished = false;
@@ -107,6 +121,7 @@ public class MasterPlayer {
                     if (playlistManager.getSelectedIndex() == playlistManager.size() - 1) {
                         autoPlayNext = true;
                         playlistFinished = true;
+                        enqueueRelated(playlistManager.getSelected(), Position.Next);
                         return;
                     }
                     try {

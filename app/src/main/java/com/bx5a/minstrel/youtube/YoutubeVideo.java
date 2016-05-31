@@ -1,5 +1,6 @@
 package com.bx5a.minstrel.youtube;
 
+import android.os.AsyncTask;
 import android.util.Log;
 
 import com.bx5a.minstrel.player.Playable;
@@ -118,6 +119,11 @@ public class YoutubeVideo implements Playable {
         return YoutubePlayer.getInstance();
     }
 
+    @Override
+    public void asyncGetRelated(RelatedAvailableListener eventListener) {
+        new AsyncGetRelated(eventListener).execute(this);
+    }
+
     public String getDuration() {
         return duration;
     }
@@ -148,5 +154,42 @@ public class YoutubeVideo implements Playable {
 
     public void setViewCount(BigInteger viewCount) {
         this.viewCount = viewCount;
+    }
+
+    private class AsyncGetRelated extends AsyncTask<YoutubeVideo, Integer, List<Playable>> {
+        private RelatedAvailableListener eventListener;
+
+        public AsyncGetRelated(RelatedAvailableListener eventListener) {
+            this.eventListener = eventListener;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected List<Playable> doInBackground(YoutubeVideo... params) {
+            try {
+                List<String> relatedIds =
+                        YoutubeSearchEngine.getInstance().relatedVideoIds(params[0]);
+                ArrayList<Playable> result = new ArrayList<>();
+                for (String id : relatedIds) {
+                    YoutubeVideo related = new YoutubeVideo();
+                    related.initFromId(id);
+                    result.add(related);
+                }
+                return result;
+            } catch (IOException e) {
+                Log.w("YoutubeVideo", "Couldn't retrieve related: " + e.getMessage());
+                return new ArrayList<>();
+            }
+        }
+
+        @Override
+        protected void onPostExecute(List<Playable> relatedList) {
+            super.onPostExecute(relatedList);
+            eventListener.onRelatedAvailable(relatedList);
+        }
     }
 }
