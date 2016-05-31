@@ -9,7 +9,7 @@ import java.io.IOException;
  */
 public interface Playable {
     // Let you initialize only for its id
-    void initFromId(String id, Context context) throws IOException;
+    void initFromId(String id) throws IOException;
 
     void load() throws IllegalStateException;
 

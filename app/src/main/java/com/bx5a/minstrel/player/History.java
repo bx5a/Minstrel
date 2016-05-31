@@ -54,7 +54,7 @@ public class History {
             try {
                 Class<?> className = Class.forName(stringClass);
                 Playable playable = (Playable) className.newInstance();
-                playable.initFromId(playableId, context);
+                playable.initFromId(playableId);
                 playableList.add(playable);
             } catch (ClassNotFoundException e) {
                 Log.i("History", "Class not found : " + stringClass);

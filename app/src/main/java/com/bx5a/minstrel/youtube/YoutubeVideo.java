@@ -1,6 +1,6 @@
 package com.bx5a.minstrel.youtube;
 
-import android.content.Context;
+import android.util.Log;
 
 import com.bx5a.minstrel.player.Playable;
 import com.bx5a.minstrel.player.Player;
@@ -22,9 +22,9 @@ public class YoutubeVideo implements Playable {
     private BigInteger viewCount;
     private String duration;
 
-    public static ArrayList<YoutubeVideo> search(Context context, String keywords) {
+    public static ArrayList<YoutubeVideo> search(String keywords) {
         // TODO: should search engine be singleton ?
-        YoutubeSearchEngine youtubeSearchEngine = new YoutubeSearchEngine(context);
+        YoutubeSearchEngine youtubeSearchEngine = YoutubeSearchEngine.getInstance();
         List<YoutubeVideo> videos = youtubeSearchEngine.search(keywords);
         if (videos == null) {
             return null;
@@ -38,10 +38,10 @@ public class YoutubeVideo implements Playable {
     }
 
     @Override
-    public void initFromId(String id, Context context) throws IOException {
+    public void initFromId(String id) throws IOException {
         ArrayList<String> ids = new ArrayList<>();
         ids.add(id);
-        YoutubeSearchEngine searchEngine = new YoutubeSearchEngine(context);
+        YoutubeSearchEngine searchEngine = YoutubeSearchEngine.getInstance();
         List<YoutubeVideo> videos = searchEngine.getVideoDetails(ids);
         if (videos.size() != 1) {
             throw new IOException("Couldn't initialize from id: search engine error");

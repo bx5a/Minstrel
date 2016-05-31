@@ -170,7 +170,7 @@ public class SearchFragment extends Fragment {
             if (Thread.currentThread().isInterrupted()) {
                 return;
             }
-            videos = YoutubeVideo.search(search.getContext(), keywords);
+            videos = YoutubeVideo.search(keywords);
 
             // notify on main thread
             if (Thread.currentThread().isInterrupted()) {
