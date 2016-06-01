@@ -24,11 +24,10 @@ import android.widget.ImageView;
 import com.bx5a.minstrel.legacy.SoftKeyboardHandledLayout;
 import com.bx5a.minstrel.player.History;
 import com.bx5a.minstrel.player.MasterPlayer;
-import com.bx5a.minstrel.player.Playable;
 import com.bx5a.minstrel.player.PlaylistManager;
-import com.bx5a.minstrel.player.Position;
 import com.bx5a.minstrel.utils.LowBrightnessOnIdleActivity;
 import com.bx5a.minstrel.widget.AboutFragment;
+import com.bx5a.minstrel.widget.GeneralPreferenceFragment;
 import com.bx5a.minstrel.widget.HistoryFragment;
 import com.bx5a.minstrel.widget.ImageAndTextButton;
 import com.bx5a.minstrel.widget.PlayerControlBarFragment;
@@ -47,6 +46,7 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
     private ImageAndTextButton playlistButton;
     private ImageAndTextButton historyButton;
     private ImageAndTextButton aboutButton;
+    private ImageAndTextButton preferenceButton;
     private PlayerControlBarFragment playerControls;
     private UndoDialogFragment undoDialogFragment;
     private final int kAutoDismissMilliseconds = 2000;
@@ -57,6 +57,7 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
     private HistoryFragment historyFragment;
     private PlayerControlFragment playerControlFragment;
     private AboutFragment aboutFragment;
+    private GeneralPreferenceFragment generalPreferenceFragment;
 
     private final String kWasPlayingKey = "wasPlaying";
     private final String kPositionAtDestroyKey = "seekPosition";
@@ -71,6 +72,7 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
         playlistButton = (ImageAndTextButton) findViewById(R.id.activityMain_playlistButton);
         historyButton = (ImageAndTextButton) findViewById(R.id.activityMain_historyButton);
         aboutButton = (ImageAndTextButton) findViewById(R.id.activityMain_aboutButton);
+        preferenceButton = (ImageAndTextButton) findViewById(R.id.activityMain_preferenceButton);
         playerControls = (PlayerControlBarFragment) getSupportFragmentManager().findFragmentById(R.id.activityMain_playerControls);
 
         initBackground();
@@ -181,6 +183,7 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
             }
         });
         aboutFragment = new AboutFragment();
+        generalPreferenceFragment = new GeneralPreferenceFragment();
     }
 
     private void initHistory() {
@@ -218,6 +221,12 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
             @Override
             public void onClick(View v) {
                 displayAbout();
+            }
+        });
+        preferenceButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                displayPreference();
             }
         });
     }
@@ -325,6 +334,11 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
 
     private void displayAbout() {
         displayFragment(aboutFragment);
+        closeSidePanel();
+    }
+
+    private void displayPreference() {
+        displayFragment(generalPreferenceFragment);
         closeSidePanel();
     }
 }

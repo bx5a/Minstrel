@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="Interface">
+        <CheckBoxPreference
+            android:persistent="true"
+            android:summary="Enable brightness reduction when inactivity is detected"
+            android:title="Manage Brightness"
+            android:defaultValue="true"
+            android:key="brightness_management"/>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Playlist">
+        <CheckBoxPreference
+            android:persistent="true"
+            android:summary="Enable automatic addition of a related song to playlist when the last song finishes"
+            android:title="Never Ending Playlist"
+            android:defaultValue="true"
+            android:key="auto_enqueue"/>
+    </PreferenceCategory>
+</PreferenceScreen>
