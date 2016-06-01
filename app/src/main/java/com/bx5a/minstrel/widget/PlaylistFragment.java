@@ -58,6 +58,11 @@ public class PlaylistFragment extends Fragment {
             public void onCurrentTimeChange() {
 
             }
+
+            @Override
+            public void onPlaylistFinish() {
+
+            }
         };
         MasterPlayer.getInstance().addMasterPlayerEventListener(eventListener);
     }

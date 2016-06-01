@@ -71,6 +71,11 @@ public class PlayerControlBarFragment extends Fragment {
             public void onCurrentTimeChange() {
                 updateSeekBar();
             }
+
+            @Override
+            public void onPlaylistFinish() {
+
+            }
         };
         MasterPlayer.getInstance().addMasterPlayerEventListener(eventListener);
 

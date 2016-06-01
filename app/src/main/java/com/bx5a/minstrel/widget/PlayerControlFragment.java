@@ -179,6 +179,11 @@ public class PlayerControlFragment extends Fragment {
             public void onCurrentTimeChange() {
 
             }
+
+            @Override
+            public void onPlaylistFinish() {
+
+            }
         };
         MasterPlayer.getInstance().addMasterPlayerEventListener(playerEventListener);
     }

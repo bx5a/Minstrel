@@ -78,7 +78,7 @@ public class MasterPlayer {
         play();
     }
 
-    private void enqueueRelated(Playable playable, final Position position) {
+    public void enqueueRelated(Playable playable, final Position position) {
         playable.asyncGetRelated(new Playable.RelatedAvailableListener() {
             @Override
             public void onRelatedAvailable(List<Playable> related) {
@@ -120,8 +120,7 @@ public class MasterPlayer {
                     // if playlist is empty now
                     if (playlistManager.getSelectedIndex() == playlistManager.size() - 1) {
                         autoPlayNext = true;
-                        playlistFinished = true;
-                        enqueueRelated(playlistManager.getSelected(), Position.Next);
+                        notifyPlaylistFinished();
                         return;
                     }
                     try {
@@ -237,6 +236,13 @@ public class MasterPlayer {
     public void notifyCurrentTimeChanged() {
         for (MasterPlayerEventListener listener : listeners) {
             listener.onCurrentTimeChange();
+        }
+    }
+
+    public void notifyPlaylistFinished() {
+        playlistFinished = true;
+        for (MasterPlayerEventListener listener : listeners) {
+            listener.onPlaylistFinish();
         }
     }
 }

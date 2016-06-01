@@ -6,11 +6,10 @@ import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-
-import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.Gravity;
@@ -24,7 +23,10 @@ import android.widget.ImageView;
 import com.bx5a.minstrel.legacy.SoftKeyboardHandledLayout;
 import com.bx5a.minstrel.player.History;
 import com.bx5a.minstrel.player.MasterPlayer;
+import com.bx5a.minstrel.player.MasterPlayerEventListener;
+import com.bx5a.minstrel.player.Playlist;
 import com.bx5a.minstrel.player.PlaylistManager;
+import com.bx5a.minstrel.player.Position;
 import com.bx5a.minstrel.utils.LowBrightnessOnIdleActivity;
 import com.bx5a.minstrel.widget.AboutFragment;
 import com.bx5a.minstrel.widget.GeneralPreferenceFragment;
@@ -38,6 +40,8 @@ import com.bx5a.minstrel.widget.UndoDialogFragment;
 import com.bx5a.minstrel.youtube.YoutubePlayer;
 import com.bx5a.minstrel.youtube.YoutubeSearchEngine;
 import com.google.android.youtube.player.YouTubePlayerSupportFragment;
+
+import static android.support.v7.preference.PreferenceManager.getDefaultSharedPreferences;
 
 public class MainActivity extends LowBrightnessOnIdleActivity {
 
@@ -82,6 +86,7 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
         initPlayerControl();
         initUndoDialog();
         initFragments();
+        initMasterPlayerBehavior();
 
         displayHistory();
 
@@ -286,6 +291,37 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
                         undoDialogFragment.dismiss();
                     }
                 }, kAutoDismissMilliseconds);
+            }
+        });
+    }
+
+    private void initMasterPlayerBehavior() {
+        final Context context = getApplicationContext();
+        MasterPlayer.getInstance().addMasterPlayerEventListener(new MasterPlayerEventListener() {
+            @Override
+            public void onPlayStateChange() {
+
+            }
+
+            @Override
+            public void onPlaylistChange() {
+
+            }
+
+            @Override
+            public void onCurrentTimeChange() {
+
+            }
+
+            @Override
+            public void onPlaylistFinish() {
+                // if the preferences says not to auto_enqueue
+                if (!getDefaultSharedPreferences(context).getBoolean("auto_enqueue", true)) {
+                    return;
+                }
+                Playlist currentPlaylist = MasterPlayer.getInstance().getPlaylist();
+                MasterPlayer.getInstance().enqueueRelated(
+                        currentPlaylist.get(currentPlaylist.size() - 1), Position.Next);
             }
         });
     }

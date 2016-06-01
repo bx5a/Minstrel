@@ -7,4 +7,5 @@ public interface MasterPlayerEventListener {
     void onPlayStateChange();
     void onPlaylistChange();
     void onCurrentTimeChange();
+    void onPlaylistFinish();
 }
