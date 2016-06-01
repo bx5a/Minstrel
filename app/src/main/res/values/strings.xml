@@ -22,6 +22,10 @@
     <string name="about_text">Minstrel is a free and open source application hosted on GitHub. For any feature request or suggestion, feel free to fill a issue on the repository page.</string>
     <string name="to_repository">Open on GitHub</string>
     <string name="parameters">Preferences</string>
-    <string name="brightnessParameter">Enable brightness management</string>
-    <string name="enqueueRelatedParameter">Add related song when playlist finishes</string>
+    <string name="playlist_preferences">Interface</string>
+    <string name="never_ending_playlist_summary">Enable automatic addition of a related song to playlist when the last song finishes</string>
+    <string name="never_ending_playlist_title">Never Ending Playlist</string>
+    <string name="interface_preferences">Interface</string>
+    <string name="manage_brightness_summary">Enable brightness reduction when inactivity is detected</string>
+    <string name="manage_brightness_title">Manage Brightnesss</string>
 </resources>
