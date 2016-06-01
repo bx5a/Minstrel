@@ -28,6 +28,7 @@ import com.bx5a.minstrel.player.Playable;
 import com.bx5a.minstrel.player.PlaylistManager;
 import com.bx5a.minstrel.player.Position;
 import com.bx5a.minstrel.utils.LowBrightnessOnIdleActivity;
+import com.bx5a.minstrel.widget.AboutFragment;
 import com.bx5a.minstrel.widget.HistoryFragment;
 import com.bx5a.minstrel.widget.ImageAndTextButton;
 import com.bx5a.minstrel.widget.PlayerControlBarFragment;
@@ -45,6 +46,7 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
     private ImageAndTextButton searchButton;
     private ImageAndTextButton playlistButton;
     private ImageAndTextButton historyButton;
+    private ImageAndTextButton aboutButton;
     private PlayerControlBarFragment playerControls;
     private UndoDialogFragment undoDialogFragment;
     private final int kAutoDismissMilliseconds = 2000;
@@ -54,6 +56,7 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
     private SearchFragment searchFragment;
     private HistoryFragment historyFragment;
     private PlayerControlFragment playerControlFragment;
+    private AboutFragment aboutFragment;
 
     private final String kWasPlayingKey = "wasPlaying";
     private final String kPositionAtDestroyKey = "seekPosition";
@@ -67,6 +70,7 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
         searchButton = (ImageAndTextButton) findViewById(R.id.activityMain_searchButton);
         playlistButton = (ImageAndTextButton) findViewById(R.id.activityMain_playlistButton);
         historyButton = (ImageAndTextButton) findViewById(R.id.activityMain_historyButton);
+        aboutButton = (ImageAndTextButton) findViewById(R.id.activityMain_aboutButton);
         playerControls = (PlayerControlBarFragment) getSupportFragmentManager().findFragmentById(R.id.activityMain_playerControls);
 
         initBackground();
@@ -176,6 +180,7 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
                 displayPlaylist();
             }
         });
+        aboutFragment = new AboutFragment();
     }
 
     private void initHistory() {
@@ -207,6 +212,12 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
             @Override
             public void onClick(View v) {
                 displayHistory();
+            }
+        });
+        aboutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                displayAbout();
             }
         });
     }
@@ -309,6 +320,11 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
 
     private void displayPlayerControls() {
         displayFragment(playerControlFragment);
+        closeSidePanel();
+    }
+
+    private void displayAbout() {
+        displayFragment(aboutFragment);
         closeSidePanel();
     }
 }

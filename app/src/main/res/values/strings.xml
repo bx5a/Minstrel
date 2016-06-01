@@ -18,4 +18,7 @@
     <string name="playable_next">Move next</string>
     <string name="playable_last">Move last</string>
     <string name="playable_remove">Remove</string>
+    <string name="about">About</string>
+    <string name="about_text">Minstrel is a free and open source application hosted on GitHub. For any feature request or suggestion, feel free to fill a issue on the repository page.</string>
+    <string name="to_repository">Open on GitHub</string>
 </resources>
