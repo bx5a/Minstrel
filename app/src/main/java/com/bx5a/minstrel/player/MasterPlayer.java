@@ -24,7 +24,10 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
-// Singleton
+/**
+ * Singleton representing the main audio player
+ * That element lets you enqueue a song, play, pause ...
+ */
 public class MasterPlayer {
     private static MasterPlayer instance;
     private PlaylistManager playlistManager;
@@ -51,6 +54,7 @@ public class MasterPlayer {
                 notifyPlaylistChanged();
             }
         });
+
         playlistManager.setSelectedIndexEventListener(new PlaylistManager.SelectedIndexEventListener() {
             @Override
             public void onChanged() {
@@ -70,7 +74,8 @@ public class MasterPlayer {
         playlistManager.setEventListener(eventListener);
     }
 
-    public void setCurrentPlayableIndex(int currentPlayableIndex) throws IndexOutOfBoundsException, IllegalStateException {
+    public void setCurrentPlayableIndex(int currentPlayableIndex)
+            throws IndexOutOfBoundsException, IllegalStateException {
         pause();
         playlistManager.move(currentPlayableIndex);
         play();
@@ -80,7 +85,8 @@ public class MasterPlayer {
         return playlistManager.getSelectedIndex();
     }
 
-    public void enqueue(Playable playable, Position position) throws IndexOutOfBoundsException, IllegalStateException {
+    public void enqueue(Playable playable, Position position)
+            throws IndexOutOfBoundsException, IllegalStateException {
         playlistManager.enqueue(playable, position);
 
         if (!autoPlayNext) {
@@ -97,6 +103,12 @@ public class MasterPlayer {
         play();
     }
 
+    /**
+     * Enqueue playable's most related song
+     * @note That function is asynchronous
+     * @param playable
+     * @param position
+     */
     public void enqueueRelated(Playable playable, final Position position) {
         playable.asyncGetRelated(new Playable.RelatedAvailableListener() {
             @Override

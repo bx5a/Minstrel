@@ -42,6 +42,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+/**
+ * Fragment for the search interface
+ */
 public class SearchFragment extends Fragment {
     private ListView resultList;
     private SearchView searchView;

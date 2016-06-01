@@ -36,7 +36,12 @@ public interface Playable {
 
     String title();
 
-    // position is a value [0, 1]. 0 being the beginning of the song and 1 the end
+    /**
+     * Seek to the given position
+     * @param position is value in the [0, 1] interval. 0 representing the beginning and 1 the end
+     *                 of the song
+     * @throws IllegalStateException
+     */
     void seekTo(float position) throws IllegalStateException;
 
     String getId();
@@ -51,5 +56,10 @@ public interface Playable {
     interface RelatedAvailableListener {
         void onRelatedAvailable(List<Playable> related);
     }
+
+    /**
+     * Asynchronously get a list of related songs
+     * @param eventListener
+     */
     void asyncGetRelated(RelatedAvailableListener eventListener);
 }

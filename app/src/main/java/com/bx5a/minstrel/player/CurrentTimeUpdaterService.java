@@ -24,7 +24,12 @@ import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
 
+/**
+ * Service that force the master player to notify that the current position in song is changing
+ */
 public class CurrentTimeUpdaterService extends IntentService {
+    private int REQUEST_INTERVAL_MILLISECOND = 1000;  // one second
+
     public CurrentTimeUpdaterService() {
         super("CurrentTimeUpdaterService");
     }
@@ -45,7 +50,7 @@ public class CurrentTimeUpdaterService extends IntentService {
                 }
             });
             try {
-                Thread.sleep(1000);  // every seconds is enough
+                Thread.sleep(REQUEST_INTERVAL_MILLISECOND);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

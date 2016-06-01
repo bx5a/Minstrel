@@ -34,6 +34,9 @@ import com.bx5a.minstrel.youtube.YoutubeVideo;
 
 import java.util.List;
 
+/**
+ * Adapter used by the search fragment
+ */
 public class SearchItemAdapter extends ArrayAdapter<YoutubeVideo> {
 
     Context context;

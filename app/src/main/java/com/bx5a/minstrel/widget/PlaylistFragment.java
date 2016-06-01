@@ -34,6 +34,9 @@ import com.bx5a.minstrel.player.MasterPlayer;
 import com.bx5a.minstrel.player.Playable;
 import com.bx5a.minstrel.player.Playlist;
 
+/**
+ * Fragment representing the current playlist
+ */
 public class PlaylistFragment extends Fragment {
     private ListView playlistView;
     private MasterPlayerEventListener eventListener;

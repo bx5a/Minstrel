@@ -40,6 +40,9 @@ import com.bx5a.minstrel.player.Playable;
 import com.bx5a.minstrel.player.Playlist;
 import com.bx5a.minstrel.utils.ThumbnailManager;
 
+/**
+ * Fragment representing advanced player controls
+ */
 public class PlayerControlFragment extends Fragment {
     private ImageView previousThumbnail;
     private ImageView currentThumbnail;

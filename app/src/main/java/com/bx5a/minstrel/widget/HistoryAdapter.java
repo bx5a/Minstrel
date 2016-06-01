@@ -34,6 +34,9 @@ import com.bx5a.minstrel.utils.ThumbnailManager;
 
 import java.util.List;
 
+/**
+ * Adapter used in the History fragment
+ */
 public class HistoryAdapter extends ArrayAdapter<Playable> {
     private Context context;
 

@@ -19,6 +19,9 @@
 
 package com.bx5a.minstrel.player;
 
+/**
+ * Generic definition of an audio player. Should be implemented for each streaming service
+ */
 public interface Player {
     interface OnInitializedListener {
         void onInitializationSuccess();
@@ -33,7 +36,11 @@ public interface Player {
 
     void play();
     void pause();
-    // position is a [0, 1] value
+
+    /**
+     * Seek on the currently playing song.
+     * @param position is a value in the [0, 1] interval
+     */
     void seekTo(float position);
     float getCurrentPosition();
     boolean isPlaying();

@@ -29,6 +29,9 @@ import com.google.android.youtube.player.YouTubePlayerSupportFragment;
 
 import java.util.LinkedList;
 
+/**
+ * Implementation of the Player interface for the YouTube streaming service
+ */
 public class YoutubePlayer implements Player {
     private static YoutubePlayer ourInstance = new YoutubePlayer();
 

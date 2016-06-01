@@ -32,6 +32,9 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Implementation of Playable interface for the YouTube api
+ */
 public class YoutubeVideo implements Playable {
     private String id;
     protected String title;

@@ -31,9 +31,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Singleton that contains the history of played song
+ */
 public class History {
     private static History instance;
     private Context context;
+    private int SONG_NUMBER = 20;
 
     public static History getInstance() {
         if (instance == null) {
@@ -46,10 +50,28 @@ public class History {
         context = null;
     }
 
+    /**
+     * To operate correctly, the history needs to be initialized with a context
+     * If not set, get and store function will throw a NullPointerException
+     * @param context
+     */
     public void setContext(Context context) {
         this.context = context;
     }
 
+    /**
+     * Gives the maximum number of song the get() function will return
+     * @return explained size
+     */
+    public int getMaximumSize() {
+        return SONG_NUMBER;
+    }
+
+    /**
+     * get at most getMaximumSize() previously played playable
+     * @return the list of playables
+     * @throws NullPointerException if context isn't set
+     */
     public List<Playable> get() throws NullPointerException {
         if (context == null) {
             throw new NullPointerException("Context needs to be set in History before using it");
@@ -61,7 +83,7 @@ public class History {
         // we order from most recent to older. Get only the first 20 entries
         Cursor cursor = db.query(true, "History",
                 new String[]{"id", "classType", "playableId", "date"},
-                null, null, null, null, "date DESC", "20");
+                null, null, null, null, "date DESC", String.valueOf(SONG_NUMBER));
 
         ArrayList<Playable> playableList = new ArrayList<>();
         while (cursor.moveToNext()) {
@@ -89,7 +111,12 @@ public class History {
         return playableList;
     }
 
-    public void store(Playable playable)  throws NullPointerException {
+    /**
+     * Add a playable to the history
+     * @param playable the song to be stored
+     * @throws NullPointerException if context isn't set
+     */
+    public void store(Playable playable) throws NullPointerException {
         if (context == null) {
             throw new NullPointerException("Context needs to be set in History before using it");
         }

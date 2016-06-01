@@ -46,6 +46,10 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+
+/**
+ * Search engine for YouTube
+ */
 public class YoutubeSearchEngine {
     private YouTube youtube;
     private final long kMaxResultNumber = 15;
@@ -64,6 +68,10 @@ public class YoutubeSearchEngine {
         return youtube != null;
     }
 
+    /**
+     * To operate properly this singleton needs to be initialized. If not,
+     * @param context
+     */
     public void init(Context context) {
         youtube = new YouTube.Builder(new NetHttpTransport(), new JacksonFactory(),
                 new HttpRequestInitializer() {
@@ -74,7 +82,10 @@ public class YoutubeSearchEngine {
                 }).setApplicationName(context.getString(R.string.app_name)).build();
     }
 
-    private YouTube.Search.List initIdQuery() throws IOException {
+    private YouTube.Search.List initIdQuery() throws IOException, NullPointerException {
+        if (youtube == null) {
+            throw new NullPointerException("YoutubeSearchEngine's uninitialized");
+        }
         YouTube.Search.List query = youtube.search().list("id");
         query.setKey(DeveloperKey.DEVELOPER_KEY);
         query.setType("video");
@@ -93,19 +104,24 @@ public class YoutubeSearchEngine {
         return ids;
     }
 
-    private List<String> searchVideoIds(String keywords) throws IOException {
+    private List<String> searchVideoIds(String keywords) throws IOException, NullPointerException {
         YouTube.Search.List query = initIdQuery();
         query.setQ(keywords);
         return executeIdQuery(query);
     }
 
-    public List<String> relatedVideoIds(YoutubeVideo video) throws IOException {
+    public List<String> relatedVideoIds(YoutubeVideo video)
+            throws IOException, NullPointerException {
         YouTube.Search.List query = initIdQuery();
         query.setRelatedToVideoId(video.getId());
         return executeIdQuery(query);
     }
 
-    public List<YoutubeVideo> getVideoDetails(List<String> videoIds) throws IOException {
+    public List<YoutubeVideo> getVideoDetails(List<String> videoIds)
+            throws IOException, NullPointerException {
+        if (youtube == null) {
+            throw new NullPointerException("YoutubeSearchEngine's uninitialized");
+        }
         Joiner stringJoiner = Joiner.on(',');
         String videoId = stringJoiner.join(videoIds);
         YouTube.Videos.List query =
@@ -159,7 +175,11 @@ public class YoutubeSearchEngine {
         }
     }
 
-    // suggestion api
+    /**
+     * Gives a list of suggested research using the given keyword
+     * @param keyword
+     * @return
+     */
     private List<String> autoComplete(String keyword) {
         ArrayList<String> suggestions = new ArrayList<>();
 

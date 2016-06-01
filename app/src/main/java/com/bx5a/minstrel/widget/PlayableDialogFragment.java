@@ -30,6 +30,10 @@ import com.bx5a.minstrel.player.MasterPlayer;
 import com.bx5a.minstrel.player.Playable;
 import com.bx5a.minstrel.player.Position;
 
+/**
+ * Dialog representing the available options of a playable. That dialog pops when long pressing a
+ * playable
+ */
 public class PlayableDialogFragment extends DialogFragment {
     private Playable playableObject;
     private int playableIndex;

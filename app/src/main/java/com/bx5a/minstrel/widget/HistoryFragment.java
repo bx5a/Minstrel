@@ -39,6 +39,9 @@ import com.bx5a.minstrel.player.Position;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Fragment representing the History singleton
+ */
 public class HistoryFragment extends Fragment {
     private GridView historyView;
     private List<Playable> playableList;

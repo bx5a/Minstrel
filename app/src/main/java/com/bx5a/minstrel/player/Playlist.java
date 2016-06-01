@@ -21,6 +21,9 @@ package com.bx5a.minstrel.player;
 
 import java.util.ArrayList;
 
+/**
+ * Defines a basic operation that can be done on a list of playable
+ */
 public class Playlist {
     public interface EventListener {
         void onChanged();

@@ -31,7 +31,12 @@ import android.widget.LinearLayout;
 
 import com.bx5a.minstrel.R;
 
+/**
+ * fragment the contains information about the app
+ */
 public class AboutFragment extends Fragment {
+    private String REPOSITORY_URL = "https://github.com/bx5a/Minstrel";
+
     @Override
     public View onCreateView(LayoutInflater layoutInflater, ViewGroup viewGroup, Bundle bundle) {
         View view = layoutInflater.inflate(R.layout.fragment_about, null);
@@ -40,7 +45,7 @@ public class AboutFragment extends Fragment {
         githubButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Uri uri = Uri.parse("https://github.com/bx5a/Minstrel");
+                Uri uri = Uri.parse(REPOSITORY_URL);
                 Intent intent = new Intent(Intent.ACTION_VIEW, uri);
                 startActivity(intent);
             }

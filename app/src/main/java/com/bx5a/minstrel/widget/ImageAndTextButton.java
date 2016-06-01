@@ -31,6 +31,9 @@ import android.widget.TextView;
 
 import com.bx5a.minstrel.R;
 
+/**
+ * A button that displays in a horizontal layout first an image and then a button
+ */
 public class ImageAndTextButton extends LinearLayout {
     private LinearLayout button;
     private TextView textView;

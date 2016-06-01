@@ -31,6 +31,9 @@ import android.widget.TextView;
 
 import com.bx5a.minstrel.R;
 
+/**
+ * Dialog showing a simple Undo button
+ */
 public class UndoDialogFragment extends DialogFragment {
     private String text;
     private View.OnClickListener onClickListener;

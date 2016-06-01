@@ -62,6 +62,9 @@ import com.google.android.youtube.player.YouTubePlayerSupportFragment;
 
 import static android.support.v7.preference.PreferenceManager.getDefaultSharedPreferences;
 
+/**
+ * Only activity of the application. Content of every fragments
+ */
 public class MainActivity extends LowBrightnessOnIdleActivity {
 
     private SoftKeyboardHandledLayout drawerLayout;
