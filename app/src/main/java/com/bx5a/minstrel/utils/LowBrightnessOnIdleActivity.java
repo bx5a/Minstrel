@@ -5,6 +5,8 @@ import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.view.WindowManager;
 
+import static android.support.v7.preference.PreferenceManager.getDefaultSharedPreferences;
+
 /**
  * Created by guillaume on 27/05/2016.
  */
@@ -30,6 +32,10 @@ public class LowBrightnessOnIdleActivity  extends AppCompatActivity {
                     public void run() {
                         WindowManager.LayoutParams layoutParameters = getWindow().getAttributes();
                         beforeIdleBrightness = layoutParameters.screenBrightness;
+
+                        if (!getDefaultSharedPreferences(getBaseContext()).getBoolean("brightness_management", true)) {
+                            return;
+                        }
                         layoutParameters.screenBrightness = 0;
                         getWindow().setAttributes(layoutParameters);
                     }
