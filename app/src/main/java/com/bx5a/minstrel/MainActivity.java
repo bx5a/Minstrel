@@ -75,7 +75,7 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
     private ImageAndTextButton preferenceButton;
     private PlayerControlBarFragment playerControls;
     private UndoDialogFragment undoDialogFragment;
-    private final int kAutoDismissMilliseconds = 2000;
+    private final int AUTO_DISMISS_MILLISECOND = 2000;
 
     // fragments
     private PlaylistFragment playlistFragment;
@@ -312,7 +312,7 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
                     public void run() {
                         undoDialogFragment.dismiss();
                     }
-                }, kAutoDismissMilliseconds);
+                }, AUTO_DISMISS_MILLISECOND);
             }
         });
     }

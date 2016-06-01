@@ -52,7 +52,7 @@ import java.util.List;
  */
 public class YoutubeSearchEngine {
     private YouTube youtube;
-    private final long kMaxResultNumber = 15;
+    private final long MAX_RESULT_NUMBER = 15;
 
     private static YoutubeSearchEngine ourInstance = new YoutubeSearchEngine();
 
@@ -90,7 +90,7 @@ public class YoutubeSearchEngine {
         query.setKey(DeveloperKey.DEVELOPER_KEY);
         query.setType("video");
         query.setFields("items(id/videoId)");
-        query.setMaxResults(kMaxResultNumber);
+        query.setMaxResults(MAX_RESULT_NUMBER);
         return query;
     }
 

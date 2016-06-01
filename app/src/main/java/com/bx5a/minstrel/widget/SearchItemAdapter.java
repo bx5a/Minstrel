@@ -38,8 +38,7 @@ import java.util.List;
  * Adapter used by the search fragment
  */
 public class SearchItemAdapter extends ArrayAdapter<YoutubeVideo> {
-
-    Context context;
+    private Context context;
 
     public SearchItemAdapter(Context context, List<YoutubeVideo> videos) {
         super(context, -1, videos);
