@@ -27,5 +27,5 @@
     <string name="never_ending_playlist_title">Never Ending Playlist</string>
     <string name="interface_preferences">Interface</string>
     <string name="manage_brightness_summary">Enable brightness reduction when inactivity is detected</string>
-    <string name="manage_brightness_title">Manage Brightnesss</string>
+    <string name="manage_brightness_title">Manage Brightness</string>
 </resources>
