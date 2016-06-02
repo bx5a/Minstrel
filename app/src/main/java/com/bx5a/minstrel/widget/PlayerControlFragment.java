@@ -210,10 +210,10 @@ public class PlayerControlFragment extends Fragment {
 
     private void updatePlayPauseIcon() {
         if (MasterPlayer.getInstance().isPlaying()) {
-            playPause.setBackgroundResource(getDefaultPlayIcon());
+            playPause.setBackgroundResource(getDefaultPauseIcon());
             return;
         }
-        playPause.setBackgroundResource(getDefaultPauseIcon());
+        playPause.setBackgroundResource(getDefaultPlayIcon());
     }
 
     private int getDefaultPlayIcon() {
