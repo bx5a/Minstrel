@@ -90,7 +90,6 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setTheme(R.style.AppTheme_Dark);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 

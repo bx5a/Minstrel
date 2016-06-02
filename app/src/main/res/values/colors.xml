@@ -1,17 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- base color: gray -->
-    <color name="colorPrimary">#393939</color>
-    <color name="colorPrimaryDark">#282828</color>
-    <color name="colorPrimaryLight">#505050</color>
-    <!-- accent color: orange -->
-    <color name="colorAccent">#F13C0E</color>
-    <!-- text color: white -->
-    <color name="textColorPrimary">#FFFFFF</color>
-    <color name="textColorSecondary">#9E9E9E</color>
-    <!-- inverse text color: 87% black -->
-    <color name="textColorPrimaryInverse">#DE000000</color>
-    <color name="textColorSecondaryInverse">#9E9E9E</color>
+    <color name="orange">#F13C0E</color>
+    <color name="darkGray">#282828</color>
 
     <!-- w3c -->
     <color name="white">#FFFFFF</color>

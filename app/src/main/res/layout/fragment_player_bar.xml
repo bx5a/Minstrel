@@ -2,7 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    style="@style/AccentLayout">
 
     <SeekBar
         android:id="@+id/viewPlayer_seekBar"
@@ -23,6 +24,7 @@
 
             <TextView
                 android:id="@+id/viewPlayer_currentSong"
+                style="@style/DarkText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:singleLine="true"
@@ -33,6 +35,7 @@
 
             <TextView
                 android:id="@+id/viewPlayer_nextSong"
+                style="@style/DarkText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"

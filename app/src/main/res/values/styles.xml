@@ -1,19 +1,47 @@
 <resources>
+    <!-- Dark theme definition -->
+    <style name="AppTheme.Dark" parent="Theme.AppCompat">
+        <!-- base color: gray -->
+        <item name="colorPrimary">#393939</item>
+        <item name="colorPrimaryDark">@color/darkGray</item>
+        <!-- accent color: orange -->
+        <item name="colorAccent">@color/orange</item>
+        <!-- text color: white -->
+        <item name="android:textColorPrimary">#FFFFFF</item>
+        <item name="android:textColorSecondary">#9E9E9E</item>
+        <!-- inverse text color: 87% black -->
+        <item name="android:textColorPrimaryInverse">#DE000000</item>
+        <item name="android:textColorSecondaryInverse">#9E9E9E</item>
 
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat">
         <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
     </style>
 
-    <!-- Dark theme definition -->
-    <style name="AppTheme.Dark" parent="AppTheme">
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:textColorPrimary">@color/textColorPrimary</item>
-        <item name="android:textColorSecondary">@color/textColorSecondary</item>
-        <item name="android:textColorPrimaryInverse">@color/textColorPrimaryInverse</item>
-        <item name="android:textColorSecondaryInverse">@color/textColorSecondaryInverse</item>
+    <style name="AppTheme.Light" parent="Theme.AppCompat.Light">
+        <!-- base color: gray -->
+        <item name="colorPrimary">#cdcdcd</item>
+        <item name="colorPrimaryDark">#a4a4a4</item>
+        <!-- accent color: orange -->
+        <item name="colorAccent">@color/orange</item>
+        <!-- text color: white -->
+        <item name="android:textColorPrimary">@color/darkGray</item>
+        <item name="android:textColorSecondary">#393939</item>
+        <!-- inverse text color -->
+        <item name="android:textColorPrimaryInverse">#FFFFFF</item>
+        <item name="android:textColorSecondaryInverse">#9E9E9E</item>
+
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
     </style>
 
+    <style name="AccentLayout">
+        <item name="android:background">?attr/colorAccent</item>
+    </style>
+    <style name="DarkText">
+        <item name="android:textColor">@color/darkGray</item>
+    </style>
+    <style name="TitleStyle">
+        <item name="android:textColor">?attr/colorAccent</item>
+        <item name="android:textSize">20dp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:padding">15dp</item>
+    </style>
 </resources>
