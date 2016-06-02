@@ -93,7 +93,7 @@ public class PlaylistManager {
             move(selectedIndex - 1);
         }
 
-        if (index != selectedIndex) {
+        if (index != selectedIndex || playlist.size() == 0) {
             return;
         }
         move(getValidGetIndexFromPosition(Position.Next));

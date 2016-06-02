@@ -235,6 +235,9 @@ public class MasterPlayer {
 
     public void remove(int playableIndex) throws IndexOutOfBoundsException {
         playlistManager.remove(playableIndex);
+        if (getPlaylist().size() == 0) {
+            autoPlayNext = true;
+        }
     }
 
     public void registerPlayer(Player player) {
