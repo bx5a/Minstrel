@@ -94,7 +94,7 @@
         <ImageButton
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:src="@drawable/ic_previous"
+            android:src="?attr/previousIcon"
             android:layout_width="0px"
             android:background="@null"
             android:id="@+id/fragmentPlayer_previous"/>
@@ -106,13 +106,13 @@
             <ImageButton
                 android:layout_height="110dp"
                 android:layout_width="110dp"
-                android:background="@drawable/ic_playwhite"
+                android:background="?attr/playIcon"
                 android:id="@+id/fragmentPlayer_playPause"/>
         </LinearLayout>
         <ImageButton
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:src="@drawable/ic_next"
+            android:src="?attr/nextIcon"
             android:layout_width="0px"
             android:background="@null"
             android:id="@+id/fragmentPlayer_next"/>
@@ -121,7 +121,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:layout_width="0px"
-            android:src="@drawable/ic_playlistwhite"
+            android:src="?attr/playlistIcon"
             android:background="@null"
             android:id="@+id/fragmentPlayer_playlist" />
     </LinearLayout>

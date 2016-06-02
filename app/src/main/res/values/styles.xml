@@ -12,7 +12,13 @@
         <!-- inverse text color: 87% black -->
         <item name="android:textColorPrimaryInverse">#DE000000</item>
         <item name="android:textColorSecondaryInverse">#9E9E9E</item>
-
+        <!-- control icons -->
+        <item name="playIcon">@drawable/ic_playwhite</item>
+        <item name="pauseIcon">@drawable/ic_pausewhite</item>
+        <item name="playlistIcon">@drawable/ic_playlistwhite</item>
+        <item name="nextIcon">@drawable/ic_next</item>
+        <item name="previousIcon">@drawable/ic_previous</item>
+        
         <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
     </style>
 
@@ -28,6 +34,12 @@
         <!-- inverse text color -->
         <item name="android:textColorPrimaryInverse">#FFFFFF</item>
         <item name="android:textColorSecondaryInverse">#9E9E9E</item>
+        <!-- control icons -->
+        <item name="playIcon">@drawable/ic_play</item>
+        <item name="pauseIcon">@drawable/ic_pause</item>
+        <item name="playlistIcon">@drawable/ic_playlist</item>
+        <item name="nextIcon">@drawable/ic_nextdark</item>
+        <item name="previousIcon">@drawable/ic_previousdark</item>
 
         <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
     </style>

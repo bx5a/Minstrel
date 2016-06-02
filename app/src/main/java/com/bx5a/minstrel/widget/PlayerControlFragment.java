@@ -23,6 +23,7 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -209,10 +210,24 @@ public class PlayerControlFragment extends Fragment {
 
     private void updatePlayPauseIcon() {
         if (MasterPlayer.getInstance().isPlaying()) {
-            playPause.setBackgroundResource(R.drawable.ic_pausewhite);
+            playPause.setBackgroundResource(getDefaultPlayIcon());
             return;
         }
-        playPause.setBackgroundResource(R.drawable.ic_playwhite);
+        playPause.setBackgroundResource(getDefaultPauseIcon());
+    }
+
+    private int getDefaultPlayIcon() {
+        return getDefaultIcon(R.attr.playIcon);
+    }
+
+    private int getDefaultPauseIcon() {
+        return getDefaultIcon(R.attr.pauseIcon);
+    }
+
+    private int getDefaultIcon(int resid) {
+        TypedValue value = new TypedValue();
+        getContext().getTheme().resolveAttribute(resid, value, true);
+        return value.resourceId;
     }
 
     private void updateThumbnails() {

@@ -5,4 +5,11 @@
         <attr name="text" format="string"/>
         <attr name="textColor" format="integer"/>
     </declare-styleable>
+    <declare-styleable name="Theme">
+        <attr name="playIcon" format="integer"/>
+        <attr name="pauseIcon" format="integer"/>
+        <attr name="nextIcon" format="integer"/>
+        <attr name="previousIcon" format="integer"/>
+        <attr name="playlistIcon" format="integer"/>
+    </declare-styleable>
 </resources>
