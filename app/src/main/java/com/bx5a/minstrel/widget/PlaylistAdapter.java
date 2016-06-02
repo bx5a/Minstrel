@@ -21,6 +21,7 @@ package com.bx5a.minstrel.widget;
 
 import android.content.Context;
 import android.support.v4.content.ContextCompat;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,20 +56,24 @@ public class PlaylistAdapter extends ArrayAdapter<Playable> {
         TextView title = (TextView) view.findViewById(R.id.listItemPlayable_title);
         TextView duration = (TextView) view.findViewById(R.id.listItemPlayable_duration);
 
+        duration.setTextColor(getDefaultTextColor());
+        title.setTextColor(getDefaultTextColor());
+        view.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.transparent));
         if (MasterPlayer.getInstance().getCurrentPlayableIndex() == position) {
             duration.setTextColor(ContextCompat.getColor(getContext(), R.color.darkGray));
             title.setTextColor(ContextCompat.getColor(getContext(), R.color.darkGray));
             view.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.orange));
-        } else {
-            int defaultColor = duration.getTextColors().getDefaultColor();
-            duration.setTextColor(defaultColor);
-            title.setTextColor(defaultColor);
-            view.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.transparent));
         }
 
         title.setText(playable.title());
         duration.setText(playable.duration());
 
         return view;
+    }
+
+    private int getDefaultTextColor() {
+        TypedValue value = new TypedValue();
+        getContext().getTheme().resolveAttribute(android.R.attr.textColorSecondary, value, true);
+        return value.data;
     }
 }
