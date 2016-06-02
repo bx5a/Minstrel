@@ -29,4 +29,5 @@
     <string name="interface_preferences">Interface</string>
     <string name="manage_brightness_summary">Enable brightness reduction when inactivity is detected</string>
     <string name="manage_brightness_title">Manage Brightness</string>
+    <string name="dark_theme_preference_title">Use Dark Theme</string>
 </resources>

@@ -22,6 +22,8 @@ package com.bx5a.minstrel;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
@@ -88,8 +90,11 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
     private final String kWasPlayingKey = "wasPlaying";
     private final String kPositionAtDestroyKey = "seekPosition";
 
+    private SharedPreferences.OnSharedPreferenceChangeListener preferencesListener;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        initTheme();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -109,6 +114,7 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
         initUndoDialog();
         initFragments();
         initMasterPlayerBehavior();
+        initPreferencesListener();
 
         displayHistory();
 
@@ -116,6 +122,7 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
 
     @Override
     protected void onDestroy() {
+        deinitPreferencesListener();
         super.onDestroy();
         YoutubePlayer.getInstance().reset();
         History.getInstance().setContext(null);
@@ -398,5 +405,41 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
     private void displayPreference() {
         displayFragment(generalPreferenceFragment);
         closeSidePanel();
+    }
+
+    private void initTheme() {
+        if (getDefaultSharedPreferences(this).getBoolean("dark_theme", true)) {
+            setTheme(R.style.AppTheme_Dark);
+            return;
+        }
+        setTheme(R.style.AppTheme_Light);
+    }
+
+    private void initPreferencesListener() {
+        final MainActivity currentActivity = this;
+        preferencesListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+            @Override
+            public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+                if (!key.equals("dark_theme")) {
+                    return;
+                }
+                new AlertDialog.Builder(currentActivity)
+                        .setTitle("Restart ?")
+                        .setMessage("To change the theme, we need to restart the application. Do you want to do it now ?")
+                        .setNegativeButton(android.R.string.no, null)
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface arg0, int arg1) {
+                                Intent intent = getIntent();
+                                finish();
+                                startActivity(intent);
+                            }
+                        }).create().show();
+            }
+        };
+        getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(preferencesListener);
+    }
+
+    private void deinitPreferencesListener() {
+        getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(preferencesListener);
     }
 }

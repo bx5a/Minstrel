@@ -7,6 +7,11 @@
             android:title="@string/manage_brightness_title"
             android:defaultValue="true"
             android:key="brightness_management"/>
+        <CheckBoxPreference
+            android:persistent="true"
+            android:title="@string/dark_theme_preference_title"
+            android:defaultValue="true"
+            android:key="dark_theme"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/playlist_preferences">
         <CheckBoxPreference
