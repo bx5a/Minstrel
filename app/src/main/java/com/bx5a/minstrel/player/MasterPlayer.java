@@ -127,6 +127,9 @@ public class MasterPlayer {
         playlistFinished = false;
 
         final Playable playable = playlistManager.getSelected();
+        if (playable == null) {
+            throw new IllegalStateException("Can't access selected playable");
+        }
 
         // initialize player if required
         if (!playable.getPlayer().isInitialized()) {
@@ -196,7 +199,7 @@ public class MasterPlayer {
         return false;
     }
 
-    public void next() {
+    public void next() throws IndexOutOfBoundsException {
         pause();
         playlistManager.next();
         play();
@@ -210,7 +213,11 @@ public class MasterPlayer {
 
     // position is a [0, 1] value
     public void seekTo(float position) throws IndexOutOfBoundsException, IllegalStateException {
-        playlistManager.getSelected().seekTo(position);
+        Playable playable = playlistManager.getSelected();
+        if (playable == null) {
+            throw new IllegalStateException("Can't access selected playable");
+        }
+        playable.seekTo(position);
     }
 
     public float getCurrentPosition() {
@@ -222,11 +229,11 @@ public class MasterPlayer {
         return 0;
     }
 
-    public void reorder(int playableIndex, Position position) {
+    public void reorder(int playableIndex, Position position) throws IndexOutOfBoundsException {
         playlistManager.reorder(playableIndex, position);
     }
 
-    public void remove(int playableIndex) {
+    public void remove(int playableIndex) throws IndexOutOfBoundsException {
         playlistManager.remove(playableIndex);
     }
 
