@@ -14,6 +14,7 @@
         android:textSize="17dp"
         android:text="text"
         android:gravity="center"
+        android:textColor="@color/white"
         android:id="@+id/dialogUndo_text"/>
     
     <Button
@@ -23,5 +24,6 @@
         android:text="@string/undo"
         android:background="@drawable/layout_border"
         android:layout_margin="10dp"
+        android:textColor="@color/white"
         android:id="@+id/dialogUndo_button"/>
 </com.bx5a.minstrel.legacy.RoundedCornerLayout>
