@@ -20,7 +20,6 @@
 package com.bx5a.minstrel.widget;
 
 import android.content.Context;
-import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,7 +27,6 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.bx5a.minstrel.R;
-import com.bx5a.minstrel.player.MasterPlayer;
 import com.bx5a.minstrel.player.Playable;
 import com.bx5a.minstrel.player.Playlist;
 
@@ -54,15 +52,17 @@ public class PlaylistAdapter extends ArrayAdapter<Playable> {
 
         TextView title = (TextView) view.findViewById(R.id.listItemPlayable_title);
         TextView duration = (TextView) view.findViewById(R.id.listItemPlayable_duration);
-        if (MasterPlayer.getInstance().getCurrentPlayableIndex() == position) {
-            duration.setTextColor(ContextCompat.getColor(getContext(), R.color.colorPrimaryDark));
-            title.setTextColor(ContextCompat.getColor(getContext(), R.color.colorPrimaryDark));
-            view.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
+
+        // TODO: find a way to outline selected in a them independent way
+        /*if (MasterPlayer.getInstance().getCurrentPlayableIndex() == position) {
+            duration.setTextColor(ContextCompat.getColor(getContext(), R.color.themeLightGray));
+            title.setTextColor(ContextCompat.getColor(getContext(), R.color.themeLightGray));
+            view.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.themeOrange));
         } else {
-            duration.setTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
-            title.setTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
+            duration.setTextColor(ContextCompat.getColor(getContext(), R.color.themeOrange));
+            title.setTextColor(ContextCompat.getColor(getContext(), R.color.themeOrange));
             view.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.transparent));
-        }
+        }*/
 
         title.setText(playable.title());
         duration.setText(playable.duration());

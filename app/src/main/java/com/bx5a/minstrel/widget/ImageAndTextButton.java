@@ -61,12 +61,17 @@ public class ImageAndTextButton extends LinearLayout {
         textView = (TextView) findViewById(R.id.imageAndTextButton_text);
 
         TypedArray attributes = context.obtainStyledAttributes(attrs, R.styleable.ImageAndTextButton);
-        String textValue = attributes.getString(R.styleable.ImageAndTextButton_text);
-        Drawable srcValue = attributes.getDrawable(R.styleable.ImageAndTextButton_src);
-        ColorStateList textColor = attributes.getColorStateList(R.styleable.ImageAndTextButton_textColor);
 
-        image.setImageDrawable(srcValue);
+        String textValue = attributes.getString(R.styleable.ImageAndTextButton_text);
         textView.setText(textValue);
+
+        Drawable srcValue = attributes.getDrawable(R.styleable.ImageAndTextButton_src);
+        image.setImageDrawable(srcValue);
+
+        if (!attributes.hasValue(R.styleable.ImageAndTextButton_textColor)) {
+            return;
+        }
+        ColorStateList textColor = attributes.getColorStateList(R.styleable.ImageAndTextButton_textColor);
         textView.setTextColor(textColor);
     }
 

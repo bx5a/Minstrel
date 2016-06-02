@@ -18,8 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:gravity="top"
-            android:background="@color/colorPrimaryDark">
+            android:gravity="top">
             <ImageView
                 android:id="@+id/activityMain_backgroundLogo"
                 android:layout_width="match_parent"
@@ -65,7 +64,6 @@
         android:layout_width="300dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:background="@color/colorAccent"
         android:layout_marginBottom="110dp">
 
         <LinearLayout
@@ -80,24 +78,21 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 image_and_text:src="@drawable/ic_history"
-                image_and_text:text="@string/myMusic"
-                image_and_text:textColor="@color/colorPrimary"/>
+                image_and_text:text="@string/myMusic"/>
 
             <com.bx5a.minstrel.widget.ImageAndTextButton
                 android:id="@+id/activityMain_searchButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 image_and_text:src="@drawable/ic_search"
-                image_and_text:text="@string/search"
-                image_and_text:textColor="@color/colorPrimary"/>
+                image_and_text:text="@string/search"/>
 
             <com.bx5a.minstrel.widget.ImageAndTextButton
                 android:id="@+id/activityMain_playlistButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 image_and_text:src="@drawable/ic_playlist"
-                image_and_text:text="@string/playlist"
-                image_and_text:textColor="@color/colorPrimary"/>
+                image_and_text:text="@string/playlist"/>
         </LinearLayout>
 
 
@@ -112,15 +107,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             image_and_text:src="@drawable/ic_parameters"
-            image_and_text:text="@string/parameters"
-            image_and_text:textColor="@color/colorPrimary"/>
+            image_and_text:text="@string/parameters"/>
         <com.bx5a.minstrel.widget.ImageAndTextButton
             android:id="@+id/activityMain_aboutButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             image_and_text:src="@drawable/ic_about"
-            image_and_text:text="@string/about"
-            image_and_text:textColor="@color/colorPrimary"/>
+            image_and_text:text="@string/about"/>
         </LinearLayout>
 
     </LinearLayout>

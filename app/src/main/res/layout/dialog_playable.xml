@@ -3,8 +3,7 @@
     xmlns:image_and_text="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/black">
+    android:layout_height="match_parent">
 
     <com.bx5a.minstrel.widget.ImageAndTextButton
         android:layout_width="match_parent"
@@ -12,7 +11,6 @@
         android:layout_marginRight="20dp"
         image_and_text:src="@drawable/ic_enqueue_now"
         image_and_text:text="@string/enqueue_now"
-        image_and_text:textColor="@color/white"
         android:id="@+id/dialogPlayable_now"/>
 
     <com.bx5a.minstrel.widget.ImageAndTextButton
@@ -21,7 +19,6 @@
         android:layout_marginRight="20dp"
         image_and_text:src="@drawable/ic_enqueue_next"
         image_and_text:text="@string/enqueue_next"
-        image_and_text:textColor="@color/white"
         android:id="@+id/dialogPlayable_next"/>
 
     <com.bx5a.minstrel.widget.ImageAndTextButton
@@ -30,7 +27,6 @@
         android:layout_marginRight="20dp"
         image_and_text:src="@drawable/ic_enqueue_last"
         image_and_text:text="@string/enqueue_last"
-        image_and_text:textColor="@color/white"
         android:id="@+id/dialogPlayable_last"/>
 
     <com.bx5a.minstrel.widget.ImageAndTextButton
@@ -39,6 +35,5 @@
         android:layout_marginRight="20dp"
         image_and_text:src="@drawable/ic_playable_remove"
         image_and_text:text="@string/playable_remove"
-        image_and_text:textColor="@color/white"
         android:id="@+id/dialogPlayable_remove"/>
 </LinearLayout>

@@ -32,8 +32,7 @@
                 android:gravity="center"
                 android:textAlignment="center"
                 android:singleLine="true"
-                android:textSize="12dp"
-                android:textColor="@color/colorAccent"/>
+                android:textSize="12dp"/>
         </FrameLayout>
 
         <RelativeLayout
@@ -51,8 +50,7 @@
                 android:gravity="center"
                 android:textAlignment="center"
                 android:singleLine="true"
-                android:textStyle="bold"
-                android:textColor="@color/colorAccent"/>
+                android:textStyle="bold"/>
         </RelativeLayout>
 
         <RelativeLayout
@@ -73,8 +71,7 @@
                 android:gravity="center"
                 android:textAlignment="center"
                 android:singleLine="true"
-                android:textSize="12dp"
-                android:textColor="@color/colorAccent"/>
+                android:textSize="12dp"/>
         </RelativeLayout>
     </LinearLayout>
 

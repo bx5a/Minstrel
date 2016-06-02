@@ -22,7 +22,6 @@
             android:text="Title"
             android:textSize="13dp"
             android:singleLine="true"
-            android:textColor="@color/colorAccent"
             android:id="@+id/listItemHistory_title"/>
     </LinearLayout>
 
