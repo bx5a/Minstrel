@@ -91,6 +91,7 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
     private final String kPositionAtDestroyKey = "seekPosition";
 
     private SharedPreferences.OnSharedPreferenceChangeListener preferencesListener;
+    private MasterPlayerEventListener playerEventListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,6 +124,7 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
     @Override
     protected void onDestroy() {
         deinitPreferencesListener();
+        deinitMasterPlayerBehavior();
         super.onDestroy();
         YoutubePlayer.getInstance().reset();
         History.getInstance().setContext(null);
@@ -290,6 +292,7 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
 
     private void initUndoDialog() {
         undoDialogFragment = new UndoDialogFragment();
+        UndoDialogFragment undoDialogFragmentCopy = undoDialogFragment;
         MasterPlayer.getInstance().setPlaylistManagerEventListener(new PlaylistManager.EventListener() {
             @Override
             public void onEnqueued(final int index, final int selectedIndex) {
@@ -317,7 +320,11 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        undoDialogFragment.dismiss();
+                        try {
+                            undoDialogFragment.dismiss();
+                        } catch (NullPointerException e) {
+                            Log.w("MainActivity", "Can't dismiss undo dialog: " + e.getMessage());
+                        }
                     }
                 }, AUTO_DISMISS_MILLISECOND);
             }
@@ -326,7 +333,7 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
 
     private void initMasterPlayerBehavior() {
         final Context context = getApplicationContext();
-        MasterPlayer.getInstance().addMasterPlayerEventListener(new MasterPlayerEventListener() {
+        playerEventListener = new MasterPlayerEventListener() {
             @Override
             public void onPlayStateChange() {
 
@@ -352,7 +359,12 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
                 MasterPlayer.getInstance().enqueueRelated(
                         currentPlaylist.get(currentPlaylist.size() - 1), Position.Next);
             }
-        });
+        };
+        MasterPlayer.getInstance().addMasterPlayerEventListener(playerEventListener);
+    }
+
+    private void deinitMasterPlayerBehavior() {
+        MasterPlayer.getInstance().removeMasterPlayerEventListener(playerEventListener);
     }
 
     // from http://stackoverflow.com/questions/1109022/close-hide-the-android-soft-keyboard
