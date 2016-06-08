@@ -28,7 +28,6 @@ import static android.support.v7.preference.PreferenceManager.getDefaultSharedPr
 
 public class LowBrightnessOnIdleActivity  extends AppCompatActivity {
     private final int kIdleTimeMilliseconds = 5000;  // 5 seconds
-    private float beforeIdleBrightness;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,13 +45,12 @@ public class LowBrightnessOnIdleActivity  extends AppCompatActivity {
                 mainHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        WindowManager.LayoutParams layoutParameters = getWindow().getAttributes();
-                        beforeIdleBrightness = layoutParameters.screenBrightness;
-
                         if (!getDefaultSharedPreferences(getBaseContext()).getBoolean("brightness_management", true)) {
                             return;
                         }
-                        layoutParameters.screenBrightness = 0;
+                        WindowManager.LayoutParams layoutParameters = getWindow().getAttributes();
+                        layoutParameters.screenBrightness =
+                                WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_OFF;
                         getWindow().setAttributes(layoutParameters);
                     }
                 });
@@ -64,7 +62,8 @@ public class LowBrightnessOnIdleActivity  extends AppCompatActivity {
                     @Override
                     public void run() {
                         WindowManager.LayoutParams layoutParameters = getWindow().getAttributes();
-                        layoutParameters.screenBrightness = beforeIdleBrightness;
+                        layoutParameters.screenBrightness =
+                                WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE;
                         getWindow().setAttributes(layoutParameters);
                     }
                 });
