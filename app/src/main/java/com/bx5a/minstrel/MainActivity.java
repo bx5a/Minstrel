@@ -79,6 +79,8 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
     private UndoDialogFragment undoDialogFragment;
     private final int AUTO_DISMISS_MILLISECOND = 2000;
 
+    private boolean currentThemeIsDark;
+
     // fragments
     private PlaylistFragment playlistFragment;
     private SearchFragment searchFragment;
@@ -422,19 +424,33 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
     private void initTheme() {
         if (getDefaultSharedPreferences(this).getBoolean("dark_theme", true)) {
             setTheme(R.style.AppTheme_Dark);
+            currentThemeIsDark = true;
             return;
         }
         setTheme(R.style.AppTheme_Light);
+        currentThemeIsDark = false;
     }
 
     private void initPreferencesListener() {
         final MainActivity currentActivity = this;
+        final boolean isCurrentThemeDark = currentThemeIsDark;
         preferencesListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
             @Override
             public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-                if (!key.equals("dark_theme")) {
+                String themeKey = "dark_theme";
+                if (!key.equals(themeKey)) {
                     return;
                 }
+
+                boolean darkTheme =
+                        getDefaultSharedPreferences(currentActivity).getBoolean(themeKey, true);
+
+                // if the theme is already the right one, no need to restart
+                if ((darkTheme && isCurrentThemeDark) || (!darkTheme && !isCurrentThemeDark)) {
+                    return;
+                }
+
+                // else we should restart the app to take that option into account
                 new AlertDialog.Builder(currentActivity)
                         .setTitle("Restart ?")
                         .setMessage("To change the theme, we need to restart the application. Do you want to do it now ?")
