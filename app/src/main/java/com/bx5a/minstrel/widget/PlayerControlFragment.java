@@ -241,6 +241,10 @@ public class PlayerControlFragment extends Fragment {
         }
         int currentIndex = MasterPlayer.getInstance().getCurrentPlayableIndex();
 
+        unsetThumbnail(previousThumbnail, previousTitle);
+        unsetThumbnail(currentThumbnail, currentTitle);
+        unsetThumbnail(nextThumbnail, nextTitle);
+
         if (playlist.hasIndex(currentIndex - 1)) {
             updateThumbnail(playlist, currentIndex - 1, previousThumbnail, previousTitle);
         }
@@ -252,11 +256,12 @@ public class PlayerControlFragment extends Fragment {
         }
     }
 
-    private void updateThumbnail(Playlist playlist, int playableIndex, final ImageView image, TextView text) {
-        // reset to blank
+    private void unsetThumbnail(ImageView image, TextView text) {
         image.setImageResource(android.R.color.transparent);
         text.setText("");
-        // update
+    }
+
+    private void updateThumbnail(Playlist playlist, int playableIndex, final ImageView image, TextView text) {
         Playable playable = playlist.get(playableIndex);
         text.setText(playable.getTitle());
         try {

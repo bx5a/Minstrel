@@ -70,6 +70,14 @@ public class History {
     }
 
     /**
+     *
+     * @return boolean whether the context is or isn't set
+     */
+    public boolean isInitialized() {
+        return context != null;
+    }
+
+    /**
      * get at most getMaximumSize() previously played playable
      * @return the list of playables
      * @throws NotInitializedException if context isn't set

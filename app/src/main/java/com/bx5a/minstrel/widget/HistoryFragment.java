@@ -60,6 +60,9 @@ public class HistoryFragment extends Fragment {
 
     private void displayHistory() {
         AsyncUpdate update = new AsyncUpdate();
+        if (!History.getInstance().isInitialized()) {
+            History.getInstance().setContext(getContext());
+        }
         update.execute(History.getInstance());
     }
 
@@ -94,7 +97,6 @@ public class HistoryFragment extends Fragment {
     }
 
     class AsyncUpdate extends AsyncTask<History, Integer, List<Playable>> {
-
         @Override
         protected void onPreExecute() {
             super.onPreExecute();

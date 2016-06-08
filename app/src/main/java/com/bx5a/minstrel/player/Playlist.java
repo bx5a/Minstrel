@@ -70,7 +70,7 @@ public class Playlist {
     }
 
     public void reorder(int sourceIndex, int destinationIndex) throws IndexOutOfBoundsException {
-        if (!hasIndex(sourceIndex) || !hasIndex(destinationIndex)) {
+        if (!hasIndex(sourceIndex) || destinationIndex > size()) {
             throw new IndexOutOfBoundsException("Invalid index");
         }
         int afterRemoveDestinationIndex = destinationIndex;

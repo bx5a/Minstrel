@@ -151,7 +151,9 @@ public class MasterPlayer {
         }
 
         // store playable in history
-        History.getInstance().store(playable);
+        if (History.getInstance().isInitialized()) {
+            History.getInstance().store(playable);
+        }
 
         playable.play();
         if (seekValue != 0) {
