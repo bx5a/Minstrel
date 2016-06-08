@@ -22,8 +22,10 @@ package com.bx5a.minstrel.youtube;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.bx5a.minstrel.exception.PlayableCreationException;
 import com.bx5a.minstrel.player.Playable;
 import com.bx5a.minstrel.player.Player;
+import com.bx5a.minstrel.utils.PlayableFactory;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -36,6 +38,25 @@ import java.util.regex.Pattern;
  * Implementation of Playable interface for the YouTube api
  */
 public class YoutubeVideo implements Playable {
+    public static void registerToFactory(PlayableFactory factory) {
+        factory.register(new PlayableFactory.PlayableCreator() {
+            @Override
+            public Playable create(String id) throws PlayableCreationException {
+                YoutubeVideo playable = new YoutubeVideo();
+                try {
+                    playable.initFromId(id);
+                } catch (IOException e) {
+                    throw new PlayableCreationException("Couldn't init YoutubeVideo: " + e.getMessage());
+                }
+                return playable;
+            }
+        }, getStaticClassName());
+    }
+
+    private static String getStaticClassName() {
+        return "com.bx5a.minstrel.youtube.YoutubeVideo";
+    }
+
     private String id;
     protected String title;
     private String thumbnailURL;
@@ -57,7 +78,6 @@ public class YoutubeVideo implements Playable {
         return items;
     }
 
-    @Override
     public void initFromId(String id) throws IOException {
         ArrayList<String> ids = new ArrayList<>();
         ids.add(id);
@@ -74,13 +94,12 @@ public class YoutubeVideo implements Playable {
         setViewCount(video.viewCount);
     }
 
-    @Override
-    public void load() throws IllegalStateException {
+    private void load() {
         YoutubePlayer.getInstance().load(this);
     }
 
-    @Override
-    public boolean isLoaded() {
+
+    private boolean isLoaded() {
         String playingId = YoutubePlayer.getInstance().getLoadedId();
         if (playingId.isEmpty()) {
             return false;
@@ -89,18 +108,26 @@ public class YoutubeVideo implements Playable {
     }
 
     @Override
-    public void play() throws IllegalStateException {
+    public String getClassName() {
+        return getStaticClassName();
+    }
+
+    @Override
+    public void play() {
+        if (!isLoaded()) {
+            load();
+        }
         YoutubePlayer.getInstance().play();
     }
 
     @Override
-    public void pause() throws IllegalStateException {
+    public void pause() {
         YoutubePlayer.getInstance().pause();
     }
 
     @Override
-    public String title() {
-        return this.title;
+    public String getTitle() {
+        return title;
     }
 
     @Override
@@ -119,10 +146,10 @@ public class YoutubeVideo implements Playable {
     }
 
     @Override
-    public String duration() {
+    public String getDuration() {
         // youtube duration is ISO 8601 string (format is PT[MINUTES]M[SECONDS]S)
         Pattern pattern = Pattern.compile("PT(.*)M(.*)S");
-        Matcher matcher = pattern.matcher(getDuration());
+        Matcher matcher = pattern.matcher(duration);
         if (matcher.matches()) {
             String seconds = matcher.group(2);
             if (seconds.length() == 1) {
@@ -143,20 +170,12 @@ public class YoutubeVideo implements Playable {
         new AsyncGetRelated(eventListener).execute(this);
     }
 
-    public String getDuration() {
-        return duration;
-    }
-
     public void setId(String id) {
         this.id = id;
     }
 
     public void setDuration(String duration) {
         this.duration = duration;
-    }
-
-    public String getTitle() {
-        return title;
     }
 
     public void setTitle(String title) {

@@ -31,11 +31,12 @@ public interface Player {
         void onPlayerStopped();
     }
 
-    boolean isInitialized();
     void initialize(OnInitializedListener listener, OnPlayerStoppedListener playerStoppedListener);
+    boolean isInitialized();
 
     void play();
     void pause();
+    boolean isPlaying();
 
     /**
      * Seek on the currently playing song.
@@ -43,7 +44,6 @@ public interface Player {
      */
     void seekTo(float position);
     float getCurrentPosition();
-    boolean isPlaying();
-    void unload();
 
+    void unload();
 }

@@ -47,20 +47,32 @@ public class Playlist {
     }
 
     public void enqueue(Playable obj, int index) throws IndexOutOfBoundsException {
+        if (index < 0 || index > list.size()) {
+            throw new IndexOutOfBoundsException("Invalid index " + String.valueOf(index));
+        }
         list.add(index, obj);
         eventListener.onChanged();
     }
 
     public void remove(int index) throws IndexOutOfBoundsException {
+        if (!hasIndex(index)) {
+            throw new IndexOutOfBoundsException("Invalid index " + String.valueOf(index));
+        }
         list.remove(index);
         eventListener.onChanged();
     }
     
     public Playable get(int index) throws IndexOutOfBoundsException {
+        if (!hasIndex(index)) {
+            throw new IndexOutOfBoundsException("Invalid index " + String.valueOf(index));
+        }
         return list.get(index);
     }
 
     public void reorder(int sourceIndex, int destinationIndex) throws IndexOutOfBoundsException {
+        if (!hasIndex(sourceIndex) || !hasIndex(destinationIndex)) {
+            throw new IndexOutOfBoundsException("Invalid index");
+        }
         int afterRemoveDestinationIndex = destinationIndex;
         if (sourceIndex < destinationIndex) {
             afterRemoveDestinationIndex--;
@@ -78,5 +90,13 @@ public class Playlist {
 
     public void setEventListener(EventListener eventListener) {
         this.eventListener = eventListener;
+    }
+
+    public boolean hasIndex(int index) {
+        return index >= 0 && index < size();
+    }
+
+    public boolean isEmpty() {
+        return size() == 0;
     }
 }

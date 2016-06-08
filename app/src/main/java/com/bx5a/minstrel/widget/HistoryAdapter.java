@@ -21,6 +21,7 @@ package com.bx5a.minstrel.widget;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +30,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bx5a.minstrel.R;
+import com.bx5a.minstrel.exception.NoThumbnailAvailableException;
 import com.bx5a.minstrel.player.Playable;
 import com.bx5a.minstrel.utils.ThumbnailManager;
 
@@ -58,16 +60,22 @@ public class HistoryAdapter extends ArrayAdapter<Playable> {
         view.setTag(playable);
 
         TextView title = (TextView) view.findViewById(R.id.listItemHistory_title);
-        title.setText(playable.title());
+        title.setText(playable.getTitle());
         final ImageView image = (ImageView) view.findViewById(R.id.listItemHistory_thumbnail);
 
         // display thumbnail
-        ThumbnailManager.getInstance().retreive(playable.getThumbnailURL(), new ThumbnailManager.BitmapAvailableListener() {
-            @Override
-            public void onBitmapAvailable(Bitmap bitmap) {
-                image.setImageBitmap(bitmap);
-            }
-        });
+        try {
+            ThumbnailManager.getInstance().retreive(playable.getThumbnailURL(),
+                    new ThumbnailManager.BitmapAvailableListener() {
+                @Override
+                public void onBitmapAvailable(Bitmap bitmap) {
+                    image.setImageBitmap(bitmap);
+                }
+            });
+        } catch (NoThumbnailAvailableException e) {
+            Log.w("HistoryAdapter", "Can't access thrumbnail for playable " + playable.getTitle());
+            e.printStackTrace();
+        }
 
         return view;
     }

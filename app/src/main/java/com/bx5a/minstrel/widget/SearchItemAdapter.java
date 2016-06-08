@@ -37,6 +37,7 @@ import java.util.List;
 /**
  * Adapter used by the search fragment
  */
+// TODO: should be an ArrayAdapter<Playable>
 public class SearchItemAdapter extends ArrayAdapter<YoutubeVideo> {
     private Context context;
 

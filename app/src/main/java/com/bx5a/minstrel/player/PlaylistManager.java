@@ -19,6 +19,8 @@
 
 package com.bx5a.minstrel.player;
 
+import com.bx5a.minstrel.exception.EmptyPlaylistException;
+
 import java.security.InvalidParameterException;
 
 /**
@@ -130,8 +132,16 @@ public class PlaylistManager {
         move(selectedIndex + 1);
     }
 
+    public boolean canMoveToNext() {
+        return selectedIndex + 1 < playlist.size();
+    }
+
     public void previous() throws IndexOutOfBoundsException {
         move(selectedIndex - 1);
+    }
+
+    public boolean canMoveToPrevious() {
+        return selectedIndex - 1 >= 0;
     }
 
     /**
@@ -147,9 +157,14 @@ public class PlaylistManager {
         selectedIndexEventListener.onChanged();
     }
 
-    public Playable getSelected() {
+    /**
+     *
+     * @return the currenty selected playable
+     * @throws EmptyPlaylistException if this.size() == 0
+     */
+    public Playable getSelected() throws EmptyPlaylistException {
         if (size() == 0) {
-            return null;
+            throw new EmptyPlaylistException("Can't get from an empty playlist");
         }
         return playlist.get(selectedIndex);
     }
@@ -168,5 +183,14 @@ public class PlaylistManager {
 
     public void setSelectedIndexEventListener(SelectedIndexEventListener selectedIndexEventListener) {
         this.selectedIndexEventListener = selectedIndexEventListener;
+    }
+
+    // helpers
+    public boolean hasIndex(int index) {
+        return playlist.hasIndex(index);
+    }
+
+    public boolean isEmpty() {
+        return playlist.isEmpty();
     }
 }

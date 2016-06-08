@@ -22,7 +22,6 @@ package com.bx5a.minstrel.widget;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,7 +35,6 @@ import com.bx5a.minstrel.player.MasterPlayer;
 import com.bx5a.minstrel.player.Playable;
 import com.bx5a.minstrel.player.Position;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -82,17 +80,14 @@ public class HistoryFragment extends Fragment {
                 MasterPlayer.getInstance().enqueue(playableList.get(position), Position.Next);
             }
         });
+
         historyView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                try {
-                    Playable playable = playableList.get(position);
-                    PlayableDialogFragment fragment = new PlayableDialogFragment();
-                    fragment.initForSearch(getContext(), playable, position);
-                    fragment.show(getActivity().getSupportFragmentManager(), "Enqueue");
-                } catch (IndexOutOfBoundsException exception) {
-                    Log.w("HistoryFragment", "Can't get long pressed playable: " + exception.getMessage());
-                }
+                Playable playable = playableList.get(position);
+                PlayableDialogFragment fragment = new PlayableDialogFragment();
+                fragment.initForSearch(getContext(), playable, position);
+                fragment.show(getActivity().getSupportFragmentManager(), "Enqueue");
                 return true;
             }
         });
@@ -108,12 +103,7 @@ public class HistoryFragment extends Fragment {
 
         @Override
         protected List<Playable> doInBackground(History... params) {
-            try {
-                return params[0].get();
-            } catch (NullPointerException e) {
-                Log.w("HistoryFragment", "Couldn't retrieve history: " + e.getMessage());
-                return new ArrayList<Playable>();
-            }
+            return params[0].get();
         }
 
         @Override

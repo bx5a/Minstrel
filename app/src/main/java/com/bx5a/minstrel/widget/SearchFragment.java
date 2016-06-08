@@ -22,7 +22,6 @@ package com.bx5a.minstrel.widget;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -80,13 +79,9 @@ public class SearchFragment extends Fragment {
                     return false;
                 }
                 Playable playable = (Playable) o;
-                try {
-                    PlayableDialogFragment fragment = new PlayableDialogFragment();
-                    fragment.initForSearch(getContext(), playable, position);
-                    fragment.show(getActivity().getSupportFragmentManager(), "Enqueue");
-                } catch (IndexOutOfBoundsException exception) {
-                    Log.w("HistoryFragment", "Can't get long pressed playable: " + exception.getMessage());
-                }
+                PlayableDialogFragment fragment = new PlayableDialogFragment();
+                fragment.initForSearch(getContext(), playable, position);
+                fragment.show(getActivity().getSupportFragmentManager(), "Enqueue");
                 return true;
             }
         });

@@ -19,37 +19,25 @@
 
 package com.bx5a.minstrel.player;
 
-import java.io.IOException;
+import com.bx5a.minstrel.exception.NoThumbnailAvailableException;
+
 import java.util.List;
 
 public interface Playable {
-    // Let you initialize only for its id
-    void initFromId(String id) throws IOException;
+    String getClassName();
 
-    void load() throws IllegalStateException;
-
-    boolean isLoaded();
-
-    void play() throws IllegalStateException;
-
-    void pause() throws IllegalStateException;
-
-    String title();
-
+    void play();
+    void pause();
     /**
      * Seek to the given position
-     * @param position is value in the [0, 1] interval. 0 representing the beginning and 1 the end
-     *                 of the song
-     * @throws IllegalStateException
+     * @param position is a value in the [0, 1] interval
      */
-    void seekTo(float position) throws IllegalStateException;
+    void seekTo(float position);
 
+    String getTitle();
     String getId();
-
-    // can return an empty string if no thumbnail available
-    String getThumbnailURL();
-
-    String duration();
+    String getThumbnailURL() throws NoThumbnailAvailableException;
+    String getDuration();
 
     Player getPlayer();
 

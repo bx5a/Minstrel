@@ -23,7 +23,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -131,14 +130,12 @@ public class PlayerControlBarFragment extends Fragment {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                float progress = (float) (seekBar.getProgress()) / seekBar.getMax();
-                try {
-                    MasterPlayer.getInstance().seekTo(progress);
-                } catch (IndexOutOfBoundsException exception) {
-                    Log.i("PlayerControlFragment", "Can't seek: " + exception.getMessage());
-                } catch (IllegalStateException exception) {
-                    Log.i("PlayerControlFragment", "Can't seek: " + exception.getMessage());
+                // can seek on an empty playlist
+                if (MasterPlayer.getInstance().getPlaylist().isEmpty()) {
+                    return;
                 }
+                float progress = (float) (seekBar.getProgress()) / seekBar.getMax();
+                MasterPlayer.getInstance().seekTo(progress);
             }
         });
     }
@@ -151,18 +148,17 @@ public class PlayerControlBarFragment extends Fragment {
         playPauseButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
-                    MasterPlayer player = MasterPlayer.getInstance();
-                    if (player.isPlaying()) {
-                        player.pause();
-                        return;
-                    }
-                    player.play();
-                } catch (IndexOutOfBoundsException exception) {
-                    Log.i("PlayerControlFragment", "Can't play/pause: " + exception.getMessage());
-                } catch (IllegalStateException exception) {
-                    Log.i("PlayerControlFragment", "Can't play/pause: " + exception.getMessage());
+                MasterPlayer player = MasterPlayer.getInstance();
+                // can't start an empty playlist
+                if (player.getPlaylist().isEmpty()) {
+                    return;
                 }
+
+                if (player.isPlaying()) {
+                    player.pause();
+                    return;
+                }
+                player.play();
             }
         });
     }
@@ -180,16 +176,22 @@ public class PlayerControlBarFragment extends Fragment {
                 new GestureDetector.SimpleOnGestureListener() {
                     @Override
                     public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-                        try {
-                            if (e1.getX() < e2.getX()) {
-                                MasterPlayer.getInstance().previous();
-                                return true;
-                            }
-                            MasterPlayer.getInstance().next();
-                        } catch (IndexOutOfBoundsException exception) {
-                            Log.i("PlayerControlFragment", "Couldn't change song: " + exception.getMessage());
-                        } catch (IllegalStateException exception) {
-                            Log.i("PlayerControlFragment", "Couldn't change song: " + exception.getMessage());
+                        MasterPlayer player = MasterPlayer.getInstance();
+                        boolean moveToNextRequested = e1.getX() > e2.getX();
+
+                        // TODO: display no next/previous available messages ??
+                        if (moveToNextRequested && !player.canMoveToNext()) {
+                            return true;
+                        }
+                        if (!moveToNextRequested && !player.canMoveToPrevious()) {
+                            return true;
+                        }
+
+                        // do previous / next
+                        if (moveToNextRequested) {
+                            player.next();
+                        } else {
+                            player.previous();
                         }
                         return true;
                     }
@@ -216,18 +218,20 @@ public class PlayerControlBarFragment extends Fragment {
     }
 
     private void displayCurrentAndNextSong() {
-        Playlist playlist = MasterPlayer.getInstance().getPlaylist();
-        int currentSongIndex = MasterPlayer.getInstance().getCurrentPlayableIndex();
-
-        // default values
         currentSongText.setText("");
         nextSongText.setText("");
 
-        if (currentSongIndex < playlist.size()) {
-            currentSongText.setText(playlist.get(currentSongIndex).title());
+        Playlist playlist = MasterPlayer.getInstance().getPlaylist();
+        if (playlist.isEmpty()) {
+            return;
         }
-        if (currentSongIndex + 1 < playlist.size()) {
-            nextSongText.setText(playlist.get(currentSongIndex + 1).title());
+
+        int currentSongIndex = MasterPlayer.getInstance().getCurrentPlayableIndex();
+        if (playlist.hasIndex(currentSongIndex)) {
+            currentSongText.setText(playlist.get(currentSongIndex).getTitle());
+        }
+        if (playlist.hasIndex(currentSongIndex + 1)) {
+            nextSongText.setText(playlist.get(currentSongIndex + 1).getTitle());
         }
     }
 }

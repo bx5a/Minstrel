@@ -35,6 +35,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bx5a.minstrel.R;
+import com.bx5a.minstrel.exception.NoThumbnailAvailableException;
 import com.bx5a.minstrel.player.MasterPlayer;
 import com.bx5a.minstrel.player.MasterPlayerEventListener;
 import com.bx5a.minstrel.player.Playable;
@@ -99,16 +100,23 @@ public class PlayerControlFragment extends Fragment {
                 new GestureDetector.SimpleOnGestureListener() {
                     @Override
                     public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-                        try {
-                            if (e1.getX() < e2.getX()) {
-                                MasterPlayer.getInstance().previous();
-                                return true;
-                            }
-                            MasterPlayer.getInstance().next();
-                        } catch (IndexOutOfBoundsException exception) {
-                            Log.i("PlayerControlFragment", "Couldn't change song: " + exception.getMessage());
-                        } catch (IllegalStateException exception) {
-                            Log.i("PlayerControlFragment", "Couldn't change song: " + exception.getMessage());
+                        // TODO: factorize with PlayerControlBarFragment
+                        MasterPlayer player = MasterPlayer.getInstance();
+                        boolean moveToNextRequested = e1.getX() > e2.getX();
+
+                        // TODO: display no next/previous available messages ??
+                        if (moveToNextRequested && !player.canMoveToNext()) {
+                            return true;
+                        }
+                        if (!moveToNextRequested && !player.canMoveToPrevious()) {
+                            return true;
+                        }
+
+                        // do previous / next
+                        if (moveToNextRequested) {
+                            player.next();
+                        } else {
+                            player.previous();
                         }
                         return true;
                     }
@@ -136,49 +144,45 @@ public class PlayerControlFragment extends Fragment {
         previous.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
-                    MasterPlayer.getInstance().previous();
-                } catch (IllegalStateException exception) {
-                    Log.w("PlayerControlFragment", "Can't move to previous: " + exception.getMessage());
-                } catch (IndexOutOfBoundsException exception) {
-                    Log.i("PlayerControlFragment", exception.getMessage());
+                if (!MasterPlayer.getInstance().canMoveToPrevious()) {
+                    return;
                 }
+
+                MasterPlayer.getInstance().previous();
             }
         });
         playPause.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
-                    if (MasterPlayer.getInstance().isPlaying()) {
-                        MasterPlayer.getInstance().pause();
-                        return;
-                    }
-                    MasterPlayer.getInstance().play();
-                } catch (IllegalStateException exception) {
-                    Log.w("PlayerControlFragment", "Can't play: " + exception.getMessage());
-                } catch (IndexOutOfBoundsException exception) {
-                    Log.i("PlayerControlFragment", exception.getMessage());
+                if (MasterPlayer.getInstance().getPlaylist().isEmpty()) {
+                    return;
                 }
+
+                if (MasterPlayer.getInstance().isPlaying()) {
+                    MasterPlayer.getInstance().pause();
+                    return;
+                }
+                MasterPlayer.getInstance().play();
             }
         });
         next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
-                    MasterPlayer.getInstance().next();
-                } catch (IllegalStateException exception) {
-                    Log.w("PlayerControlFragment", "Can't move to next: " + exception.getMessage());
-                } catch (IndexOutOfBoundsException exception) {
-                    Log.i("PlayerControlFragment", exception.getMessage());
+                if (!MasterPlayer.getInstance().canMoveToNext()) {
+                    return;
                 }
+
+                MasterPlayer.getInstance().next();
             }
         });
         playlist.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (onPlaylistClickListener != null) {
-                    onPlaylistClickListener.onClick(v);
+                if (onPlaylistClickListener == null) {
+                    return;
                 }
+
+                onPlaylistClickListener.onClick(v);
             }
         });
     }
@@ -232,11 +236,20 @@ public class PlayerControlFragment extends Fragment {
 
     private void updateThumbnails() {
         Playlist playlist = MasterPlayer.getInstance().getPlaylist();
+        if (playlist.isEmpty()) {
+            return;
+        }
         int currentIndex = MasterPlayer.getInstance().getCurrentPlayableIndex();
 
-        updateThumbnail(playlist, currentIndex - 1, previousThumbnail, previousTitle);
-        updateThumbnail(playlist, currentIndex, currentThumbnail, currentTitle);
-        updateThumbnail(playlist, currentIndex + 1, nextThumbnail, nextTitle);
+        if (playlist.hasIndex(currentIndex - 1)) {
+            updateThumbnail(playlist, currentIndex - 1, previousThumbnail, previousTitle);
+        }
+        if (playlist.hasIndex(currentIndex)) {
+            updateThumbnail(playlist, currentIndex, currentThumbnail, currentTitle);
+        }
+        if (playlist.hasIndex(currentIndex + 1)) {
+            updateThumbnail(playlist, currentIndex + 1, nextThumbnail, nextTitle);
+        }
     }
 
     private void updateThumbnail(Playlist playlist, int playableIndex, final ImageView image, TextView text) {
@@ -244,17 +257,19 @@ public class PlayerControlFragment extends Fragment {
         image.setImageResource(android.R.color.transparent);
         text.setText("");
         // update
+        Playable playable = playlist.get(playableIndex);
+        text.setText(playable.getTitle());
         try {
-            Playable playable = playlist.get(playableIndex);
-            text.setText(playable.title());
-            ThumbnailManager.getInstance().retreive(playable.getThumbnailURL(), new ThumbnailManager.BitmapAvailableListener() {
+            ThumbnailManager.getInstance().retreive(playable.getThumbnailURL(),
+                    new ThumbnailManager.BitmapAvailableListener() {
                 @Override
                 public void onBitmapAvailable(Bitmap bitmap) {
                     image.setImageBitmap(bitmap);
                 }
             });
-        } catch (IndexOutOfBoundsException exception) {
-            Log.w("PlayerControlFragment", "Can't update thumbnail: " + exception.getMessage());
+        } catch (NoThumbnailAvailableException e) {
+            Log.i("PlayerControlFragment", "Can't get thumbnail for playable " + playable.getTitle());
+            e.printStackTrace();
         }
     }
 }

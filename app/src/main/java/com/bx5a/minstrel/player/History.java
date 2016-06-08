@@ -26,8 +26,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.bx5a.minstrel.LocalSQLiteOpenHelper;
+import com.bx5a.minstrel.exception.NotInitializedException;
+import com.bx5a.minstrel.exception.PlayableCreationException;
+import com.bx5a.minstrel.utils.PlayableFactory;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -70,11 +72,11 @@ public class History {
     /**
      * get at most getMaximumSize() previously played playable
      * @return the list of playables
-     * @throws NullPointerException if context isn't set
+     * @throws NotInitializedException if context isn't set
      */
-    public List<Playable> get() throws NullPointerException {
+    public List<Playable> get() throws NotInitializedException {
         if (context == null) {
-            throw new NullPointerException("Context needs to be set in History before using it");
+            throw new NotInitializedException("Context needs to be set in History before using it");
         }
 
         LocalSQLiteOpenHelper helper = new LocalSQLiteOpenHelper(context);
@@ -90,18 +92,11 @@ public class History {
             String stringClass = cursor.getString(cursor.getColumnIndex("classType"));
             String playableId = cursor.getString(cursor.getColumnIndex("playableId"));
             try {
-                Class<?> className = Class.forName(stringClass);
-                Playable playable = (Playable) className.newInstance();
-                playable.initFromId(playableId);
+                Playable playable = PlayableFactory.getInstance().create(stringClass, playableId);
                 playableList.add(playable);
-            } catch (ClassNotFoundException e) {
-                Log.i("History", "Class not found : " + stringClass);
-            } catch (InstantiationException e) {
-                Log.i("History", "Couldn't instantiate " + stringClass + " : " + e.getMessage());
-            } catch (IllegalAccessException e) {
-                Log.i("History", "Illegal access to " + stringClass + " : " + e.getMessage());
-            } catch (IOException e) {
-                Log.i("History", "Couldn't init playable " + stringClass + " : " + e.getMessage());
+            } catch (PlayableCreationException e) {
+                Log.e("History", e.getMessage());
+                e.printStackTrace();
             }
         }
 
@@ -114,14 +109,14 @@ public class History {
     /**
      * Add a playable to the history
      * @param playable the song to be stored
-     * @throws NullPointerException if context isn't set
+     * @throws NotInitializedException if context isn't set
      */
-    public void store(Playable playable) throws NullPointerException {
+    public void store(Playable playable) throws NotInitializedException {
         if (context == null) {
-            throw new NullPointerException("Context needs to be set in History before using it");
+            throw new NotInitializedException("Context needs to be set in History before using it");
         }
 
-        String classType = playable.getClass().getName();
+        String classType = playable.getClassName();
         String id = playable.getId();
 
         LocalSQLiteOpenHelper helper = new LocalSQLiteOpenHelper(context);

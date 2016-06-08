@@ -21,7 +21,6 @@ package com.bx5a.minstrel.widget;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,8 +28,8 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.bx5a.minstrel.R;
-import com.bx5a.minstrel.player.MasterPlayerEventListener;
 import com.bx5a.minstrel.player.MasterPlayer;
+import com.bx5a.minstrel.player.MasterPlayerEventListener;
 import com.bx5a.minstrel.player.Playable;
 import com.bx5a.minstrel.player.Playlist;
 
@@ -91,25 +90,16 @@ public class PlaylistFragment extends Fragment {
         playlistView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                try {
-                    MasterPlayer.getInstance().setCurrentPlayableIndex((int) id);
-                } catch (IndexOutOfBoundsException exception) {
-                    // shouldn't happen
-                    Log.e("PlaylistFragment", "Can't switch playable index: " + exception.getMessage());
-                }
+                MasterPlayer.getInstance().setCurrentPlayableIndex(position);
             }
         });
         playlistView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                try {
-                    Playable playable = MasterPlayer.getInstance().getPlaylist().get((int)id);
-                    PlayableDialogFragment fragment = new PlayableDialogFragment();
-                    fragment.initForPlaylist(getContext(), playable, position);
-                    fragment.show(getActivity().getSupportFragmentManager(), "Enqueue");
-                } catch (IndexOutOfBoundsException exception) {
-                    Log.w("PlaylistFragment", "Can't get long pressed playable: " + exception.getMessage());
-                }
+                Playable playable = MasterPlayer.getInstance().getPlaylist().get(position);
+                PlayableDialogFragment fragment = new PlayableDialogFragment();
+                fragment.initForPlaylist(getContext(), playable, position);
+                fragment.show(getActivity().getSupportFragmentManager(), "Enqueue");
                 return true;
             }
         });
