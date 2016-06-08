@@ -29,6 +29,7 @@ public interface Player {
     }
     interface OnPlayerStoppedListener {
         void onPlayerStopped();
+        void onPlayerError();
     }
 
     void initialize(OnInitializedListener listener, OnPlayerStoppedListener playerStoppedListener);

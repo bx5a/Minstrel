@@ -183,13 +183,23 @@ public class MasterPlayer {
         return new Player.OnPlayerStoppedListener() {
             @Override
             public void onPlayerStopped() {
-                // is we can move to next, do it
+                // if we can move to next, do it
                 if (playlistManager.canMoveToNext()) {
                     next();
                     return;
                 }
                 autoPlayNext = true;
                 notifyPlaylistFinished();
+            }
+
+            @Override
+            public void onPlayerError() {
+                // if we can move to next, do it
+                if (playlistManager.canMoveToNext()) {
+                    next();
+                    return;
+                }
+                autoPlayNext = true;
             }
         };
     }

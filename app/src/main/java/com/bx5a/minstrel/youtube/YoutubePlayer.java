@@ -157,26 +157,34 @@ public class YoutubePlayer implements Player {
                     Log.e("YoutubePlayer", "On loaded called even if loadingTask isn't set");
                     return;
                 }
-                Task currentTask = loadingTask;
-                loadingTask = null;
-                currentTask.markAsComplete();
+                markLoadingTaskAsComplete();
             }
 
             @Override
             public void onVideoEnded() {
-                videoStopped();
-            }
-
-            @Override
-            public void onError(YouTubePlayer.ErrorReason errorReason) {
-                videoStopped();
-            }
-
-            private void videoStopped() {
                 loadedId = "";
                 if (playerStoppedListener != null) {
                     playerStoppedListener.onPlayerStopped();
                 }
+            }
+
+            @Override
+            public void onError(YouTubePlayer.ErrorReason errorReason) {
+                // TODO: pop error info ??
+                // if we are still in the loading process. We can say that it failed
+                if (loadingTask != null) {
+                    markLoadingTaskAsComplete();
+                }
+                loadedId = "";
+                if (playerStoppedListener != null) {
+                    playerStoppedListener.onPlayerError();
+                }
+            }
+
+            private void markLoadingTaskAsComplete() {
+                Task currentTask = loadingTask;
+                loadingTask = null;
+                currentTask.markAsComplete();
             }
         });
 
