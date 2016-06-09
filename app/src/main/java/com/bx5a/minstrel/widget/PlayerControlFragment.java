@@ -32,6 +32,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.bx5a.minstrel.R;
@@ -56,6 +57,7 @@ public class PlayerControlFragment extends Fragment {
     private ImageButton playPause;
     private ImageButton next;
     private ImageButton playlist;
+    private SeekBar seekBar;
     private MasterPlayerEventListener playerEventListener;
     private View.OnClickListener onPlaylistClickListener;
 
@@ -73,6 +75,7 @@ public class PlayerControlFragment extends Fragment {
         playPause = (ImageButton) view.findViewById(R.id.fragmentPlayer_playPause);
         next = (ImageButton) view.findViewById(R.id.fragmentPlayer_next);
         playlist = (ImageButton) view.findViewById(R.id.fragmentPlayer_playlist);
+        seekBar = (SeekBar) view.findViewById(R.id.fragmentPlayer_seekBar);
 
         // TODO: understand why those 2 lines are necessary to match parent
         LinearLayout rootLayout = (LinearLayout) view.findViewById(R.id.fragmentPlayer_rootLayout);
@@ -81,10 +84,12 @@ public class PlayerControlFragment extends Fragment {
                                               LinearLayout.LayoutParams.MATCH_PARENT));
 
         initSwipe(view.findViewById(R.id.fragmentPlayer_thumbnailLayout));
+        initSeekBarControls();
         connectPlayerEvents();
         connectButtonEvents();
         updateThumbnails();
         updatePlayPauseIcon();
+        updateSeekBar();
 
         return view;
     }
@@ -93,6 +98,34 @@ public class PlayerControlFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         MasterPlayer.getInstance().removeMasterPlayerEventListener(playerEventListener);
+    }
+
+    private void initSeekBarControls() {
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                // can seek on an empty playlist
+                if (MasterPlayer.getInstance().getPlaylist().isEmpty()) {
+                    return;
+                }
+                float progress = (float) (seekBar.getProgress()) / seekBar.getMax();
+                MasterPlayer.getInstance().seekTo(progress);
+            }
+        });
+    }
+
+    private void updateSeekBar() {
+        seekBar.setProgress((int) (MasterPlayer.getInstance().getCurrentPosition() * seekBar.getMax()));
     }
 
     private void initSwipe(View view) {
@@ -201,7 +234,7 @@ public class PlayerControlFragment extends Fragment {
 
             @Override
             public void onCurrentTimeChange() {
-
+                updateSeekBar();
             }
 
             @Override

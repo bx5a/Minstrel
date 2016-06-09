@@ -9,6 +9,9 @@
         android:id="@+id/viewPlayer_seekBar"
         android:layout_width="match_parent"
         android:layout_height="2dp"
+        android:progressDrawable="@drawable/transparent_background_progress_horizontal"
+        android:minHeight="5dp"
+        android:maxHeight="5dp"
         android:thumb="@color/transparent"/>
 
     <LinearLayout
