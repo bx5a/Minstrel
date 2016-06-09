@@ -180,15 +180,15 @@ public class YoutubePlayer implements Player {
                     playerStoppedListener.onPlayerError();
                 }
             }
-
-            private void markLoadingTaskAsComplete() {
-                Task currentTask = loadingTask;
-                loadingTask = null;
-                currentTask.markAsComplete();
-            }
         });
 
         MasterPlayer.getInstance().registerPlayer(this);
+    }
+
+    private void markLoadingTaskAsComplete() {
+        Task currentTask = loadingTask;
+        loadingTask = null;
+        currentTask.markAsComplete();
     }
 
     public void load(final YoutubeVideo video) throws IllegalStateException {
@@ -196,6 +196,12 @@ public class YoutubePlayer implements Player {
             throw new IllegalStateException("Youtube player isn't initialized");
         }
         pause();
+
+        // if a current loading task is pending, mark it as finished as we won't wait for its
+        // completion anyway
+        if (loadingTask != null) {
+            markLoadingTaskAsComplete();
+        }
 
         loadingTask = new Task() {
             @Override
