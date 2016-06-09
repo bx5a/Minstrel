@@ -112,7 +112,8 @@ public class PlayerControlBarFragment extends Fragment {
     private void initSeekBar() {
         // TODO: should be done in xml but it's so much more work...
         seekBar.getProgressDrawable().setColorFilter(Color.BLACK, android.graphics.PorterDuff.Mode.MULTIPLY);
-        seekBar.getThumb().mutate().setAlpha(0);
+        //seekBar.getThumb().mutate().setAlpha(0);
+        seekBar.setPadding(0, 0, 0, 0);
         // init current time updater service
         Intent intent = new Intent(getActivity(), CurrentTimeUpdaterService.class);
         getActivity().startService(intent);

@@ -45,7 +45,7 @@
                     android:name="com.bx5a.minstrel.widget.PlayerControlBarFragment"
                     android:id="@+id/activityMain_playerControls"
                     android:layout_width="match_parent"
-                    android:layout_height="60dp"
+                    android:layout_height="50dp"
                     tools:layout="@layout/fragment_player_bar" />
                 <fragment
                     android:name="com.google.android.youtube.player.YouTubePlayerSupportFragment"
