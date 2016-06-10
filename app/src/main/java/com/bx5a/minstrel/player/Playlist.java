@@ -84,6 +84,15 @@ public class Playlist {
         eventListener.onChanged();
     }
 
+    public boolean contains(Playable playable) {
+        for (Playable containedPlayable : list) {
+            if (containedPlayable.isEqual(playable)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public int size() {
         return list.size();
     }

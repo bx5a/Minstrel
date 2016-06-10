@@ -50,4 +50,6 @@ public interface Playable {
      * @param eventListener
      */
     void asyncGetRelated(RelatedAvailableListener eventListener);
+
+    boolean isEqual(Playable playable);
 }

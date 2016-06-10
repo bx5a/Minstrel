@@ -230,4 +230,9 @@ public class YoutubeVideo implements Playable {
             eventListener.onRelatedAvailable(relatedList);
         }
     }
+
+    @Override
+    public boolean isEqual(Playable playable) {
+        return playable.getId().equals(getId());
+    }
 }

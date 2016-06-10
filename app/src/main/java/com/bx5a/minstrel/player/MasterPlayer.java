@@ -118,13 +118,25 @@ public class MasterPlayer {
         playable.asyncGetRelated(new Playable.RelatedAvailableListener() {
             @Override
             public void onRelatedAvailable(List<Playable> related) {
-                if (related.size() == 0) {
+                List<Playable> newRelated = removeAlreadyInPlaylist(related);
+                if (newRelated.size() == 0) {
                     Log.w("PlaylistManager", "No related found can't auto enqueue");
                     return;
                 }
-                enqueue(related.get(0), position);
+                enqueue(newRelated.get(0), position);
             }
         });
+    }
+
+    private List<Playable> removeAlreadyInPlaylist(List<Playable> playables) {
+        ArrayList<Playable> newPlayables = new ArrayList<>();
+        for (Playable playable: playables) {
+            if (getPlaylist().contains(playable)) {
+                continue;
+            }
+            newPlayables.add(playable);
+        }
+        return newPlayables;
     }
 
     /**
