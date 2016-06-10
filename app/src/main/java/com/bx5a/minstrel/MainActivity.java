@@ -58,6 +58,7 @@ import com.bx5a.minstrel.widget.ImageAndTextButton;
 import com.bx5a.minstrel.widget.PlayerControlBarFragment;
 import com.bx5a.minstrel.widget.PlayerControlFragment;
 import com.bx5a.minstrel.widget.PlaylistFragment;
+import com.bx5a.minstrel.widget.PopularFragment;
 import com.bx5a.minstrel.widget.SearchFragment;
 import com.bx5a.minstrel.widget.UndoDialogFragment;
 import com.bx5a.minstrel.youtube.YoutubePlayer;
@@ -87,6 +88,7 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
     private PlaylistFragment playlistFragment;
     private SearchFragment searchFragment;
     private HistoryFragment historyFragment;
+    private PopularFragment popularFragment;
     private PlayerControlFragment playerControlFragment;
     private AboutFragment aboutFragment;
     private GeneralPreferenceFragment generalPreferenceFragment;
@@ -121,7 +123,7 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
         initMasterPlayerBehavior();
         initPreferencesListener();
 
-        displayHistory();
+        displayPopular();
 
         updateScreenRotationPreference();
     }
@@ -213,6 +215,7 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
     }
 
     private void initFragments() {
+        popularFragment = new PopularFragment();
         historyFragment = new HistoryFragment();
         searchFragment = new SearchFragment();
         playlistFragment = new PlaylistFragment();
@@ -408,6 +411,11 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
 
     private void displaySearch() {
         displayFragment(searchFragment);
+        closeSidePanel();
+    }
+
+    private void displayPopular() {
+        displayFragment(popularFragment);
         closeSidePanel();
     }
 

@@ -25,24 +25,35 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.bx5a.minstrel.R;
-import com.bx5a.minstrel.player.History;
 import com.bx5a.minstrel.player.Playable;
+import com.bx5a.minstrel.youtube.YoutubeSearchEngine;
+import com.bx5a.minstrel.youtube.YoutubeVideo;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by guillaume on 10/06/2016.
  */
-public class HistoryFragment extends ThumbnailPlayableListFragment {
+public class PopularFragment extends ThumbnailPlayableListFragment {
     @Override
     public View onCreateView(LayoutInflater layoutInflater, ViewGroup viewGroup, Bundle bundle) {
         View view = super.onCreateView(layoutInflater, viewGroup, bundle);
-        setTitle(R.string.history);
+        setTitle(R.string.popular);
         return view;
     }
 
     @Override
     protected List<Playable> getPlayableList() {
-        return History.getInstance().get();
+        ArrayList<Playable> playables = new ArrayList<>();
+        try {
+            for (YoutubeVideo video : YoutubeSearchEngine.getInstance().getPopularVideos()) {
+                playables.add(video);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return playables;
     }
 }

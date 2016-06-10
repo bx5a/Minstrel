@@ -8,10 +8,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/history"
+        android:id="@+id/fragmentThumbnailPlayableList_title"
         style="@style/TitleStyle"/>
 
     <ProgressBar
-        android:id="@+id/fragmentHistory_progressBar"
+        android:id="@+id/fragmentThumbnailPlayableList_progressBar"
         style="?android:attr/progressBarStyleLarge"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -21,7 +22,7 @@
     <GridView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/fragmentHistory_list"
+        android:id="@+id/fragmentThumbnailPlayableList_list"
         android:columnWidth="90dp"
         android:numColumns="auto_fit"
         android:horizontalSpacing="10dp"

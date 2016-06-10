@@ -39,10 +39,10 @@ import java.util.List;
 /**
  * Adapter used in the History fragment
  */
-public class HistoryAdapter extends ArrayAdapter<Playable> {
+public class ThumbnailPlayableAdapter extends ArrayAdapter<Playable> {
     private Context context;
 
-    public HistoryAdapter(Context context, List<Playable> payableList) {
+    public ThumbnailPlayableAdapter(Context context, List<Playable> payableList) {
         super(context, -1, payableList);
         this.context = context;
     }
@@ -53,15 +53,15 @@ public class HistoryAdapter extends ArrayAdapter<Playable> {
         if (view == null) {
             LayoutInflater layoutInflater =
                     (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            view = layoutInflater.inflate(R.layout.listitem_history, null);
+            view = layoutInflater.inflate(R.layout.listitem_thumbnail_playable, null);
         }
         final Playable playable = getItem(position);
 
         view.setTag(playable);
 
-        TextView title = (TextView) view.findViewById(R.id.listItemHistory_title);
+        TextView title = (TextView) view.findViewById(R.id.listItemThumbnailPlayable_title);
         title.setText(playable.getTitle());
-        final ImageView image = (ImageView) view.findViewById(R.id.listItemHistory_thumbnail);
+        final ImageView image = (ImageView) view.findViewById(R.id.listItemThumbnailPlayable_thumbnail);
 
         // display thumbnail
         try {
@@ -73,7 +73,7 @@ public class HistoryAdapter extends ArrayAdapter<Playable> {
                 }
             });
         } catch (NoThumbnailAvailableException e) {
-            Log.w("HistoryAdapter", "Can't access thrumbnail for playable " + playable.getTitle());
+            Log.w("ThumbnailPlayableAdapter", "Can't access thrumbnail for playable " + playable.getTitle());
             e.printStackTrace();
         }
 
