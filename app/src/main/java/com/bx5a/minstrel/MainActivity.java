@@ -38,6 +38,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 
@@ -61,6 +62,8 @@ import com.bx5a.minstrel.widget.UndoDialogFragment;
 import com.bx5a.minstrel.youtube.YoutubePlayer;
 import com.bx5a.minstrel.youtube.YoutubeSearchEngine;
 import com.google.android.youtube.player.YouTubePlayerSupportFragment;
+
+import java.io.InvalidObjectException;
 
 import static android.support.v7.preference.PreferenceManager.getDefaultSharedPreferences;
 
@@ -294,10 +297,15 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
 
     private void initUndoDialog() {
         undoDialogFragment = new UndoDialogFragment();
-        UndoDialogFragment undoDialogFragmentCopy = undoDialogFragment;
         MasterPlayer.getInstance().setPlaylistManagerEventListener(new PlaylistManager.EventListener() {
             @Override
             public void onEnqueued(final int index, final int selectedIndex) {
+                // if undo dialog is already present, we can't handle it. Just return
+                if (undoDialogFragment.isAdded()) {
+                    Log.w("MainActivity", "Can't handle an enqueue event while undo dialog is still visible");
+                    return;
+                }
+
                 undoDialogFragment.setText("Added to list");
                 undoDialogFragment.setOnClickListener(new View.OnClickListener() {
                     @Override
