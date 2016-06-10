@@ -24,6 +24,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
@@ -38,7 +39,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 
@@ -49,6 +49,7 @@ import com.bx5a.minstrel.player.MasterPlayerEventListener;
 import com.bx5a.minstrel.player.Playlist;
 import com.bx5a.minstrel.player.PlaylistManager;
 import com.bx5a.minstrel.player.Position;
+import com.bx5a.minstrel.utils.GeneralPreferencesEnum;
 import com.bx5a.minstrel.utils.LowBrightnessOnIdleActivity;
 import com.bx5a.minstrel.widget.AboutFragment;
 import com.bx5a.minstrel.widget.GeneralPreferenceFragment;
@@ -62,8 +63,6 @@ import com.bx5a.minstrel.widget.UndoDialogFragment;
 import com.bx5a.minstrel.youtube.YoutubePlayer;
 import com.bx5a.minstrel.youtube.YoutubeSearchEngine;
 import com.google.android.youtube.player.YouTubePlayerSupportFragment;
-
-import java.io.InvalidObjectException;
 
 import static android.support.v7.preference.PreferenceManager.getDefaultSharedPreferences;
 
@@ -124,6 +123,7 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
 
         displayHistory();
 
+        updateScreenRotationPreference();
     }
 
     @Override
@@ -207,6 +207,7 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
     private void openSidePanel() {
         drawerLayout.openDrawer(Gravity.START);
     }
+
     private void closeSidePanel() {
         drawerLayout.closeDrawer(Gravity.START);
     }
@@ -362,7 +363,8 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
             @Override
             public void onPlaylistFinish() {
                 // if the preferences says not to auto_enqueue
-                if (!getDefaultSharedPreferences(context).getBoolean("auto_enqueue", true)) {
+                if (!getDefaultSharedPreferences(context).getBoolean("auto_enqueue",
+                        getDefaultPreferencesValue(R.bool.auto_enqueue_default))) {
                     return;
                 }
                 Playlist currentPlaylist = MasterPlayer.getInstance().getPlaylist();
@@ -430,7 +432,8 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
     }
 
     private void initTheme() {
-        if (getDefaultSharedPreferences(this).getBoolean("dark_theme", true)) {
+        if (getDefaultSharedPreferences(this).getBoolean("dark_theme",
+                getDefaultPreferencesValue(R.bool.dark_theme_default))) {
             setTheme(R.style.AppTheme_Dark);
             currentThemeIsDark = true;
             return;
@@ -440,40 +443,55 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
     }
 
     private void initPreferencesListener() {
-        final MainActivity currentActivity = this;
         final boolean isCurrentThemeDark = currentThemeIsDark;
         preferencesListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
             @Override
             public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-                String themeKey = "dark_theme";
-                if (!key.equals(themeKey)) {
-                    return;
+                GeneralPreferencesEnum enumKey = GeneralPreferencesEnum.fromString(key);
+                switch (enumKey) {
+                    case DARK_THEME:
+                        boolean darkTheme = sharedPreferences.getBoolean(key,
+                                getDefaultPreferencesValue(R.bool.dark_theme_default));
+                        // if the theme is already the right one, no need to restart
+                        if ((darkTheme && isCurrentThemeDark) || (!darkTheme && !isCurrentThemeDark)) {
+                            return;
+                        }
+                        darkThemePreferenceChanged();
+                        break;
+                    case DISABLE_SCREEN_ROTATION:
+                        updateScreenRotationPreference();
+                        break;
                 }
-
-                boolean darkTheme =
-                        getDefaultSharedPreferences(currentActivity).getBoolean(themeKey, true);
-
-                // if the theme is already the right one, no need to restart
-                if ((darkTheme && isCurrentThemeDark) || (!darkTheme && !isCurrentThemeDark)) {
-                    return;
-                }
-
-                // else we should restart the app to take that option into account
-                new AlertDialog.Builder(currentActivity)
-                        .setTitle("Restart ?")
-                        .setMessage("To change the theme, we need to restart the application. Do you want to do it now ?")
-                        .setNegativeButton(android.R.string.no, null)
-                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface arg0, int arg1) {
-                                Intent intent = getIntent();
-                                finish();
-                                startActivity(intent);
-                            }
-                        }).create().show();
             }
         };
         getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(preferencesListener);
     }
+
+    private void darkThemePreferenceChanged() {
+        new AlertDialog.Builder(this)
+                .setTitle("Restart ?")
+                .setMessage("To change the theme, we need to restart the application. Do you want to do it now ?")
+                .setNegativeButton(android.R.string.no, null)
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface arg0, int arg1) {
+                        Intent intent = getIntent();
+                        finish();
+                        startActivity(intent);
+                    }
+                }).create().show();
+    }
+
+    private void updateScreenRotationPreference() {
+        boolean screenRotationIsDisabled =
+                getDefaultSharedPreferences(this).getBoolean("disable_screen_rotation",
+                        getDefaultPreferencesValue(R.bool.disable_screen_rotation_default));
+        if (screenRotationIsDisabled) {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
+            return;
+        }
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+    }
+
 
     private void deinitPreferencesListener() {
         getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(preferencesListener);

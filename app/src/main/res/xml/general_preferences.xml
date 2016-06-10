@@ -5,20 +5,25 @@
             android:persistent="true"
             android:summary="@string/manage_brightness_summary"
             android:title="@string/manage_brightness_title"
-            android:defaultValue="true"
+            android:defaultValue="@bool/brightness_management_default"
             android:key="brightness_management"/>
         <CheckBoxPreference
             android:persistent="true"
             android:title="@string/dark_theme_preference_title"
-            android:defaultValue="true"
+            android:defaultValue="@bool/dark_theme_default"
             android:key="dark_theme"/>
+        <CheckBoxPreference
+            android:persistent="true"
+            android:title="@string/screen_rotation_disabled_preference_title"
+            android:defaultValue="@bool/disable_screen_rotation_default"
+            android:key="disable_screen_rotation"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/playlist_preferences">
         <CheckBoxPreference
             android:persistent="true"
             android:summary="@string/never_ending_playlist_summary"
             android:title="@string/never_ending_playlist_title"
-            android:defaultValue="true"
+            android:defaultValue="@bool/auto_enqueue_default"
             android:key="auto_enqueue"/>
     </PreferenceCategory>
 </PreferenceScreen>

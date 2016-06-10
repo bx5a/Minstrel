@@ -24,6 +24,8 @@ import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.view.WindowManager;
 
+import com.bx5a.minstrel.R;
+
 import static android.support.v7.preference.PreferenceManager.getDefaultSharedPreferences;
 
 public class LowBrightnessOnIdleActivity  extends AppCompatActivity {
@@ -45,7 +47,8 @@ public class LowBrightnessOnIdleActivity  extends AppCompatActivity {
                 mainHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        if (!getDefaultSharedPreferences(getBaseContext()).getBoolean("brightness_management", true)) {
+                        if (!getDefaultSharedPreferences(getBaseContext()).getBoolean("brightness_management",
+                                getDefaultPreferencesValue(R.bool.brightness_management_default))) {
                             return;
                         }
                         WindowManager.LayoutParams layoutParameters = getWindow().getAttributes();
@@ -81,5 +84,9 @@ public class LowBrightnessOnIdleActivity  extends AppCompatActivity {
     public void onPause() {
         super.onPause();
         IdleManager.getInstance().resetIdleTimer();
+    }
+
+    protected boolean getDefaultPreferencesValue(int resid) {
+        return getResources().getBoolean(resid);
     }
 }

@@ -56,4 +56,10 @@
         <item name="android:textStyle">bold</item>
         <item name="android:padding">15dp</item>
     </style>
+
+    <!-- default values for preferences -->
+    <bool name="brightness_management_default">true</bool>
+    <bool name="dark_theme_default">true</bool>
+    <bool name="disable_screen_rotation_default">false</bool>
+    <bool name="auto_enqueue_default">true</bool>
 </resources>
