@@ -55,6 +55,11 @@ import java.util.List;
  * Search engine for YouTube
  */
 public class YoutubeSearchEngine {
+    public interface SearchList<T> {
+        void setMaxResults(long maxResults);
+        List<T> execute() throws IOException;
+    }
+
     private YouTube youtube;
     private String countryCode;
     private final long MAX_RESULT_NUMBER = 15;
@@ -90,17 +95,17 @@ public class YoutubeSearchEngine {
                 }).setApplicationName(context.getString(R.string.app_name)).build();
     }
 
-    public List<String> relatedVideoIds(YoutubeVideo video)
+    public SearchList<String> relatedVideoIds(YoutubeVideo video)
             throws IOException, NotInitializedException {
         if (youtube == null) {
             throw new NotInitializedException("YoutubeSearchEngine's uninitialized");
         }
-        SearchList list = new SearchList(youtube, countryCode, getMusicCategoryId());
+        IdList list = new IdList(youtube, countryCode, getMusicCategoryId());
         list.setRelatedToVideoId(video.getId());
-        return list.execute();
+        return list;
     }
 
-    public List<YoutubeVideo> getVideoDetails(List<String> videoIds)
+    public SearchList<YoutubeVideo> getVideoDetails(List<String> videoIds)
             throws IOException, NotInitializedException {
         if (youtube == null) {
             throw new NotInitializedException("YoutubeSearchEngine's uninitialized");
@@ -110,19 +115,20 @@ public class YoutubeSearchEngine {
 
         VideoList list = new VideoList(youtube, countryCode, getMusicCategoryId());
         list.setId(videoId);
-        return list.execute();
+        list.setMaxResults(videoIds.size());
+        return list;
     }
 
-    public List<YoutubeVideo> getPopularVideos() throws IOException, NotInitializedException {
+    public SearchList<YoutubeVideo> getPopularVideos() throws IOException, NotInitializedException {
         if (youtube == null) {
             throw new NotInitializedException("YoutubeSearchEngine not initialized");
         }
         VideoList list = new VideoList(youtube, countryCode, getMusicCategoryId());
         list.setChart("mostPopular");
-        return list.execute();
+        return list;
     }
 
-    public List<YoutubeVideo> search(String keywords) throws IOException, NotInitializedException {
+    public SearchList<YoutubeVideo> search(String keywords) throws IOException, NotInitializedException {
         if (youtube == null) {
             throw new NotInitializedException("YoutubeSearchEngine not initialized");
         }
@@ -137,9 +143,9 @@ public class YoutubeSearchEngine {
                     "Can't auto complete: " + e.getMessage() + " Defaulting to normal query");
         }
 
-        SearchList list = new SearchList(youtube, countryCode, getMusicCategoryId());
+        IdList list = new IdList(youtube, countryCode, getMusicCategoryId());
         list.setQ(keywords);
-        return getVideoDetails(list.execute());
+        return new IdToVideoList(list);
     }
 
     /**
@@ -211,9 +217,9 @@ public class YoutubeSearchEngine {
     }
 
     // Helpers
-    private class SearchList {
+    private class IdList implements SearchList<String> {
         private YouTube.Search.List query;
-        public SearchList(YouTube youtube, String countryCode, String categoryId)
+        public IdList(YouTube youtube, String countryCode, String categoryId)
                 throws IOException {
             query = youtube.search().list("id");
             query.setKey(DeveloperKey.DEVELOPER_KEY);
@@ -229,6 +235,9 @@ public class YoutubeSearchEngine {
         public void setRelatedToVideoId(String relatedToVideoId) {
             query.setRelatedToVideoId(relatedToVideoId);
         }
+        public void setMaxResults(long maxResults) {
+            query.setMaxResults(maxResults);
+        }
         public List<String> execute() throws IOException {
             SearchListResponse response = query.execute();
 
@@ -240,7 +249,7 @@ public class YoutubeSearchEngine {
         }
     }
 
-    private class VideoList {
+    private class VideoList implements SearchList<YoutubeVideo> {
         private YouTube.Videos.List query;
         public VideoList(YouTube youtube, String countryCode, String categoryId)
                 throws IOException {
@@ -257,6 +266,9 @@ public class YoutubeSearchEngine {
         }
         public void setId(String id) {
             query.setId(id);
+        }
+        public void setMaxResults(long maxResults) {
+            query.setMaxResults(maxResults);
         }
         public List<YoutubeVideo> execute() throws IOException {
             VideoListResponse response = query.execute();
@@ -276,6 +288,21 @@ public class YoutubeSearchEngine {
             }
 
             return youtubeVideos;
+        }
+    }
+
+    private class IdToVideoList implements SearchList<YoutubeVideo> {
+        private IdList idList;
+        public IdToVideoList(IdList idList) {
+            this.idList = idList;
+        }
+        @Override
+        public void setMaxResults(long maxResults) {
+            idList.setMaxResults(maxResults);
+        }
+        @Override
+        public List<YoutubeVideo> execute() throws IOException {
+            return getVideoDetails(idList.execute()).execute();
         }
     }
 }

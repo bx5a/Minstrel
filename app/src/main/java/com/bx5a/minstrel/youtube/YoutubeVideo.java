@@ -65,7 +65,9 @@ public class YoutubeVideo implements Playable {
 
     public static ArrayList<YoutubeVideo> search(String keywords) throws IOException {
         ArrayList<YoutubeVideo> videos = new ArrayList<>();
-        for (YoutubeVideo video : YoutubeSearchEngine.getInstance().search(keywords)) {
+        YoutubeSearchEngine.SearchList<YoutubeVideo> videoList =
+                YoutubeSearchEngine.getInstance().search(keywords);
+        for (YoutubeVideo video : videoList.execute()) {
             videos.add(video);
         }
         return videos;
@@ -74,8 +76,9 @@ public class YoutubeVideo implements Playable {
     public void initFromId(String id) throws IOException {
         ArrayList<String> ids = new ArrayList<>();
         ids.add(id);
-        YoutubeSearchEngine searchEngine = YoutubeSearchEngine.getInstance();
-        List<YoutubeVideo> videos = searchEngine.getVideoDetails(ids);
+        YoutubeSearchEngine.SearchList<YoutubeVideo> videoList =
+                YoutubeSearchEngine.getInstance().getVideoDetails(ids);
+        List<YoutubeVideo> videos = videoList.execute();
         if (videos.size() != 1) {
             throw new IOException("Couldn't initialize from id: search engine error");
         }
@@ -202,8 +205,9 @@ public class YoutubeVideo implements Playable {
         @Override
         protected List<Playable> doInBackground(YoutubeVideo... params) {
             try {
-                List<String> relatedIds =
+                YoutubeSearchEngine.SearchList<String> idList =
                         YoutubeSearchEngine.getInstance().relatedVideoIds(params[0]);
+                List<String> relatedIds = idList.execute();
                 ArrayList<Playable> result = new ArrayList<>();
                 for (String id : relatedIds) {
                     YoutubeVideo related = new YoutubeVideo();
@@ -213,6 +217,7 @@ public class YoutubeVideo implements Playable {
                 return result;
             } catch (IOException e) {
                 Log.w("YoutubeVideo", "Couldn't retrieve related: " + e.getMessage());
+                e.printStackTrace();
                 return new ArrayList<>();
             }
         }

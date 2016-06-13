@@ -20,6 +20,7 @@
 package com.bx5a.minstrel.widget;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,12 +48,20 @@ public class PopularFragment extends ThumbnailPlayableListFragment {
     @Override
     protected List<Playable> getPlayableList() {
         ArrayList<Playable> playables = new ArrayList<>();
+
+        List<YoutubeVideo> videos;
         try {
-            for (YoutubeVideo video : YoutubeSearchEngine.getInstance().getPopularVideos()) {
-                playables.add(video);
-            }
+            YoutubeSearchEngine.SearchList<YoutubeVideo> videoList =
+                    YoutubeSearchEngine.getInstance().getPopularVideos();
+            videos = videoList.execute();
         } catch (IOException e) {
+            Log.e("PopularFragment", "Can't get popular videos: " + e.getMessage());
             e.printStackTrace();
+            return playables;
+        }
+
+        for (YoutubeVideo video : videos) {
+            playables.add(video);
         }
         return playables;
     }
