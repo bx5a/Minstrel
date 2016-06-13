@@ -37,6 +37,7 @@ public interface Playable {
     String getTitle();
     String getId();
     String getThumbnailURL() throws NoThumbnailAvailableException;
+    String getHighResolutionThumbnailURL() throws NoThumbnailAvailableException;
     String getDuration();
 
     Player getPlayer();

@@ -298,7 +298,7 @@ public class PlayerControlFragment extends Fragment {
         Playable playable = playlist.get(playableIndex);
         text.setText(playable.getTitle());
         try {
-            ThumbnailManager.getInstance().retreive(playable.getThumbnailURL(),
+            ThumbnailManager.getInstance().retreive(playable.getHighResolutionThumbnailURL(),
                     new ThumbnailManager.BitmapAvailableListener() {
                 @Override
                 public void onBitmapAvailable(Bitmap bitmap) {

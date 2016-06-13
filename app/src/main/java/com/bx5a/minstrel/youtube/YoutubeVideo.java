@@ -60,6 +60,7 @@ public class YoutubeVideo implements Playable {
     private String id;
     protected String title;
     private String thumbnailURL;
+    private String highResolutionThumbnailURL;
     private BigInteger viewCount;
     private String duration;
 
@@ -142,6 +143,11 @@ public class YoutubeVideo implements Playable {
     }
 
     @Override
+    public String getHighResolutionThumbnailURL() {
+        return highResolutionThumbnailURL;
+    }
+
+    @Override
     public String getDuration() {
         // youtube duration is ISO 8601 string (format is PT[MINUTES]M[SECONDS]S)
         Pattern pattern = Pattern.compile("PT(.*)M(.*)S");
@@ -180,6 +186,10 @@ public class YoutubeVideo implements Playable {
 
     public void setThumbnailURL(String thumbnailURL) {
         this.thumbnailURL = thumbnailURL;
+    }
+
+    public void setHighResolutionThumbnailURL(String url) {
+        highResolutionThumbnailURL = url;
     }
 
     public BigInteger getViewCount() {
