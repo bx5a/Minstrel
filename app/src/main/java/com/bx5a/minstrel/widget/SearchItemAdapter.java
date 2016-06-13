@@ -21,6 +21,7 @@ package com.bx5a.minstrel.widget;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +30,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bx5a.minstrel.R;
+import com.bx5a.minstrel.exception.NoThumbnailAvailableException;
 import com.bx5a.minstrel.utils.ThumbnailManager;
 import com.bx5a.minstrel.youtube.YoutubeVideo;
 
@@ -66,12 +68,17 @@ public class SearchItemAdapter extends ArrayAdapter<YoutubeVideo> {
         viewCount.setText(
                 String.format(context.getString(R.string.view_count), video.getViewCount()));
 
-        ThumbnailManager.getInstance().retreive(video.getThumbnailURL(), new ThumbnailManager.BitmapAvailableListener() {
-            @Override
-            public void onBitmapAvailable(Bitmap bitmap) {
-                thumbnail.setImageBitmap(bitmap);
-            }
-        });
+        try {
+            ThumbnailManager.getInstance().retreive(video.getThumbnailURL(), new ThumbnailManager.BitmapAvailableListener() {
+                @Override
+                public void onBitmapAvailable(Bitmap bitmap) {
+                    thumbnail.setImageBitmap(bitmap);
+                }
+            });
+        } catch (NoThumbnailAvailableException e) {
+            Log.w("SearchItemAdapter", "No thumbnail available for " + video.getTitle());
+            e.printStackTrace();
+        }
 
         return view;
     }

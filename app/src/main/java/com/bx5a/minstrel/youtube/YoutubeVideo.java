@@ -22,6 +22,7 @@ package com.bx5a.minstrel.youtube;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.bx5a.minstrel.exception.NoThumbnailAvailableException;
 import com.bx5a.minstrel.exception.PlayableCreationException;
 import com.bx5a.minstrel.player.Playable;
 import com.bx5a.minstrel.player.Player;
@@ -138,12 +139,18 @@ public class YoutubeVideo implements Playable {
     }
 
     @Override
-    public String getThumbnailURL() {
+    public String getThumbnailURL() throws NoThumbnailAvailableException {
+        if (thumbnailURL == null) {
+            throw new NoThumbnailAvailableException("No thumbnail available");
+        }
         return thumbnailURL;
     }
 
     @Override
-    public String getHighResolutionThumbnailURL() {
+    public String getHighResolutionThumbnailURL() throws NoThumbnailAvailableException {
+        if (highResolutionThumbnailURL == null) {
+            throw new NoThumbnailAvailableException("No thumbnail available");
+        }
         return highResolutionThumbnailURL;
     }
 
