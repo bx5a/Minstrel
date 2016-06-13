@@ -431,6 +431,10 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
 
     private void displayFragment(Fragment fragment) {
         closeKeyboard();
+        // don't show fragment if already visible
+        if (fragment.isVisible()) {
+            return;
+        }
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.activityMain_topPlaceholder, fragment);
         transaction.addToBackStack(null);
