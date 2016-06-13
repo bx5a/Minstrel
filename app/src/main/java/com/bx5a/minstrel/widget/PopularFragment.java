@@ -38,6 +38,8 @@ import java.util.List;
  * Created by guillaume on 10/06/2016.
  */
 public class PopularFragment extends ThumbnailPlayableListFragment {
+    private final long MAX_RESULT_NUMBER = 30;
+
     @Override
     public View onCreateView(LayoutInflater layoutInflater, ViewGroup viewGroup, Bundle bundle) {
         View view = super.onCreateView(layoutInflater, viewGroup, bundle);
@@ -53,6 +55,7 @@ public class PopularFragment extends ThumbnailPlayableListFragment {
         try {
             YoutubeSearchEngine.SearchList<YoutubeVideo> videoList =
                     YoutubeSearchEngine.getInstance().getPopularVideos();
+            videoList.setMaxResults(MAX_RESULT_NUMBER);
             videos = videoList.execute();
         } catch (IOException e) {
             Log.e("PopularFragment", "Can't get popular videos: " + e.getMessage());
