@@ -63,19 +63,12 @@ public class YoutubeVideo implements Playable {
     private BigInteger viewCount;
     private String duration;
 
-    public static ArrayList<YoutubeVideo> search(String keywords) {
-        // TODO: should search engine be singleton ?
-        YoutubeSearchEngine youtubeSearchEngine = YoutubeSearchEngine.getInstance();
-        List<YoutubeVideo> videos = youtubeSearchEngine.search(keywords);
-        if (videos == null) {
-            return null;
+    public static ArrayList<YoutubeVideo> search(String keywords) throws IOException {
+        ArrayList<YoutubeVideo> videos = new ArrayList<>();
+        for (YoutubeVideo video : YoutubeSearchEngine.getInstance().search(keywords)) {
+            videos.add(video);
         }
-
-        ArrayList<YoutubeVideo> items = new ArrayList<>();
-        for (YoutubeVideo video : videos) {
-            items.add(video);
-        }
-        return items;
+        return videos;
     }
 
     public void initFromId(String id) throws IOException {

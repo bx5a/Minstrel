@@ -22,6 +22,7 @@ package com.bx5a.minstrel.widget;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,6 +37,7 @@ import com.bx5a.minstrel.player.Position;
 import com.bx5a.minstrel.utils.IdleManager;
 import com.bx5a.minstrel.youtube.YoutubeVideo;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -184,7 +186,14 @@ public class SearchFragment extends Fragment {
             if (Thread.currentThread().isInterrupted()) {
                 return;
             }
-            videos = YoutubeVideo.search(keywords);
+
+            try {
+                videos = YoutubeVideo.search(keywords);
+            } catch (IOException e) {
+                // TODO: notify the user of that error somehow
+                Log.e("SearchFragment", "Can't search: " + keywords);
+                return;
+            }
 
             // notify on main thread
             if (Thread.currentThread().isInterrupted()) {

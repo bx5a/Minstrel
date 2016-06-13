@@ -24,6 +24,7 @@ import android.util.Log;
 
 import com.bx5a.minstrel.R;
 import com.bx5a.minstrel.exception.CategoryNotFoundException;
+import com.bx5a.minstrel.exception.NotInitializedException;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.http.javanet.NetHttpTransport;
@@ -89,9 +90,9 @@ public class YoutubeSearchEngine {
                 }).setApplicationName(context.getString(R.string.app_name)).build();
     }
 
-    private YouTube.Search.List initIdQuery() throws IOException, NullPointerException {
+    private YouTube.Search.List initIdQuery() throws IOException, NotInitializedException {
         if (youtube == null) {
-            throw new NullPointerException("YoutubeSearchEngine's uninitialized");
+            throw new NotInitializedException("YoutubeSearchEngine's uninitialized");
         }
         YouTube.Search.List query = youtube.search().list("id");
         query.setKey(DeveloperKey.DEVELOPER_KEY);
@@ -113,23 +114,24 @@ public class YoutubeSearchEngine {
         return ids;
     }
 
-    private List<String> searchVideoIds(String keywords) throws IOException, NullPointerException {
+    private List<String> searchVideoIds(String keywords)
+            throws IOException, NotInitializedException {
         YouTube.Search.List query = initIdQuery();
         query.setQ(keywords);
         return executeIdQuery(query);
     }
 
     public List<String> relatedVideoIds(YoutubeVideo video)
-            throws IOException, NullPointerException {
+            throws IOException, NotInitializedException {
         YouTube.Search.List query = initIdQuery();
         query.setRelatedToVideoId(video.getId());
         return executeIdQuery(query);
     }
 
     public List<YoutubeVideo> getVideoDetails(List<String> videoIds)
-            throws IOException, NullPointerException {
+            throws IOException, NotInitializedException {
         if (youtube == null) {
-            throw new NullPointerException("YoutubeSearchEngine's uninitialized");
+            throw new NotInitializedException("YoutubeSearchEngine's uninitialized");
         }
         Joiner stringJoiner = Joiner.on(',');
         String videoId = stringJoiner.join(videoIds);
@@ -140,7 +142,7 @@ public class YoutubeSearchEngine {
         return executeDetailQuery(query);
     }
 
-    public List<YoutubeVideo> getPopularVideos() throws IOException, NullPointerException {
+    public List<YoutubeVideo> getPopularVideos() throws IOException, NotInitializedException {
         YouTube.Videos.List query = initDetailQuery();
         query.setChart("mostPopular");
         query.setRegionCode(countryCode);
@@ -180,7 +182,10 @@ public class YoutubeSearchEngine {
     }
 
     // TODO: should return a wrapper on YouTube.Videos.List since executeDetailQuery wouldn't work for query initialized differently
-    private YouTube.Videos.List initDetailQuery() throws IOException {
+    private YouTube.Videos.List initDetailQuery() throws IOException, NotInitializedException {
+        if (youtube == null) {
+            throw new NotInitializedException("YoutubeSearchEngine not initialized");
+        }
         YouTube.Videos.List query =
                 youtube.videos().list("contentDetails,snippet,statistics");
         query.setKey(DeveloperKey.DEVELOPER_KEY);
@@ -210,31 +215,23 @@ public class YoutubeSearchEngine {
         return youtubeVideos;
     }
 
-    public List<YoutubeVideo> search(String keywords) {
-        // update keywords using highest score suggested one
-        List<String> suggestedKeywords = autoComplete(keywords);
-        if (suggestedKeywords.size() != 0) {
-            keywords = suggestedKeywords.get(0);
+    public List<YoutubeVideo> search(String keywords) throws IOException, NotInitializedException {
+        if (youtube == null) {
+            throw new NotInitializedException("YoutubeSearchEngine not initialized");
         }
 
-        // search with given keyword
-        List<String> videoIds;
         try {
-            videoIds = searchVideoIds(keywords);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
+            List<String> suggestedKeywords = autoComplete(keywords);
+            if (suggestedKeywords.size() > 0) {
+                keywords = suggestedKeywords.get(0);
+            }
+        } catch (JSONException e) {
+            Log.e("YoutubeSearchEngine",
+                    "Can't auto complete: " + e.getMessage() + " Defaulting to normal query");
         }
 
-        // for each answer, search for details
-        List<YoutubeVideo> videos;
-        try {
-            videos = getVideoDetails(videoIds);
-            return videos;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
+        List<String> videoIds = searchVideoIds(keywords);
+        return getVideoDetails(videoIds);
     }
 
     /**
@@ -242,38 +239,38 @@ public class YoutubeSearchEngine {
      * @param keyword
      * @return
      */
-    private List<String> autoComplete(String keyword) {
+    private List<String> autoComplete(String keyword) throws IOException, JSONException {
         ArrayList<String> suggestions = new ArrayList<>();
 
         String path = "complete/search";
         String query = "client=firefox&ds=yt&q=" + keyword.replace(" ", "+");
 
-        try {
-            URL suggestionApiUrl = new URL("http", "suggestqueries.google.com", path + "?" + query);
+        URL suggestionApiUrl = new URL("http", "suggestqueries.google.com", path + "?" + query);
 
-            // open a connection to the autocompletion engine
-            HttpURLConnection connection = (HttpURLConnection) suggestionApiUrl.openConnection();
+        // open a connection to the autocompletion engine
+        HttpURLConnection connection = (HttpURLConnection) suggestionApiUrl.openConnection();
+
+        String readQuery = "";
+        try {
             InputStream in = new BufferedInputStream(connection.getInputStream());
 
             // read
             InputStreamReader reader = new InputStreamReader(in);
             int c;
-            String readQuery = "";
             while ((c = reader.read()) != -1) {
-                readQuery = readQuery + (char)c;
+                readQuery = readQuery + (char) c;
             }
-
-            // response is an array of size 2: 0 = keyword / 1 = array of response
-            JSONArray array = new JSONArray(readQuery).getJSONArray(1);
-            for (int index = 0; index < array.length(); index++) {
-                suggestions.add(array.getString(index));
-            }
-
-            connection.disconnect();
         } catch (IOException e) {
-            Log.w("YoutubeSearchEngine", "Can't autocomplete " + keyword + " : " + e.getMessage());
-        } catch (JSONException e) {
-            Log.w("YoutubeSearchEngine", "Can't parse json for keyword " + keyword + " : " + e.getMessage());
+            throw e;
+        } finally {
+            // Force the closing of the connection
+            connection.disconnect();
+        }
+
+        // response is an array of size 2: 0 = keyword / 1 = array of response
+        JSONArray array = new JSONArray(readQuery).getJSONArray(1);
+        for (int index = 0; index < array.length(); index++) {
+            suggestions.add(array.getString(index));
         }
 
         return suggestions;
