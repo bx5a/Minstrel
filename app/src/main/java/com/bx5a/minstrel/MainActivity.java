@@ -28,10 +28,12 @@ import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.Gravity;
@@ -41,6 +43,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.bx5a.minstrel.legacy.SoftKeyboardHandledLayout;
 import com.bx5a.minstrel.player.History;
@@ -103,6 +106,8 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
     protected void onCreate(Bundle savedInstanceState) {
         initTheme();
         super.onCreate(savedInstanceState);
+        updateScreenRotationPreference();
+
         setContentView(R.layout.activity_main);
 
         drawerLayout = (SoftKeyboardHandledLayout) findViewById(R.id.activityMain_drawer);
@@ -122,10 +127,9 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
         initFragments();
         initMasterPlayerBehavior();
         initPreferencesListener();
+        initTitleClickEvent();
 
-        displayPopular();
-
-        updateScreenRotationPreference();
+        displayInitialFragment();
     }
 
     @Override
@@ -388,6 +392,29 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
         MasterPlayer.getInstance().removeMasterPlayerEventListener(playerEventListener);
     }
 
+    private void initTitleClickEvent() {
+        // from http://stackoverflow.com/questions/24838155/set-onclick-listener-on-action-bar-title-in-android
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            // Disable the default and enable the custom
+            actionBar.setDisplayShowTitleEnabled(false);
+            actionBar.setDisplayShowCustomEnabled(true);
+            View customView = getLayoutInflater().inflate(R.layout.actionbar_title, null);
+            // Get the textview of the title
+            TextView customTitle = (TextView) customView.findViewById(R.id.actionbarTitle);
+
+            // Set the on click listener for the title
+            customTitle.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    displayInitialFragment();
+                }
+            });
+            // Apply the custom view
+            actionBar.setCustomView(customView);
+        }
+    }
+
     // from http://stackoverflow.com/questions/1109022/close-hide-the-android-soft-keyboard
     private void closeKeyboard() {
         View view = getCurrentFocus();
@@ -408,6 +435,10 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
         transaction.replace(R.id.activityMain_topPlaceholder, fragment);
         transaction.addToBackStack(null);
         transaction.commit();
+    }
+
+    private void displayInitialFragment() {
+        displayPopular();
     }
 
     private void displayPlaylist() {
