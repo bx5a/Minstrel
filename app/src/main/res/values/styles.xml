@@ -62,4 +62,5 @@
     <bool name="dark_theme_default">true</bool>
     <bool name="disable_screen_rotation_default">false</bool>
     <bool name="auto_enqueue_default">true</bool>
+    <bool name="show_undo_dialog_default">true</bool>
 </resources>

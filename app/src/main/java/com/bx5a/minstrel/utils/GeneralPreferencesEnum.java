@@ -28,7 +28,8 @@ public enum GeneralPreferencesEnum {
     DARK_THEME,
     BRIGHTNESS_MANAGEMENT,
     DISABLE_SCREEN_ROTATION,
-    AUTO_ENQUEUE;
+    AUTO_ENQUEUE,
+    SHOW_UNDO_DIALOG;
 
     static public GeneralPreferencesEnum fromString(String value) throws InvalidParameterException {
         if (value.equals("dark_theme")) {
@@ -39,6 +40,8 @@ public enum GeneralPreferencesEnum {
             return DISABLE_SCREEN_ROTATION;
         } else if (value.equals("auto_enqueue")) {
             return AUTO_ENQUEUE;
+        } else if (value.equals("show_undo_dialog")) {
+            return SHOW_UNDO_DIALOG;
         }
         throw new InvalidParameterException("Can't convert string " + value + " to enum");
     }

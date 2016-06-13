@@ -25,5 +25,11 @@
             android:title="@string/never_ending_playlist_title"
             android:defaultValue="@bool/auto_enqueue_default"
             android:key="auto_enqueue"/>
+        <CheckBoxPreference
+            android:persistent="true"
+            android:summary="@string/show_undo_dialog_summary"
+            android:title="@string/show_undo_dialog_title"
+            android:defaultValue="@bool/show_undo_dialog_default"
+            android:key="show_undo_dialog"/>
     </PreferenceCategory>
 </PreferenceScreen>

@@ -304,6 +304,12 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
         MasterPlayer.getInstance().setPlaylistManagerEventListener(new PlaylistManager.EventListener() {
             @Override
             public void onEnqueued(final int index, final int selectedIndex) {
+                // preferences: don't show undo dialog
+                if (!getDefaultSharedPreferences(getApplicationContext()).getBoolean("show_undo_dialog",
+                        getDefaultPreferencesValue(R.bool.show_undo_dialog_default))) {
+                    return;
+                }
+
                 // if undo dialog is already present, we can't handle it. Just return
                 if (undoDialogFragment.isAdded()) {
                     Log.w("MainActivity", "Can't handle an enqueue event while undo dialog is still visible");
