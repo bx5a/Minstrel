@@ -25,6 +25,7 @@ import com.bx5a.minstrel.player.Playable;
 import com.bx5a.minstrel.youtube.YoutubeVideo;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -33,6 +34,7 @@ import java.util.Map;
 public class PlayableFactory {
     public interface PlayableCreator {
         Playable create(String id) throws PlayableCreationException;
+        List<Playable> createList(List<String> ids) throws PlayableCreationException;
     }
 
     private static PlayableFactory ourInstance = new PlayableFactory();
@@ -66,11 +68,22 @@ public class PlayableFactory {
         playableCreatorMap.put(className, playableCreator);
     }
 
-    public Playable create(String className, String id) throws ClassNotRegisteredException, PlayableCreationException {
+    public Playable create(String className, String id)
+            throws ClassNotRegisteredException, PlayableCreationException {
         if (!playableCreatorMap.containsKey(className)) {
             throw new ClassNotRegisteredException(
                     className + " Not found. Make sure that class is added in the registerPlayableClasses() function");
         }
         return playableCreatorMap.get(className).create(id);
+    }
+
+    public List<Playable> createList(String className, List<String> ids)
+            throws ClassNotRegisteredException, PlayableCreationException {
+        if (!playableCreatorMap.containsKey(className)) {
+            throw new ClassNotRegisteredException(
+                    className + " Not found. Make sure that class is added in the registerPlayableClasses() function");
+        }
+
+        return playableCreatorMap.get(className).createList(ids);
     }
 }

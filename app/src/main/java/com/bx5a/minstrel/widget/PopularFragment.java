@@ -27,6 +27,7 @@ import android.view.ViewGroup;
 
 import com.bx5a.minstrel.R;
 import com.bx5a.minstrel.player.Playable;
+import com.bx5a.minstrel.utils.SearchList;
 import com.bx5a.minstrel.youtube.YoutubeSearchEngine;
 import com.bx5a.minstrel.youtube.YoutubeVideo;
 
@@ -53,7 +54,7 @@ public class PopularFragment extends ThumbnailPlayableListFragment {
 
         List<YoutubeVideo> videos;
         try {
-            YoutubeSearchEngine.SearchList<YoutubeVideo> videoList =
+            SearchList<YoutubeVideo> videoList =
                     YoutubeSearchEngine.getInstance().getPopularVideos();
             videoList.setMaxResults(MAX_RESULT_NUMBER);
             videos = videoList.execute();

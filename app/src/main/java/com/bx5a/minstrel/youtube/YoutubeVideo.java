@@ -52,6 +52,21 @@ public class YoutubeVideo implements Playable {
                 }
                 return playable;
             }
+
+            @Override
+            public List<Playable> createList(List<String> ids) throws PlayableCreationException {
+                List<YoutubeVideo> videos;
+                try {
+                    videos = YoutubeSearchEngine.getInstance().getVideoDetails(ids).execute();
+                } catch (IOException e) {
+                    throw new PlayableCreationException("Couldn't init YoutubeVideos: " + e.getMessage());
+                }
+                ArrayList<Playable> playables = new ArrayList<>();
+                for(YoutubeVideo video : videos) {
+                    playables.add(video);
+                }
+                return playables;
+            }
         }, getStaticClassName());
     }
 

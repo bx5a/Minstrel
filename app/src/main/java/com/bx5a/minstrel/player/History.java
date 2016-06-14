@@ -29,9 +29,13 @@ import com.bx5a.minstrel.LocalSQLiteOpenHelper;
 import com.bx5a.minstrel.exception.NotInitializedException;
 import com.bx5a.minstrel.exception.PlayableCreationException;
 import com.bx5a.minstrel.utils.PlayableFactory;
+import com.bx5a.minstrel.utils.SearchList;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Singleton that contains the history of played song
@@ -39,7 +43,7 @@ import java.util.List;
 public class History {
     private static History instance;
     private Context context;
-    private int SONG_NUMBER = 20;
+    private int MAX_RESULT_NUMBER = 20;
 
     public static History getInstance() {
         if (instance == null) {
@@ -62,14 +66,6 @@ public class History {
     }
 
     /**
-     * Gives the maximum number of song the get() function will return
-     * @return explained size
-     */
-    public int getMaximumSize() {
-        return SONG_NUMBER;
-    }
-
-    /**
      *
      * @return boolean whether the context is or isn't set
      */
@@ -82,36 +78,12 @@ public class History {
      * @return the list of playables
      * @throws NotInitializedException if context isn't set
      */
-    public List<Playable> get() throws NotInitializedException {
+    public SearchList<Playable> get() throws NotInitializedException {
         if (context == null) {
             throw new NotInitializedException("Context needs to be set in History before using it");
         }
 
-        LocalSQLiteOpenHelper helper = new LocalSQLiteOpenHelper(context);
-        SQLiteDatabase db = helper.getReadableDatabase();
-
-        // we order from most recent to older. Get only the first 20 entries
-        Cursor cursor = db.query(true, "History",
-                new String[]{"id", "classType", "playableId", "date"},
-                null, null, null, null, "date DESC", String.valueOf(SONG_NUMBER));
-
-        ArrayList<Playable> playableList = new ArrayList<>();
-        while (cursor.moveToNext()) {
-            String stringClass = cursor.getString(cursor.getColumnIndex("classType"));
-            String playableId = cursor.getString(cursor.getColumnIndex("playableId"));
-            try {
-                Playable playable = PlayableFactory.getInstance().create(stringClass, playableId);
-                playableList.add(playable);
-            } catch (PlayableCreationException e) {
-                Log.e("History", e.getMessage());
-                e.printStackTrace();
-            }
-        }
-
-        cursor.close();
-        db.close();
-
-        return playableList;
+        return new HistoryList();
     }
 
     /**
@@ -156,5 +128,57 @@ public class History {
         cursor.close();
         db.close();
         return exists;
+    }
+
+    private class HistoryList implements SearchList<Playable> {
+        private long maxResults;
+        public HistoryList() {
+            maxResults = MAX_RESULT_NUMBER;
+        }
+
+        @Override
+        public void setMaxResults(long maxResults) {
+            this.maxResults = maxResults;
+        }
+
+        @Override
+        public List<Playable> execute() throws IOException {
+            LocalSQLiteOpenHelper helper = new LocalSQLiteOpenHelper(context);
+            SQLiteDatabase db = helper.getReadableDatabase();
+
+            // we order from most recent to older. Get only the first 20 entries
+            Cursor cursor = db.query(true, "History",
+                    new String[]{"id", "classType", "playableId", "date"},
+                    null, null, null, null, "date DESC", String.valueOf(maxResults));
+
+            Map<String, List<String>> classOrderedPlayables = new HashMap<>();
+            while (cursor.moveToNext()) {
+                String stringClass = cursor.getString(cursor.getColumnIndex("classType"));
+                String playableId = cursor.getString(cursor.getColumnIndex("playableId"));
+                if (!classOrderedPlayables.containsKey(stringClass)) {
+                    classOrderedPlayables.put(stringClass, new ArrayList<String>());
+                }
+                List<String> classList = classOrderedPlayables.get(stringClass);
+                classList.add(playableId);
+                classOrderedPlayables.put(stringClass, classList);
+            }
+
+            cursor.close();
+            db.close();
+
+            ArrayList<Playable> playableList = new ArrayList<>();
+            for (String key : classOrderedPlayables.keySet()) {
+                try {
+                    List<Playable> playables = PlayableFactory.getInstance().createList(key,
+                            classOrderedPlayables.get(key));
+                    playableList.addAll(playables);
+                } catch (PlayableCreationException e) {
+                    Log.e("History", e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+
+            return playableList;
+        }
     }
 }

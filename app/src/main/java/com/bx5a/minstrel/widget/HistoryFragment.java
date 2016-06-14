@@ -20,6 +20,7 @@
 package com.bx5a.minstrel.widget;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +29,8 @@ import com.bx5a.minstrel.R;
 import com.bx5a.minstrel.player.History;
 import com.bx5a.minstrel.player.Playable;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -43,6 +46,12 @@ public class HistoryFragment extends ThumbnailPlayableListFragment {
 
     @Override
     protected List<Playable> getPlayableList() {
-        return History.getInstance().get();
+        try {
+            return History.getInstance().get().execute();
+        } catch (IOException e) {
+            Log.e("HistoryFragment", "Can't retreive history: " + e.getMessage());
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
     }
 }
