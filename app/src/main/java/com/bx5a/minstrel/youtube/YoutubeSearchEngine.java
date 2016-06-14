@@ -223,7 +223,7 @@ public class YoutubeSearchEngine {
             query = youtube.search().list("id");
             query.setKey(DeveloperKey.DEVELOPER_KEY);
             query.setType("video");
-            query.setFields("items(id/videoId)");
+            query.setFields("items(id/videoId),nextPageToken");
             query.setMaxResults(MAX_RESULT_NUMBER);
             query.setRegionCode(countryCode);
             query.setVideoCategoryId(categoryId);
@@ -276,7 +276,8 @@ public class YoutubeSearchEngine {
             query = youtube.videos().list("contentDetails,snippet,statistics");
             query.setKey(DeveloperKey.DEVELOPER_KEY);
             query.setFields("items(id,snippet/title,snippet/thumbnails/default/url," +
-                    "snippet/thumbnails/high/url,contentDetails/duration,statistics/viewCount)");
+                    "snippet/thumbnails/high/url,contentDetails/duration,statistics/viewCount),"+
+                    "nextPageToken");
             query.setMaxResults(MAX_RESULT_NUMBER);
             query.setRegionCode(countryCode);
             query.setVideoCategoryId(categoryId);
