@@ -25,11 +25,13 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SearchView;
 
 import com.bx5a.minstrel.R;
+import com.bx5a.minstrel.exception.PageNotAvailableException;
 import com.bx5a.minstrel.player.MasterPlayer;
 import com.bx5a.minstrel.player.Playable;
 import com.bx5a.minstrel.player.Position;
@@ -111,6 +113,28 @@ public class SearchFragment extends Fragment {
             }
         });
 
+        // TODO: factorize with ThumbnailPlayableListFragment
+        resultList.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                // if view is empty, we don't even have the first page displayed. nothing to do
+                if (totalItemCount == 0) {
+                    return;
+                }
+                // if every item are shown and we are not already updating the list, load more
+                if (firstVisibleItem + visibleItemCount == totalItemCount
+                        && !isSearching()
+                        && searchList.hasNextPage()) {
+                    displayNextPage();
+                }
+            }
+        });
+
         // open search view
         searchView.setIconified(false);
 
@@ -147,12 +171,18 @@ public class SearchFragment extends Fragment {
 
     private void setSearchList(SearchList<YoutubeVideo> list) {
         searchList = list;
-        updateList();
     }
 
-    private void updateList() {
+    private void displayFirstPage() {
+        displayNextPage();
+    }
+
+    private void displayNextPage() {
         if (isSearching()) {
             searchTask.cancel(true);
+        }
+        if (!searchList.hasNextPage()) {
+            throw new PageNotAvailableException("Can't find next page");
         }
         ExecuteSearchTask executeTask = new ExecuteSearchTask(searchList);
         executeTask.execute();
@@ -179,6 +209,7 @@ public class SearchFragment extends Fragment {
             // TODO: hide waitbar
             if (!isCancelled && list != null) {
                 setSearchList(list);
+                displayFirstPage();
             }
             super.onPostExecute(list);
         }
