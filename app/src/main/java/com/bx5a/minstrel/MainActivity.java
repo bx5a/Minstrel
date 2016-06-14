@@ -42,6 +42,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bx5a.minstrel.legacy.SoftKeyboardHandledLayout;
@@ -85,6 +86,7 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
     private ImageAndTextButton preferenceButton;
     private PlayerControlBarFragment playerControls;
     private UndoDialogFragment undoDialogFragment;
+    private RelativeLayout playerControlsParentLayout;
     private final int AUTO_DISMISS_MILLISECOND = 2000;
 
     private boolean currentThemeIsDark;
@@ -119,6 +121,7 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
         historyButton = (ImageAndTextButton) findViewById(R.id.activityMain_historyButton);
         aboutButton = (ImageAndTextButton) findViewById(R.id.activityMain_aboutButton);
         preferenceButton = (ImageAndTextButton) findViewById(R.id.activityMain_preferenceButton);
+        playerControlsParentLayout = (RelativeLayout) findViewById(R.id.activityMain_bottomControls);
         playerControls = (PlayerControlBarFragment) getSupportFragmentManager().findFragmentById(R.id.activityMain_playerControls);
 
         initBackground();
@@ -133,6 +136,7 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
         initTitleClickEvent();
 
         displayInitialFragment();
+        updateControlBarVisibility();
     }
 
     @Override
@@ -310,52 +314,56 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
         undoDialogFragment = new UndoDialogFragment();
         MasterPlayer.getInstance().setPlaylistManagerEventListener(new PlaylistManager.EventListener() {
             @Override
-            public void onEnqueued(final int index, final int selectedIndex) {
-                // preferences: don't show undo dialog
-                if (!getDefaultSharedPreferences(getApplicationContext()).getBoolean("show_undo_dialog",
-                        getDefaultPreferencesValue(R.bool.show_undo_dialog_default))) {
-                    return;
-                }
-
-                // if undo dialog is already present, we can't handle it. Just return
-                if (undoDialogFragment.isAdded()) {
-                    Log.w("MainActivity", "Can't handle an enqueue event while undo dialog is still visible");
-                    return;
-                }
-
-                undoDialogFragment.setText("Added to list");
-                undoDialogFragment.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        MasterPlayer.getInstance().remove(index);
-                        if (MasterPlayer.getInstance().getCurrentPlayableIndex() != selectedIndex) {
-                            MasterPlayer.getInstance().setCurrentPlayableIndex(selectedIndex);
-                        }
-                        undoDialogFragment.dismiss();
-                    }
-                });
-                undoDialogFragment.show(getSupportFragmentManager(), "Undo");
-
-                // dismiss if clicked outside
-                Dialog dialog = undoDialogFragment.getDialog();
-                if (dialog != null) {
-                    dialog.setCanceledOnTouchOutside(true);
-                }
-
-                // auto dismiss
-                Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            undoDialogFragment.dismiss();
-                        } catch (NullPointerException e) {
-                            Log.w("MainActivity", "Can't dismiss undo dialog: " + e.getMessage());
-                        }
-                    }
-                }, AUTO_DISMISS_MILLISECOND);
+            public void onEnqueued(int index, int selectedIndex) {
+                displayUndoDialog(index, selectedIndex);
             }
         });
+    }
+
+    private void displayUndoDialog(final int index, final int selectedIndex) {
+        // preferences: don't show undo dialog
+        if (!getDefaultSharedPreferences(getApplicationContext()).getBoolean("show_undo_dialog",
+                getDefaultPreferencesValue(R.bool.show_undo_dialog_default))) {
+            return;
+        }
+
+        // if undo dialog is already present, we can't handle it. Just return
+        if (undoDialogFragment.isAdded()) {
+            Log.w("MainActivity", "Can't handle an enqueue event while undo dialog is still visible");
+            return;
+        }
+
+        undoDialogFragment.setText("Added to list");
+        undoDialogFragment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MasterPlayer.getInstance().remove(index);
+                if (MasterPlayer.getInstance().getCurrentPlayableIndex() != selectedIndex) {
+                    MasterPlayer.getInstance().setCurrentPlayableIndex(selectedIndex);
+                }
+                undoDialogFragment.dismiss();
+            }
+        });
+        undoDialogFragment.show(getSupportFragmentManager(), "Undo");
+
+        // dismiss if clicked outside
+        Dialog dialog = undoDialogFragment.getDialog();
+        if (dialog != null) {
+            dialog.setCanceledOnTouchOutside(true);
+        }
+
+        // auto dismiss
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    undoDialogFragment.dismiss();
+                } catch (NullPointerException e) {
+                    Log.w("MainActivity", "Can't dismiss undo dialog: " + e.getMessage());
+                }
+            }
+        }, AUTO_DISMISS_MILLISECOND);
     }
 
     private void initMasterPlayerBehavior() {
@@ -368,7 +376,7 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
 
             @Override
             public void onPlaylistChange() {
-
+                updateControlBarVisibility();
             }
 
             @Override
@@ -389,6 +397,14 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
             }
         };
         MasterPlayer.getInstance().addMasterPlayerEventListener(playerEventListener);
+    }
+
+    private void updateControlBarVisibility() {
+        if (MasterPlayer.getInstance().getPlaylist().isEmpty()) {
+            playerControlsParentLayout.setVisibility(View.GONE);
+            return;
+        }
+        playerControlsParentLayout.setVisibility(View.VISIBLE);
     }
 
     private void deinitMasterPlayerBehavior() {
