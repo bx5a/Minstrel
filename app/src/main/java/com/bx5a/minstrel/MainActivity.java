@@ -28,7 +28,6 @@ import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -66,7 +65,10 @@ import com.bx5a.minstrel.widget.SearchFragment;
 import com.bx5a.minstrel.widget.UndoDialogFragment;
 import com.bx5a.minstrel.youtube.YoutubePlayer;
 import com.bx5a.minstrel.youtube.YoutubeSearchEngine;
+import com.crashlytics.android.Crashlytics;
 import com.google.android.youtube.player.YouTubePlayerSupportFragment;
+
+import io.fabric.sdk.android.Fabric;
 
 import static android.support.v7.preference.PreferenceManager.getDefaultSharedPreferences;
 
@@ -106,6 +108,7 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
     protected void onCreate(Bundle savedInstanceState) {
         initTheme();
         super.onCreate(savedInstanceState);
+        Fabric.with(this, new Crashlytics());
         updateScreenRotationPreference();
 
         setContentView(R.layout.activity_main);
