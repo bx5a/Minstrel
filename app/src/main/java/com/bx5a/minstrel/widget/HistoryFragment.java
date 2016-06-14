@@ -26,8 +26,10 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.bx5a.minstrel.R;
+import com.bx5a.minstrel.exception.PageNotAvailableException;
 import com.bx5a.minstrel.player.History;
 import com.bx5a.minstrel.player.Playable;
+import com.bx5a.minstrel.utils.SearchList;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -45,13 +47,33 @@ public class HistoryFragment extends ThumbnailPlayableListFragment {
     }
 
     @Override
-    protected List<Playable> getPlayableList() {
-        try {
-            return History.getInstance().get().getNextPage();
-        } catch (IOException e) {
-            Log.e("HistoryFragment", "Can't retreive history: " + e.getMessage());
-            e.printStackTrace();
-            return new ArrayList<>();
+    protected PlayablePages getPlayables() {
+        return new HistoryPages();
+    }
+
+    private class HistoryPages implements PlayablePages {
+        private SearchList<Playable> playableList;
+        public HistoryPages() {
+            playableList = History.getInstance().get();
+        }
+        @Override
+        public boolean hastNextPlayablePage() {
+            return playableList.hasNextPage();
+        }
+
+        @Override
+        public List<Playable> getNextPlayablePage() {
+            if (!hastNextPlayablePage()) {
+                throw new PageNotAvailableException("No next page available");
+            }
+
+            try {
+                return playableList.getNextPage();
+            } catch (IOException e) {
+                Log.e("HistoryFragment", "Can't retrieve history: " + e.getMessage());
+                e.printStackTrace();
+                return new ArrayList<>();
+            }
         }
     }
 }

@@ -26,6 +26,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.bx5a.minstrel.R;
+import com.bx5a.minstrel.exception.PageNotAvailableException;
 import com.bx5a.minstrel.player.Playable;
 import com.bx5a.minstrel.utils.SearchList;
 import com.bx5a.minstrel.youtube.YoutubeSearchEngine;
@@ -45,28 +46,56 @@ public class PopularFragment extends ThumbnailPlayableListFragment {
     public View onCreateView(LayoutInflater layoutInflater, ViewGroup viewGroup, Bundle bundle) {
         View view = super.onCreateView(layoutInflater, viewGroup, bundle);
         setTitle(R.string.popular);
+
         return view;
     }
 
     @Override
-    protected List<Playable> getPlayableList() {
-        ArrayList<Playable> playables = new ArrayList<>();
+    protected PlayablePages getPlayables() {
+        return new PopularPages();
+    }
 
-        List<YoutubeVideo> videos;
-        try {
-            SearchList<YoutubeVideo> videoList =
-                    YoutubeSearchEngine.getInstance().getPopularVideos();
-            videoList.setMaxResults(MAX_RESULT_NUMBER);
-            videos = videoList.getNextPage();
-        } catch (IOException e) {
-            Log.e("PopularFragment", "Can't get popular videos: " + e.getMessage());
-            e.printStackTrace();
+    private class PopularPages implements PlayablePages {
+        private SearchList<YoutubeVideo> youtubePopular;
+        public PopularPages() {
+            try {
+                youtubePopular = YoutubeSearchEngine.getInstance().getPopularVideos();
+                youtubePopular.setMaxResults(MAX_RESULT_NUMBER);
+            } catch (IOException e) {
+                Log.e("PopularFragment", "Can't get youtube popular videos: " + e.getMessage());
+                e.printStackTrace();
+                youtubePopular = null;
+            }
+        }
+
+        @Override
+        public boolean hastNextPlayablePage() {
+            if (youtubePopular == null) {
+                return false;
+            }
+            return youtubePopular.hasNextPage();
+        }
+
+        @Override
+        public List<Playable> getNextPlayablePage() {
+            if (!hastNextPlayablePage()) {
+                throw new PageNotAvailableException("No next page available");
+            }
+            ArrayList<Playable> playables = new ArrayList<>();
+
+            List<YoutubeVideo> videos;
+            try {
+                videos = youtubePopular.getNextPage();
+            } catch (IOException e) {
+                Log.e("PopularFragment", "Can't get popular videos: " + e.getMessage());
+                e.printStackTrace();
+                return playables;
+            }
+
+            for (YoutubeVideo video : videos) {
+                playables.add(video);
+            }
             return playables;
         }
-
-        for (YoutubeVideo video : videos) {
-            playables.add(video);
-        }
-        return playables;
     }
 }
