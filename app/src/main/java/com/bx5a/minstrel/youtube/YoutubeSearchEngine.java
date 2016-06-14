@@ -25,6 +25,7 @@ import android.util.Log;
 import com.bx5a.minstrel.R;
 import com.bx5a.minstrel.exception.CategoryNotFoundException;
 import com.bx5a.minstrel.exception.NotInitializedException;
+import com.bx5a.minstrel.utils.SearchList;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.http.javanet.NetHttpTransport;
@@ -55,11 +56,6 @@ import java.util.List;
  * Search engine for YouTube
  */
 public class YoutubeSearchEngine {
-    public interface SearchList<T> {
-        void setMaxResults(long maxResults);
-        List<T> execute() throws IOException;
-    }
-
     private YouTube youtube;
     private String countryCode;
     private final long MAX_RESULT_NUMBER = 15;

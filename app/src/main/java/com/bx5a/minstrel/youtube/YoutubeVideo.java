@@ -27,6 +27,7 @@ import com.bx5a.minstrel.exception.PlayableCreationException;
 import com.bx5a.minstrel.player.Playable;
 import com.bx5a.minstrel.player.Player;
 import com.bx5a.minstrel.utils.PlayableFactory;
+import com.bx5a.minstrel.utils.SearchList;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -67,8 +68,7 @@ public class YoutubeVideo implements Playable {
 
     public static ArrayList<YoutubeVideo> search(String keywords) throws IOException {
         ArrayList<YoutubeVideo> videos = new ArrayList<>();
-        YoutubeSearchEngine.SearchList<YoutubeVideo> videoList =
-                YoutubeSearchEngine.getInstance().search(keywords);
+        SearchList<YoutubeVideo> videoList = YoutubeSearchEngine.getInstance().search(keywords);
         for (YoutubeVideo video : videoList.execute()) {
             videos.add(video);
         }
@@ -78,8 +78,7 @@ public class YoutubeVideo implements Playable {
     public void initFromId(String id) throws IOException {
         ArrayList<String> ids = new ArrayList<>();
         ids.add(id);
-        YoutubeSearchEngine.SearchList<YoutubeVideo> videoList =
-                YoutubeSearchEngine.getInstance().getVideoDetails(ids);
+        SearchList<YoutubeVideo> videoList = YoutubeSearchEngine.getInstance().getVideoDetails(ids);
         List<YoutubeVideo> videos = videoList.execute();
         if (videos.size() != 1) {
             throw new IOException("Couldn't initialize from id: search engine error");
@@ -222,7 +221,7 @@ public class YoutubeVideo implements Playable {
         @Override
         protected List<Playable> doInBackground(YoutubeVideo... params) {
             try {
-                YoutubeSearchEngine.SearchList<String> idList =
+                SearchList<String> idList =
                         YoutubeSearchEngine.getInstance().relatedVideoIds(params[0]);
                 List<String> relatedIds = idList.execute();
                 ArrayList<Playable> result = new ArrayList<>();
