@@ -57,7 +57,7 @@ public class YoutubeVideo implements Playable {
             public List<Playable> createList(List<String> ids) throws PlayableCreationException {
                 List<YoutubeVideo> videos;
                 try {
-                    videos = YoutubeSearchEngine.getInstance().getVideoDetails(ids).execute();
+                    videos = YoutubeSearchEngine.getInstance().getVideoDetails(ids).getNextPage();
                 } catch (IOException e) {
                     throw new PlayableCreationException("Couldn't init YoutubeVideos: " + e.getMessage());
                 }
@@ -84,7 +84,7 @@ public class YoutubeVideo implements Playable {
     public static ArrayList<YoutubeVideo> search(String keywords) throws IOException {
         ArrayList<YoutubeVideo> videos = new ArrayList<>();
         SearchList<YoutubeVideo> videoList = YoutubeSearchEngine.getInstance().search(keywords);
-        for (YoutubeVideo video : videoList.execute()) {
+        for (YoutubeVideo video : videoList.getNextPage()) {
             videos.add(video);
         }
         return videos;
@@ -94,7 +94,7 @@ public class YoutubeVideo implements Playable {
         ArrayList<String> ids = new ArrayList<>();
         ids.add(id);
         SearchList<YoutubeVideo> videoList = YoutubeSearchEngine.getInstance().getVideoDetails(ids);
-        List<YoutubeVideo> videos = videoList.execute();
+        List<YoutubeVideo> videos = videoList.getNextPage();
         if (videos.size() != 1) {
             throw new IOException("Couldn't initialize from id: search engine error");
         }
@@ -238,7 +238,7 @@ public class YoutubeVideo implements Playable {
             try {
                 SearchList<String> idList =
                         YoutubeSearchEngine.getInstance().relatedVideoIds(params[0]);
-                List<String> relatedIds = idList.execute();
+                List<String> relatedIds = idList.getNextPage();
                 ArrayList<Playable> result = new ArrayList<>();
                 for (String id : relatedIds) {
                     YoutubeVideo related = new YoutubeVideo();

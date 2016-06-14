@@ -27,6 +27,7 @@ import android.util.Log;
 
 import com.bx5a.minstrel.LocalSQLiteOpenHelper;
 import com.bx5a.minstrel.exception.NotInitializedException;
+import com.bx5a.minstrel.exception.PageNotAvailableException;
 import com.bx5a.minstrel.exception.PlayableCreationException;
 import com.bx5a.minstrel.utils.PlayableFactory;
 import com.bx5a.minstrel.utils.SearchList;
@@ -132,24 +133,40 @@ public class History {
 
     private class HistoryList implements SearchList<Playable> {
         private long maxResults;
+        private int indexOffset;
+        private boolean nextPageAvailable;
         public HistoryList() {
             maxResults = MAX_RESULT_NUMBER;
+            indexOffset = 0;
+            nextPageAvailable = true;
         }
-
         @Override
         public void setMaxResults(long maxResults) {
             this.maxResults = maxResults;
         }
-
         @Override
-        public List<Playable> execute() throws IOException {
+        public boolean hasNextPage() {
+            return nextPageAvailable;
+        }
+        @Override
+        public List<Playable> getNextPage() throws IOException {
+            if (!hasNextPage()) {
+                throw new PageNotAvailableException("No next page available");
+            }
+
             LocalSQLiteOpenHelper helper = new LocalSQLiteOpenHelper(context);
             SQLiteDatabase db = helper.getReadableDatabase();
 
-            // we order from most recent to older. Get only the first 20 entries
+            // we order from most recent to older
             Cursor cursor = db.query(true, "History",
                     new String[]{"id", "classType", "playableId", "date"},
-                    null, null, null, null, "date DESC", String.valueOf(maxResults));
+                    null, null, null, null, "date DESC", String.valueOf(maxResults + indexOffset));
+
+            // skip the first indexOffset elements
+            cursor.move(indexOffset);
+
+            // if that page was found and full, we suppose their is another one
+            nextPageAvailable = cursor.getCount() == maxResults + indexOffset;
 
             // retrieve !
             Map<String, List<String>> classOrderedPlayables = new HashMap<>();
@@ -162,6 +179,7 @@ public class History {
                 List<String> classList = classOrderedPlayables.get(stringClass);
                 classList.add(playableId);
                 classOrderedPlayables.put(stringClass, classList);
+                indexOffset++;
             }
 
             cursor.close();

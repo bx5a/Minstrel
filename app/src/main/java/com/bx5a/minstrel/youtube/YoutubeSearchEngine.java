@@ -25,6 +25,7 @@ import android.util.Log;
 import com.bx5a.minstrel.R;
 import com.bx5a.minstrel.exception.CategoryNotFoundException;
 import com.bx5a.minstrel.exception.NotInitializedException;
+import com.bx5a.minstrel.exception.PageNotAvailableException;
 import com.bx5a.minstrel.utils.SearchList;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestInitializer;
@@ -215,6 +216,8 @@ public class YoutubeSearchEngine {
     // Helpers
     private class IdList implements SearchList<String> {
         private YouTube.Search.List query;
+        private boolean nextPageAvailable;
+        private String nextPageToken;
         public IdList(YouTube youtube, String countryCode, String categoryId)
                 throws IOException {
             query = youtube.search().list("id");
@@ -224,6 +227,8 @@ public class YoutubeSearchEngine {
             query.setMaxResults(MAX_RESULT_NUMBER);
             query.setRegionCode(countryCode);
             query.setVideoCategoryId(categoryId);
+            nextPageAvailable = true;
+            nextPageToken = null;
         }
         public void setQ(String q) {
             query.setQ(q);
@@ -231,11 +236,28 @@ public class YoutubeSearchEngine {
         public void setRelatedToVideoId(String relatedToVideoId) {
             query.setRelatedToVideoId(relatedToVideoId);
         }
+        @Override
         public void setMaxResults(long maxResults) {
             query.setMaxResults(maxResults);
         }
-        public List<String> execute() throws IOException {
+        @Override
+        public boolean hasNextPage() {
+            return nextPageAvailable;
+        }
+        @Override
+        public List<String> getNextPage() throws IOException {
+            if (!hasNextPage()) {
+                throw new PageNotAvailableException("No next page available");
+            }
+
+            if (nextPageToken != null) {
+                query.setPageToken(nextPageToken);
+            }
             SearchListResponse response = query.execute();
+
+            // get next page token
+            nextPageToken = response.getNextPageToken();
+            nextPageAvailable = nextPageToken != null;
 
             List<String> ids = new ArrayList<>();
             for (SearchResult result : response.getItems()) {
@@ -247,6 +269,8 @@ public class YoutubeSearchEngine {
 
     private class VideoList implements SearchList<YoutubeVideo> {
         private YouTube.Videos.List query;
+        private boolean nextPageAvailable;
+        private String nextPageToken;
         public VideoList(YouTube youtube, String countryCode, String categoryId)
                 throws IOException {
             query = youtube.videos().list("contentDetails,snippet,statistics");
@@ -256,6 +280,8 @@ public class YoutubeSearchEngine {
             query.setMaxResults(MAX_RESULT_NUMBER);
             query.setRegionCode(countryCode);
             query.setVideoCategoryId(categoryId);
+            nextPageAvailable = true;
+            nextPageToken = null;
         }
         public void setChart(String chart) {
             query.setChart(chart);
@@ -263,11 +289,27 @@ public class YoutubeSearchEngine {
         public void setId(String id) {
             query.setId(id);
         }
+        @Override
         public void setMaxResults(long maxResults) {
             query.setMaxResults(maxResults);
         }
-        public List<YoutubeVideo> execute() throws IOException {
+        @Override
+        public boolean hasNextPage() {
+            return nextPageAvailable;
+        }
+        @Override
+        public List<YoutubeVideo> getNextPage() throws IOException {
+            if (!hasNextPage()) {
+                throw new PageNotAvailableException("No next page available");
+            }
+
+            if (nextPageToken != null) {
+                query.setPageToken(nextPageToken);
+            }
             VideoListResponse response = query.execute();
+
+            nextPageToken = response.getNextPageToken();
+            nextPageAvailable = nextPageToken != null;
 
             List<YoutubeVideo> youtubeVideos = new ArrayList<>();
             for (Video video : response.getItems()) {
@@ -299,8 +341,12 @@ public class YoutubeSearchEngine {
             idList.setMaxResults(maxResults);
         }
         @Override
-        public List<YoutubeVideo> execute() throws IOException {
-            return getVideoDetails(idList.execute()).execute();
+        public boolean hasNextPage() {
+            return idList.hasNextPage();
+        }
+        @Override
+        public List<YoutubeVideo> getNextPage() throws IOException {
+            return getVideoDetails(idList.getNextPage()).getNextPage();
         }
     }
 }

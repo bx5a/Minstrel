@@ -57,7 +57,7 @@ public class PopularFragment extends ThumbnailPlayableListFragment {
             SearchList<YoutubeVideo> videoList =
                     YoutubeSearchEngine.getInstance().getPopularVideos();
             videoList.setMaxResults(MAX_RESULT_NUMBER);
-            videos = videoList.execute();
+            videos = videoList.getNextPage();
         } catch (IOException e) {
             Log.e("PopularFragment", "Can't get popular videos: " + e.getMessage());
             e.printStackTrace();

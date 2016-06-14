@@ -47,7 +47,7 @@ public class HistoryFragment extends ThumbnailPlayableListFragment {
     @Override
     protected List<Playable> getPlayableList() {
         try {
-            return History.getInstance().get().execute();
+            return History.getInstance().get().getNextPage();
         } catch (IOException e) {
             Log.e("HistoryFragment", "Can't retreive history: " + e.getMessage());
             e.printStackTrace();

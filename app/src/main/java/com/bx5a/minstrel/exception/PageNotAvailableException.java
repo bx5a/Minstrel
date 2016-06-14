@@ -17,18 +17,13 @@
  * along with Minstrel.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.bx5a.minstrel.utils;
-
-import java.io.IOException;
-import java.util.List;
+package com.bx5a.minstrel.exception;
 
 /**
  * Created by guillaume on 14/06/2016.
  */
-
-public interface SearchList<T> {
-    void setMaxResults(long maxResults);
-    List<T> getNextPage() throws IOException;
-    boolean hasNextPage();
-    //List<T> execute() throws IOException;
+public class PageNotAvailableException extends RuntimeException {
+    public PageNotAvailableException(String detailMessage) {
+        super(detailMessage);
+    }
 }
