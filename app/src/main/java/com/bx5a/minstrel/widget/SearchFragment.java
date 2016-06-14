@@ -19,10 +19,9 @@
 
 package com.bx5a.minstrel.widget;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,13 +34,13 @@ import com.bx5a.minstrel.player.MasterPlayer;
 import com.bx5a.minstrel.player.Playable;
 import com.bx5a.minstrel.player.Position;
 import com.bx5a.minstrel.utils.IdleManager;
+import com.bx5a.minstrel.utils.SearchList;
+import com.bx5a.minstrel.youtube.YoutubeSearchEngine;
 import com.bx5a.minstrel.youtube.YoutubeVideo;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.List;
 
 /**
  * Fragment for the search interface
@@ -49,19 +48,20 @@ import java.util.concurrent.Future;
 public class SearchFragment extends Fragment {
     private ListView resultList;
     private SearchView searchView;
-    private String nextSearch;
-    private ExecutorService searchQueue;
-    private ArrayList<Future<?>> pendingSearch;
-
+    private AsyncTask searchTask;
+    private SearchList<YoutubeVideo> searchList;
+    private SearchItemAdapter adapter;
+    private ArrayList<YoutubeVideo> videoList;
 
     @Override
     public View onCreateView(LayoutInflater layoutInflater, ViewGroup viewGroup, Bundle bundle) {
         View view = layoutInflater.inflate(R.layout.fragment_search, null);
 
+        videoList = new ArrayList<>();
+        adapter = new SearchItemAdapter(getContext(), videoList);
+
         resultList = (ListView) view.findViewById(R.id.viewSearch_resultList);
-        searchView = null;
-        nextSearch = null;
-        pendingSearch = new ArrayList<>();
+        resultList.setAdapter(adapter);
 
         resultList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -73,6 +73,7 @@ public class SearchFragment extends Fragment {
                 }
             }
         });
+
         resultList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
@@ -88,10 +89,6 @@ public class SearchFragment extends Fragment {
             }
         });
 
-
-        // only one thread to make a serial queue
-        searchQueue = Executors.newFixedThreadPool(1);
-
         // search view
         searchView = (SearchView) view.findViewById(R.id.viewSearch_search);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -106,9 +103,10 @@ public class SearchFragment extends Fragment {
             @Override
             public boolean onQueryTextChange(String newText) {
                 // TODO: should be done on LowBrightnessOnIdleActivity but I can't figure out where
-                // we get keyboard press notification
                 IdleManager.getInstance().resetIdleTimer();
-                asyncSearch(newText);
+
+                // we get keyboard press notification
+                search(newText);
                 return true;
             }
         });
@@ -116,97 +114,136 @@ public class SearchFragment extends Fragment {
         // open search view
         searchView.setIconified(false);
 
+        searchTask = null;
         return view;
     }
-
 
     private void addPlayableToPlayer(Playable playable) {
         MasterPlayer.getInstance().enqueue(playable, Position.Next);
     }
 
-    private void asyncSearch(String keywords) {
-        cancelPendingSearch();
-        Future<?> search = searchQueue.submit(new AsyncVideosSearch(this, keywords));
-        pendingSearch.add(search);
-        // TODO: when destroying should shutdown() and awaitTermination()
+    private boolean isSearching() {
+        return searchTask != null && searchTask.getStatus() != AsyncTask.Status.FINISHED;
     }
 
-    private void searchFinished(ArrayList<YoutubeVideo> videos) {
-        // if we are asking for a next search, don't update the list. The next one will update it
-        if (nextSearch != null) {
-            asyncSearch(nextSearch);
-            nextSearch = null;
-            return;
+    private void search(String keywords) {
+        if (isSearching()) {
+            searchTask.cancel(true);
         }
-        updateList(videos);
-
-        // remove finished search
-        clearPendingSearch();
+        InitSearchTask initTask = new InitSearchTask(keywords);
+        initTask.execute();
+        searchTask = initTask;
     }
 
-    private void updateList(ArrayList<YoutubeVideo> videos) {
-        if (videos == null) {
-            return;
+    private void clear() {
+        videoList.clear();
+        adapter.notifyDataSetChanged();
+    }
+
+    private void add(List<YoutubeVideo> videos) {
+        videoList.addAll(videos);
+        adapter.notifyDataSetChanged();
+    }
+
+    private void setSearchList(SearchList<YoutubeVideo> list) {
+        searchList = list;
+        updateList();
+    }
+
+    private void updateList() {
+        if (isSearching()) {
+            searchTask.cancel(true);
         }
-        resultList.setAdapter(new SearchItemAdapter(getContext(), videos));
+        ExecuteSearchTask executeTask = new ExecuteSearchTask(searchList);
+        executeTask.execute();
+        searchTask = executeTask;
     }
 
-    private void cancelPendingSearch() {
-        for (Future<?> search : pendingSearch) {
-            search.cancel(true);
-        }
-        pendingSearch.clear();
-    }
-
-    private void clearPendingSearch() {
-        // do a copy not to modify the array we iterate on
-        ArrayList<Future<?>> pendingSearchCopy = pendingSearch;
-        for (Future<?> search : pendingSearchCopy) {
-            if (search.isDone() || search.isCancelled()) {
-                pendingSearch.remove(search);
-            }
-        }
-    }
-
-    class AsyncVideosSearch implements Runnable {
-        private SearchFragment search;
+    private class InitSearchTask extends AsyncTask<Void, Void, SearchList<YoutubeVideo>> {
+        private boolean isCancelled;
         private String keywords;
-        private ArrayList<YoutubeVideo> videos;
-
-        public AsyncVideosSearch(SearchFragment search, String searchKeywords) {
-            super();
-            this.search = search;
-            this.keywords = searchKeywords;
-            this.videos = null;
+        public InitSearchTask(String keywords) {
+            isCancelled = false;
+            this.keywords = keywords;
         }
 
         @Override
-        public void run() {
-            // search
-            if (Thread.currentThread().isInterrupted()) {
-                return;
+        protected void onPreExecute() {
+            clear();
+            // TODO: display waitbar
+            super.onPreExecute();
+        }
+
+        @Override
+        protected void onPostExecute(SearchList<YoutubeVideo> list) {
+            // TODO: hide waitbar
+            if (!isCancelled && list != null) {
+                setSearchList(list);
+            }
+            super.onPostExecute(list);
+        }
+
+        @Override
+        protected void onCancelled() {
+            isCancelled = true;
+            // TODO: hide waitbar
+            super.onCancelled();
+        }
+
+        @Override
+        protected SearchList<YoutubeVideo> doInBackground(Void... aVoid) {
+            if (isCancelled) {
+                return null;
             }
 
             try {
-                videos = YoutubeVideo.search(keywords);
+                return YoutubeSearchEngine.getInstance().search(keywords);
             } catch (IOException e) {
-                // TODO: notify the user of that error somehow
-                Log.e("SearchFragment", "Can't search: " + keywords);
-                return;
+                e.printStackTrace();
+                return null;
             }
+        }
+    }
 
-            // notify on main thread
-            if (Thread.currentThread().isInterrupted()) {
-                return;
+    private class ExecuteSearchTask extends AsyncTask<Void, Void, List<YoutubeVideo>> {
+        private boolean isCancelled;
+        private SearchList<YoutubeVideo> searchList;
+        public ExecuteSearchTask(SearchList<YoutubeVideo> searchList) {
+            isCancelled = false;
+            this.searchList = searchList;
+        }
+        @Override
+        protected void onPreExecute() {
+            // TODO: display waitbar
+            super.onPreExecute();
+        }
+
+        @Override
+        protected void onPostExecute(List<YoutubeVideo> youtubeVideos) {
+            if (!isCancelled && youtubeVideos != null) {
+                add(youtubeVideos);
             }
-            Handler mainHandler = new Handler(search.getContext().getMainLooper());
-            Runnable runOnMainThread = new Runnable() {
-                @Override
-                public void run() {
-                    search.searchFinished(videos);
-                }
-            };
-            mainHandler.post(runOnMainThread);
+            // TODO: hide waitbar
+            super.onPostExecute(youtubeVideos);
+        }
+
+        @Override
+        protected void onCancelled() {
+            // TODO: hide waitbar
+            super.onCancelled();
+        }
+
+        @Override
+        protected List<YoutubeVideo> doInBackground(Void... aVoid) {
+            if (isCancelled) {
+                return null;
+            }
+            try {
+                return searchList.getNextPage();
+            } catch (IOException e) {
+                e.printStackTrace();
+                return null;
+            }
         }
     }
 }
