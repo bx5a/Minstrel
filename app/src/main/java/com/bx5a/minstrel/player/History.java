@@ -151,6 +151,7 @@ public class History {
                     new String[]{"id", "classType", "playableId", "date"},
                     null, null, null, null, "date DESC", String.valueOf(maxResults));
 
+            // retrieve !
             Map<String, List<String>> classOrderedPlayables = new HashMap<>();
             while (cursor.moveToNext()) {
                 String stringClass = cursor.getString(cursor.getColumnIndex("classType"));
