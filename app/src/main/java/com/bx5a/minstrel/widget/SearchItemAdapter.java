@@ -21,7 +21,6 @@ package com.bx5a.minstrel.widget;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,6 +34,8 @@ import com.bx5a.minstrel.utils.ThumbnailManager;
 import com.bx5a.minstrel.youtube.YoutubeVideo;
 
 import java.util.List;
+
+import timber.log.Timber;
 
 /**
  * Adapter used by the search fragment
@@ -76,8 +77,7 @@ public class SearchItemAdapter extends ArrayAdapter<YoutubeVideo> {
                 }
             });
         } catch (NoThumbnailAvailableException e) {
-            Log.w("SearchItemAdapter", "No thumbnail available for " + video.getTitle());
-            e.printStackTrace();
+            Timber.w(e, "No thumbnail available for " + video.getTitle());
         }
 
         return view;

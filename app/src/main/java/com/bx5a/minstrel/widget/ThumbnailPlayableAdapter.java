@@ -21,7 +21,6 @@ package com.bx5a.minstrel.widget;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,6 +34,8 @@ import com.bx5a.minstrel.player.Playable;
 import com.bx5a.minstrel.utils.ThumbnailManager;
 
 import java.util.List;
+
+import timber.log.Timber;
 
 /**
  * Adapter used in the History fragment
@@ -73,7 +74,7 @@ public class ThumbnailPlayableAdapter extends ArrayAdapter<Playable> {
                 }
             });
         } catch (NoThumbnailAvailableException e) {
-            Log.w("ThumbnailPlayableAdapter", "Can't access thrumbnail for playable " + playable.getTitle());
+            Timber.w(e, "Can't access thrumbnail for playable " + playable.getTitle());
             e.printStackTrace();
         }
 

@@ -24,6 +24,8 @@ import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
 
+import timber.log.Timber;
+
 /**
  * Service that force the master player to notify that the current position in song is changing
  */
@@ -52,7 +54,7 @@ public class CurrentTimeUpdaterService extends IntentService {
             try {
                 Thread.sleep(REQUEST_INTERVAL_MILLISECOND);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                Timber.e(e, "Can't sleep thread");
             }
         }
     }

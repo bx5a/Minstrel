@@ -19,8 +19,6 @@
 
 package com.bx5a.minstrel.youtube;
 
-import android.util.Log;
-
 import com.bx5a.minstrel.player.MasterPlayer;
 import com.bx5a.minstrel.player.Player;
 import com.bx5a.minstrel.utils.Task;
@@ -28,6 +26,8 @@ import com.bx5a.minstrel.utils.TaskQueue;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerSupportFragment;
+
+import timber.log.Timber;
 
 /**
  * Implementation of the Player interface for the YouTube streaming service
@@ -154,7 +154,7 @@ public class YoutubePlayer implements Player {
             @Override
             public void onVideoStarted() {
                 if (loadingTask == null) {
-                    Log.e("YoutubePlayer", "On loaded called even if loadingTask isn't set");
+                    Timber.e("On loaded called even if loadingTask isn't set");
                     return;
                 }
                 markLoadingTaskAsComplete();

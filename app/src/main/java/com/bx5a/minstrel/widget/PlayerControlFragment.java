@@ -22,7 +22,6 @@ package com.bx5a.minstrel.widget;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
@@ -42,6 +41,8 @@ import com.bx5a.minstrel.player.MasterPlayerEventListener;
 import com.bx5a.minstrel.player.Playable;
 import com.bx5a.minstrel.player.Playlist;
 import com.bx5a.minstrel.utils.ThumbnailManager;
+
+import timber.log.Timber;
 
 /**
  * Fragment representing advanced player controls
@@ -312,8 +313,8 @@ public class PlayerControlFragment extends Fragment {
             });
             return;
         } catch (NoThumbnailAvailableException e) {
-            Log.i("PlayerControlFragment", "Can't get high resolution thumbnail for playable " +
-                    playable.getTitle() + " defaulting to low resolution");
+            Timber.i(e, "Can't get high resolution thumbnail for playable " + playable.getTitle()
+                    + " defaulting to low resolution");
         }
 
         // if fails, default to low resolution
@@ -326,9 +327,7 @@ public class PlayerControlFragment extends Fragment {
                         }
                     });
         } catch (NoThumbnailAvailableException e1) {
-            Log.i("PlayerControlFragment", "Can't get low resolution thumbnail for playable " +
-                    playable.getTitle());
-            e1.printStackTrace();
+            Timber.i(e1, "Can't get low resolution thumbnail for playable " + playable.getTitle());
         }
     }
 }

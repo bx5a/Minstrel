@@ -20,7 +20,6 @@
 package com.bx5a.minstrel.youtube;
 
 import android.os.AsyncTask;
-import android.util.Log;
 
 import com.bx5a.minstrel.exception.NoThumbnailAvailableException;
 import com.bx5a.minstrel.exception.PlayableCreationException;
@@ -35,6 +34,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import timber.log.Timber;
 
 /**
  * Implementation of Playable interface for the YouTube api
@@ -247,8 +248,7 @@ public class YoutubeVideo implements Playable {
                 }
                 return result;
             } catch (IOException e) {
-                Log.w("YoutubeVideo", "Couldn't retrieve related: " + e.getMessage());
-                e.printStackTrace();
+                Timber.w(e, "Couldn't retrieve related");
                 return new ArrayList<>();
             }
         }

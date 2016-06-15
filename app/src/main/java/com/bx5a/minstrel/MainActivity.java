@@ -70,6 +70,7 @@ import com.crashlytics.android.Crashlytics;
 import com.google.android.youtube.player.YouTubePlayerSupportFragment;
 
 import io.fabric.sdk.android.Fabric;
+import timber.log.Timber;
 
 import static android.support.v7.preference.PreferenceManager.getDefaultSharedPreferences;
 
@@ -111,6 +112,11 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
         initTheme();
         super.onCreate(savedInstanceState);
         Fabric.with(this, new Crashlytics());
+        // init logging options
+        if (BuildConfig.DEBUG) {
+            Timber.plant(new Timber.DebugTree());
+        }
+
         updateScreenRotationPreference();
 
         setContentView(R.layout.activity_main);
@@ -329,7 +335,7 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
 
         // if undo dialog is already present, we can't handle it. Just return
         if (undoDialogFragment.isAdded()) {
-            Log.w("MainActivity", "Can't handle an enqueue event while undo dialog is still visible");
+            Timber.w("Can't handle an enqueue event while undo dialog is still visible");
             return;
         }
 
@@ -360,7 +366,7 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
                 try {
                     undoDialogFragment.dismiss();
                 } catch (NullPointerException e) {
-                    Log.w("MainActivity", "Can't dismiss undo dialog: " + e.getMessage());
+                    Timber.w(e, "Can't dismiss undo dialog");
                 }
             }
         }, AUTO_DISMISS_MILLISECOND);
@@ -438,7 +444,7 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
     private void closeKeyboard() {
         View view = getCurrentFocus();
         if (view == null) {
-            Log.w("MainActivity", "Can't close keyboard: current focus view not found");
+            Timber.w("Can't close keyboard: current focus view not found");
             return;
         }
         InputMethodManager manager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);

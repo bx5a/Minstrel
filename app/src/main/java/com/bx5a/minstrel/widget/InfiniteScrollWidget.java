@@ -21,7 +21,6 @@ package com.bx5a.minstrel.widget;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
@@ -32,6 +31,8 @@ import com.bx5a.minstrel.utils.SearchList;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import timber.log.Timber;
 
 /**
  * Widget that handles infinite scrolls.
@@ -186,8 +187,7 @@ abstract public class InfiniteScrollWidget<ElementType> {
             try {
                 return searchList.getNextPage();
             } catch (IOException e) {
-                Log.e("InfiniteScrollWidget", "Can't get next page: " + e.getMessage());
-                e.printStackTrace();
+                Timber.e(e, "Can't get next page");
                 return null;
             }
         }

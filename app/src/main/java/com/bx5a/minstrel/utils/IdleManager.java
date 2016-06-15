@@ -19,9 +19,9 @@
 
 package com.bx5a.minstrel.utils;
 
-import android.util.Log;
-
 import java.util.concurrent.Semaphore;
+
+import timber.log.Timber;
 
 public class IdleManager {
     private static IdleManager ourInstance = new IdleManager();
@@ -73,13 +73,13 @@ public class IdleManager {
                         }
                         mutex.release();
                     } catch (InterruptedException e) {
-                        e.printStackTrace();
+                        Timber.w(e, "Thread did interrupt");
                     }
 
                     try {
                         Thread.sleep(kGranularityMilliseconds);
                     } catch (InterruptedException e) {
-                        Log.w("IdleManager", "Can't sleep thread: " + e.getMessage());
+                        Timber.w(e, "Can't sleep thread");
                     }
                 }
             }

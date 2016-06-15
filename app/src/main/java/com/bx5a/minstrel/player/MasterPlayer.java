@@ -19,12 +19,12 @@
 
 package com.bx5a.minstrel.player;
 
-import android.util.Log;
-
 import com.bx5a.minstrel.exception.EmptyPlaylistException;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import timber.log.Timber;
 
 /**
  * Singleton representing the main audio player
@@ -120,7 +120,7 @@ public class MasterPlayer {
             public void onRelatedAvailable(List<Playable> related) {
                 List<Playable> newRelated = removeAlreadyInPlaylist(related);
                 if (newRelated.size() == 0) {
-                    Log.w("PlaylistManager", "No related found can't auto enqueue");
+                    Timber.w("No related found can't auto enqueue");
                     return;
                 }
                 enqueue(newRelated.get(0), position);
@@ -182,7 +182,7 @@ public class MasterPlayer {
 
             @Override
             public void onInitializationFailure(String reason) {
-                Log.e("MasterPlayer", "Can't play current index: " + reason + ". Moving to next");
+                Timber.e("Can't play current index: " + reason + ". Moving to next");
                 if (!playlistManager.canMoveToNext()) {
                     return;
                 }

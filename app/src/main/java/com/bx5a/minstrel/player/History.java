@@ -23,7 +23,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
 import com.bx5a.minstrel.LocalSQLiteOpenHelper;
 import com.bx5a.minstrel.exception.NotInitializedException;
@@ -37,6 +36,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import timber.log.Timber;
 
 /**
  * Singleton that contains the history of played song
@@ -192,8 +193,7 @@ public class History {
                             classOrderedPlayables.get(key));
                     playableList.addAll(playables);
                 } catch (PlayableCreationException e) {
-                    Log.e("History", e.getMessage());
-                    e.printStackTrace();
+                    Timber.e(e, "Can't get next page");
                 }
             }
 

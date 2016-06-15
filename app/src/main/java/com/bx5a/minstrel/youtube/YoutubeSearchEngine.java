@@ -20,7 +20,6 @@
 package com.bx5a.minstrel.youtube;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.bx5a.minstrel.R;
 import com.bx5a.minstrel.exception.CategoryNotFoundException;
@@ -51,6 +50,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+
+import timber.log.Timber;
 
 
 /**
@@ -136,8 +137,7 @@ public class YoutubeSearchEngine {
                 keywords = suggestedKeywords.get(0);
             }
         } catch (JSONException e) {
-            Log.e("YoutubeSearchEngine",
-                    "Can't auto complete: " + e.getMessage() + " Defaulting to normal query");
+            Timber.e(e, "Can't auto complete. Defaulting to normal query");
         }
 
         IdList list = new IdList(youtube, countryCode, getMusicCategoryId());
@@ -191,8 +191,7 @@ public class YoutubeSearchEngine {
         try {
             return getCategoryIdFromTitle(MUSIC_CATEGORY_TITLE);
         } catch (CategoryNotFoundException | IOException e) {
-            Log.e("YoutubeSearchEngine",
-                    "Couldn't get music category id. Defaulting to " + DEFAULT_CATEGORY_ID);
+            Timber.e(e, "Couldn't get music category id. Defaulting to " + DEFAULT_CATEGORY_ID);
             return DEFAULT_CATEGORY_ID;
         }
     }
