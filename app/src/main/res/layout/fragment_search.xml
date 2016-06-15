@@ -4,15 +4,29 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <SearchView
-        android:id="@+id/viewSearch_search"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="60dp"/>
-    
-    <ListView
-        android:id="@+id/viewSearch_resultList"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-    </ListView>
+        android:layout_height="0dp"
+        android:layout_weight="6"
+        android:orientation="vertical">
+        <SearchView
+            android:id="@+id/viewSearch_search"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"/>
 
+        <ListView
+            android:id="@+id/viewSearch_resultList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        </ListView>
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/viewSearch_progressBar"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="0dp"/>
 </LinearLayout>

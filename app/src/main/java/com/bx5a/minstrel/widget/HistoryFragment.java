@@ -20,20 +20,14 @@
 package com.bx5a.minstrel.widget;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.bx5a.minstrel.R;
-import com.bx5a.minstrel.exception.PageNotAvailableException;
 import com.bx5a.minstrel.player.History;
 import com.bx5a.minstrel.player.Playable;
 import com.bx5a.minstrel.utils.SearchList;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by guillaume on 10/06/2016.
@@ -47,33 +41,7 @@ public class HistoryFragment extends ThumbnailPlayableListFragment {
     }
 
     @Override
-    protected PlayablePages getPlayables() {
-        return new HistoryPages();
-    }
-
-    private class HistoryPages implements PlayablePages {
-        private SearchList<Playable> playableList;
-        public HistoryPages() {
-            playableList = History.getInstance().get();
-        }
-        @Override
-        public boolean hastNextPlayablePage() {
-            return playableList.hasNextPage();
-        }
-
-        @Override
-        public List<Playable> getNextPlayablePage() {
-            if (!hastNextPlayablePage()) {
-                throw new PageNotAvailableException("No next page available");
-            }
-
-            try {
-                return playableList.getNextPage();
-            } catch (IOException e) {
-                Log.e("HistoryFragment", "Can't retrieve history: " + e.getMessage());
-                e.printStackTrace();
-                return new ArrayList<>();
-            }
-        }
+    protected SearchList<Playable> getSearchList() {
+        return History.getInstance().get();
     }
 }

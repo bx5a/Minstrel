@@ -19,19 +19,19 @@
 
 package com.bx5a.minstrel.widget;
 
-import android.os.AsyncTask;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.SearchView;
 
 import com.bx5a.minstrel.R;
-import com.bx5a.minstrel.exception.PageNotAvailableException;
 import com.bx5a.minstrel.player.MasterPlayer;
 import com.bx5a.minstrel.player.Playable;
 import com.bx5a.minstrel.player.Position;
@@ -41,7 +41,6 @@ import com.bx5a.minstrel.youtube.YoutubeSearchEngine;
 import com.bx5a.minstrel.youtube.YoutubeVideo;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -50,21 +49,52 @@ import java.util.List;
 public class SearchFragment extends Fragment {
     private ListView resultList;
     private SearchView searchView;
-    private AsyncTask searchTask;
-    private SearchList<YoutubeVideo> searchList;
-    private SearchItemAdapter adapter;
-    private ArrayList<YoutubeVideo> videoList;
+    private InfiniteScrollWidget<YoutubeVideo> infiniteScrollWidget;
+    private String keywords;
 
     @Override
     public View onCreateView(LayoutInflater layoutInflater, ViewGroup viewGroup, Bundle bundle) {
         View view = layoutInflater.inflate(R.layout.fragment_search, null);
 
-        videoList = new ArrayList<>();
-        adapter = new SearchItemAdapter(getContext(), videoList);
+        InfiniteScrollWidget.AdapterCreator<YoutubeVideo> adapterCreator =
+                new InfiniteScrollWidget.AdapterCreator<YoutubeVideo>() {
+                    @Override
+                    public ArrayAdapter<YoutubeVideo> create(Context context, List<YoutubeVideo> elementList) {
+                        return new SearchItemAdapter(context, elementList);
+                    }
+                };
+
+        keywords = null;
+
+        infiniteScrollWidget = new InfiniteScrollWidget<YoutubeVideo>(view,
+                R.id.viewSearch_resultList,
+                R.id.viewSearch_progressBar,
+                adapterCreator) {
+            @Override
+            protected SearchList<YoutubeVideo> getSearchList() {
+                try {
+                    return YoutubeSearchEngine.getInstance().search(keywords);
+                } catch (IOException e) {
+                    Log.e("SearchFragment", "Couldn't search youtube: " + e.getMessage());
+                    e.printStackTrace();
+                    return null;
+                }
+            }
+        };
+
 
         resultList = (ListView) view.findViewById(R.id.viewSearch_resultList);
-        resultList.setAdapter(adapter);
+        searchView = (SearchView) view.findViewById(R.id.viewSearch_search);
 
+        connectEvents();
+
+        // open search view
+        searchView.setIconified(false);
+
+        return view;
+    }
+
+    private void connectEvents() {
         resultList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -92,7 +122,6 @@ public class SearchFragment extends Fragment {
         });
 
         // search view
-        searchView = (SearchView) view.findViewById(R.id.viewSearch_search);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -112,169 +141,14 @@ public class SearchFragment extends Fragment {
                 return true;
             }
         });
-
-        // TODO: factorize with ThumbnailPlayableListFragment
-        resultList.setOnScrollListener(new AbsListView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(AbsListView view, int scrollState) {
-
-            }
-
-            @Override
-            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                // if view is empty, we don't even have the first page displayed. nothing to do
-                if (totalItemCount == 0) {
-                    return;
-                }
-                // if every item are shown and we are not already updating the list, load more
-                if (firstVisibleItem + visibleItemCount == totalItemCount
-                        && !isSearching()
-                        && searchList.hasNextPage()) {
-                    displayNextPage();
-                }
-            }
-        });
-
-        // open search view
-        searchView.setIconified(false);
-
-        searchTask = null;
-        return view;
     }
 
     private void addPlayableToPlayer(Playable playable) {
         MasterPlayer.getInstance().enqueue(playable, Position.Next);
     }
 
-    private boolean isSearching() {
-        return searchTask != null && searchTask.getStatus() != AsyncTask.Status.FINISHED;
-    }
-
     private void search(String keywords) {
-        if (isSearching()) {
-            searchTask.cancel(true);
-        }
-        InitSearchTask initTask = new InitSearchTask(keywords);
-        initTask.execute();
-        searchTask = initTask;
-    }
-
-    private void clear() {
-        videoList.clear();
-        adapter.notifyDataSetChanged();
-    }
-
-    private void add(List<YoutubeVideo> videos) {
-        videoList.addAll(videos);
-        adapter.notifyDataSetChanged();
-    }
-
-    private void setSearchList(SearchList<YoutubeVideo> list) {
-        searchList = list;
-    }
-
-    private void displayFirstPage() {
-        displayNextPage();
-    }
-
-    private void displayNextPage() {
-        if (isSearching()) {
-            searchTask.cancel(true);
-        }
-        if (!searchList.hasNextPage()) {
-            throw new PageNotAvailableException("Can't find next page");
-        }
-        ExecuteSearchTask executeTask = new ExecuteSearchTask(searchList);
-        executeTask.execute();
-        searchTask = executeTask;
-    }
-
-    private class InitSearchTask extends AsyncTask<Void, Void, SearchList<YoutubeVideo>> {
-        private boolean isCancelled;
-        private String keywords;
-        public InitSearchTask(String keywords) {
-            isCancelled = false;
-            this.keywords = keywords;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            clear();
-            // TODO: display waitbar
-            super.onPreExecute();
-        }
-
-        @Override
-        protected void onPostExecute(SearchList<YoutubeVideo> list) {
-            // TODO: hide waitbar
-            if (!isCancelled && list != null) {
-                setSearchList(list);
-                displayFirstPage();
-            }
-            super.onPostExecute(list);
-        }
-
-        @Override
-        protected void onCancelled() {
-            isCancelled = true;
-            // TODO: hide waitbar
-            super.onCancelled();
-        }
-
-        @Override
-        protected SearchList<YoutubeVideo> doInBackground(Void... aVoid) {
-            if (isCancelled) {
-                return null;
-            }
-
-            try {
-                return YoutubeSearchEngine.getInstance().search(keywords);
-            } catch (IOException e) {
-                e.printStackTrace();
-                return null;
-            }
-        }
-    }
-
-    private class ExecuteSearchTask extends AsyncTask<Void, Void, List<YoutubeVideo>> {
-        private boolean isCancelled;
-        private SearchList<YoutubeVideo> searchList;
-        public ExecuteSearchTask(SearchList<YoutubeVideo> searchList) {
-            isCancelled = false;
-            this.searchList = searchList;
-        }
-        @Override
-        protected void onPreExecute() {
-            // TODO: display waitbar
-            super.onPreExecute();
-        }
-
-        @Override
-        protected void onPostExecute(List<YoutubeVideo> youtubeVideos) {
-            if (!isCancelled && youtubeVideos != null) {
-                add(youtubeVideos);
-            }
-            // TODO: hide waitbar
-            super.onPostExecute(youtubeVideos);
-        }
-
-        @Override
-        protected void onCancelled() {
-            // TODO: hide waitbar
-            super.onCancelled();
-        }
-
-        @Override
-        protected List<YoutubeVideo> doInBackground(Void... aVoid) {
-            if (isCancelled) {
-                return null;
-            }
-            try {
-                return searchList.getNextPage();
-            } catch (IOException e) {
-                e.printStackTrace();
-                return null;
-            }
-        }
+        this.keywords = keywords;
+        infiniteScrollWidget.displayFirstPage();
     }
 }
