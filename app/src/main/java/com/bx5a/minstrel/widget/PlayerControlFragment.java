@@ -294,9 +294,14 @@ public class PlayerControlFragment extends Fragment {
         text.setText("");
     }
 
-    private void updateThumbnail(Playlist playlist, int playableIndex, final ImageView image, TextView text) {
+    private void updateThumbnail(Playlist playlist,
+                                 int playableIndex,
+                                 final ImageView image,
+                                 TextView text) {
         Playable playable = playlist.get(playableIndex);
         text.setText(playable.getTitle());
+
+        // try high resolution
         try {
             ThumbnailManager.getInstance().retreive(playable.getHighResolutionThumbnailURL(),
                     new ThumbnailManager.BitmapAvailableListener() {
@@ -305,9 +310,25 @@ public class PlayerControlFragment extends Fragment {
                     image.setImageBitmap(bitmap);
                 }
             });
+            return;
         } catch (NoThumbnailAvailableException e) {
-            Log.i("PlayerControlFragment", "Can't get thumbnail for playable " + playable.getTitle());
-            e.printStackTrace();
+            Log.i("PlayerControlFragment", "Can't get high resolution thumbnail for playable " +
+                    playable.getTitle() + " defaulting to low resolution");
+        }
+
+        // if fails, default to low resolution
+        try {
+            ThumbnailManager.getInstance().retreive(playable.getThumbnailURL(),
+                    new ThumbnailManager.BitmapAvailableListener() {
+                        @Override
+                        public void onBitmapAvailable(Bitmap bitmap) {
+                            image.setImageBitmap(bitmap);
+                        }
+                    });
+        } catch (NoThumbnailAvailableException e1) {
+            Log.i("PlayerControlFragment", "Can't get low resolution thumbnail for playable " +
+                    playable.getTitle());
+            e1.printStackTrace();
         }
     }
 }
