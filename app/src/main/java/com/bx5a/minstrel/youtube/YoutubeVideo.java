@@ -1,10 +1,33 @@
+/*
+ * Copyright Guillaume VINCKE 2016
+ *
+ * This file is part of Minstrel
+ *
+ * Minstrel is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Minstrel is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Minstrel.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package com.bx5a.minstrel.youtube;
 
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.bx5a.minstrel.exception.NoThumbnailAvailableException;
+import com.bx5a.minstrel.exception.PlayableCreationException;
 import com.bx5a.minstrel.player.Playable;
 import com.bx5a.minstrel.player.Player;
+import com.bx5a.minstrel.utils.PlayableFactory;
+import com.bx5a.minstrel.utils.SearchList;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -14,36 +37,64 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Created by guillaume on 24/03/2016.
+ * Implementation of Playable interface for the YouTube api
  */
 public class YoutubeVideo implements Playable {
+    public static void registerToFactory(PlayableFactory factory) {
+        factory.register(new PlayableFactory.PlayableCreator() {
+            @Override
+            public Playable create(String id) throws PlayableCreationException {
+                YoutubeVideo playable = new YoutubeVideo();
+                try {
+                    playable.initFromId(id);
+                } catch (IOException e) {
+                    throw new PlayableCreationException("Couldn't init YoutubeVideo: " + e.getMessage());
+                }
+                return playable;
+            }
+
+            @Override
+            public List<Playable> createList(List<String> ids) throws PlayableCreationException {
+                List<YoutubeVideo> videos;
+                try {
+                    videos = YoutubeSearchEngine.getInstance().getVideoDetails(ids).getNextPage();
+                } catch (IOException e) {
+                    throw new PlayableCreationException("Couldn't init YoutubeVideos: " + e.getMessage());
+                }
+                ArrayList<Playable> playables = new ArrayList<>();
+                for(YoutubeVideo video : videos) {
+                    playables.add(video);
+                }
+                return playables;
+            }
+        }, getStaticClassName());
+    }
+
+    private static String getStaticClassName() {
+        return "com.bx5a.minstrel.youtube.YoutubeVideo";
+    }
+
     private String id;
     protected String title;
     private String thumbnailURL;
+    private String highResolutionThumbnailURL;
     private BigInteger viewCount;
     private String duration;
 
-    public static ArrayList<YoutubeVideo> search(String keywords) {
-        // TODO: should search engine be singleton ?
-        YoutubeSearchEngine youtubeSearchEngine = YoutubeSearchEngine.getInstance();
-        List<YoutubeVideo> videos = youtubeSearchEngine.search(keywords);
-        if (videos == null) {
-            return null;
+    public static ArrayList<YoutubeVideo> search(String keywords) throws IOException {
+        ArrayList<YoutubeVideo> videos = new ArrayList<>();
+        SearchList<YoutubeVideo> videoList = YoutubeSearchEngine.getInstance().search(keywords);
+        for (YoutubeVideo video : videoList.getNextPage()) {
+            videos.add(video);
         }
-
-        ArrayList<YoutubeVideo> items = new ArrayList<>();
-        for (YoutubeVideo video : videos) {
-            items.add(video);
-        }
-        return items;
+        return videos;
     }
 
-    @Override
     public void initFromId(String id) throws IOException {
         ArrayList<String> ids = new ArrayList<>();
         ids.add(id);
-        YoutubeSearchEngine searchEngine = YoutubeSearchEngine.getInstance();
-        List<YoutubeVideo> videos = searchEngine.getVideoDetails(ids);
+        SearchList<YoutubeVideo> videoList = YoutubeSearchEngine.getInstance().getVideoDetails(ids);
+        List<YoutubeVideo> videos = videoList.getNextPage();
         if (videos.size() != 1) {
             throw new IOException("Couldn't initialize from id: search engine error");
         }
@@ -55,13 +106,12 @@ public class YoutubeVideo implements Playable {
         setViewCount(video.viewCount);
     }
 
-    @Override
-    public void load() throws IllegalStateException {
+    private void load() {
         YoutubePlayer.getInstance().load(this);
     }
 
-    @Override
-    public boolean isLoaded() {
+
+    private boolean isLoaded() {
         String playingId = YoutubePlayer.getInstance().getLoadedId();
         if (playingId.isEmpty()) {
             return false;
@@ -70,18 +120,26 @@ public class YoutubeVideo implements Playable {
     }
 
     @Override
-    public void play() throws IllegalStateException {
+    public String getClassName() {
+        return getStaticClassName();
+    }
+
+    @Override
+    public void play() {
+        if (!isLoaded()) {
+            load();
+        }
         YoutubePlayer.getInstance().play();
     }
 
     @Override
-    public void pause() throws IllegalStateException {
+    public void pause() {
         YoutubePlayer.getInstance().pause();
     }
 
     @Override
-    public String title() {
-        return this.title;
+    public String getTitle() {
+        return title;
     }
 
     @Override
@@ -95,15 +153,26 @@ public class YoutubeVideo implements Playable {
     }
 
     @Override
-    public String getThumbnailURL() {
+    public String getThumbnailURL() throws NoThumbnailAvailableException {
+        if (thumbnailURL == null) {
+            throw new NoThumbnailAvailableException("No thumbnail available");
+        }
         return thumbnailURL;
     }
 
     @Override
-    public String duration() {
+    public String getHighResolutionThumbnailURL() throws NoThumbnailAvailableException {
+        if (highResolutionThumbnailURL == null) {
+            throw new NoThumbnailAvailableException("No thumbnail available");
+        }
+        return highResolutionThumbnailURL;
+    }
+
+    @Override
+    public String getDuration() {
         // youtube duration is ISO 8601 string (format is PT[MINUTES]M[SECONDS]S)
         Pattern pattern = Pattern.compile("PT(.*)M(.*)S");
-        Matcher matcher = pattern.matcher(getDuration());
+        Matcher matcher = pattern.matcher(duration);
         if (matcher.matches()) {
             String seconds = matcher.group(2);
             if (seconds.length() == 1) {
@@ -124,10 +193,6 @@ public class YoutubeVideo implements Playable {
         new AsyncGetRelated(eventListener).execute(this);
     }
 
-    public String getDuration() {
-        return duration;
-    }
-
     public void setId(String id) {
         this.id = id;
     }
@@ -136,16 +201,16 @@ public class YoutubeVideo implements Playable {
         this.duration = duration;
     }
 
-    public String getTitle() {
-        return title;
-    }
-
     public void setTitle(String title) {
         this.title = title;
     }
 
     public void setThumbnailURL(String thumbnailURL) {
         this.thumbnailURL = thumbnailURL;
+    }
+
+    public void setHighResolutionThumbnailURL(String url) {
+        highResolutionThumbnailURL = url;
     }
 
     public BigInteger getViewCount() {
@@ -171,8 +236,9 @@ public class YoutubeVideo implements Playable {
         @Override
         protected List<Playable> doInBackground(YoutubeVideo... params) {
             try {
-                List<String> relatedIds =
+                SearchList<String> idList =
                         YoutubeSearchEngine.getInstance().relatedVideoIds(params[0]);
+                List<String> relatedIds = idList.getNextPage();
                 ArrayList<Playable> result = new ArrayList<>();
                 for (String id : relatedIds) {
                     YoutubeVideo related = new YoutubeVideo();
@@ -182,6 +248,7 @@ public class YoutubeVideo implements Playable {
                 return result;
             } catch (IOException e) {
                 Log.w("YoutubeVideo", "Couldn't retrieve related: " + e.getMessage());
+                e.printStackTrace();
                 return new ArrayList<>();
             }
         }
@@ -191,5 +258,10 @@ public class YoutubeVideo implements Playable {
             super.onPostExecute(relatedList);
             eventListener.onRelatedAvailable(relatedList);
         }
+    }
+
+    @Override
+    public boolean isEqual(Playable playable) {
+        return playable.getId().equals(getId());
     }
 }

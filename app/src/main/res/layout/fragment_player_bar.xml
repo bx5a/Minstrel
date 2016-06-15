@@ -3,12 +3,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/colorAccent">
+    style="@style/AccentLayout">
 
     <SeekBar
         android:id="@+id/viewPlayer_seekBar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="3dp"
+        android:progressDrawable="@drawable/transparent_background_progress_horizontal"
+        android:minHeight="3dp"
+        android:maxHeight="3dp"
+        android:thumb="@color/transparent"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -20,10 +24,12 @@
             android:layout_height="match_parent"
             android:layout_marginLeft="5dp"
             android:layout_weight="4"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:layout_marginTop="5dp">
 
             <TextView
                 android:id="@+id/viewPlayer_currentSong"
+                style="@style/DarkText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:singleLine="true"
@@ -34,6 +40,7 @@
 
             <TextView
                 android:id="@+id/viewPlayer_nextSong"
+                style="@style/DarkText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"

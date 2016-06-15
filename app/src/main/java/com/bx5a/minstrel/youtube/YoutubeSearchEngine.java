@@ -1,9 +1,32 @@
+/*
+ * Copyright Guillaume VINCKE 2016
+ *
+ * This file is part of Minstrel
+ *
+ * Minstrel is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Minstrel is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Minstrel.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package com.bx5a.minstrel.youtube;
 
 import android.content.Context;
 import android.util.Log;
 
 import com.bx5a.minstrel.R;
+import com.bx5a.minstrel.exception.CategoryNotFoundException;
+import com.bx5a.minstrel.exception.NotInitializedException;
+import com.bx5a.minstrel.exception.PageNotAvailableException;
+import com.bx5a.minstrel.utils.SearchList;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.http.javanet.NetHttpTransport;
@@ -13,6 +36,8 @@ import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.SearchListResponse;
 import com.google.api.services.youtube.model.SearchResult;
 import com.google.api.services.youtube.model.Video;
+import com.google.api.services.youtube.model.VideoCategory;
+import com.google.api.services.youtube.model.VideoCategoryListResponse;
 import com.google.api.services.youtube.model.VideoListResponse;
 
 import org.json.JSONArray;
@@ -27,12 +52,16 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+
 /**
- * Created by guillaume on 23/03/2016.
+ * Search engine for YouTube
  */
 public class YoutubeSearchEngine {
     private YouTube youtube;
-    private final long kMaxResultNumber = 15;
+    private String countryCode;
+    private final long MAX_RESULT_NUMBER = 15;
+    private final String MUSIC_CATEGORY_TITLE = "Music";
+    private final String DEFAULT_CATEGORY_ID = "0";
 
     private static YoutubeSearchEngine ourInstance = new YoutubeSearchEngine();
 
@@ -48,7 +77,12 @@ public class YoutubeSearchEngine {
         return youtube != null;
     }
 
+    /**
+     * To operate properly this singleton needs to be initialized. If not,
+     * @param context
+     */
     public void init(Context context) {
+        countryCode = context.getResources().getConfiguration().locale.getCountry();
         youtube = new YouTube.Builder(new NetHttpTransport(), new JacksonFactory(),
                 new HttpRequestInitializer() {
                     @Override
@@ -58,126 +92,262 @@ public class YoutubeSearchEngine {
                 }).setApplicationName(context.getString(R.string.app_name)).build();
     }
 
-    private YouTube.Search.List initIdQuery() throws IOException {
-        YouTube.Search.List query = youtube.search().list("id");
-        query.setKey(DeveloperKey.DEVELOPER_KEY);
-        query.setType("video");
-        query.setFields("items(id/videoId)");
-        query.setMaxResults(kMaxResultNumber);
-        return query;
-    }
-
-    private List<String> executeIdQuery(YouTube.Search.List query) throws IOException {
-        SearchListResponse response = query.execute();
-
-        List<String> ids = new ArrayList<>();
-        for (SearchResult result : response.getItems()) {
-            ids.add(result.getId().getVideoId());
+    public SearchList<String> relatedVideoIds(YoutubeVideo video)
+            throws IOException, NotInitializedException {
+        if (youtube == null) {
+            throw new NotInitializedException("YoutubeSearchEngine's uninitialized");
         }
-        return ids;
+        IdList list = new IdList(youtube, countryCode, getMusicCategoryId());
+        list.setRelatedToVideoId(video.getId());
+        return list;
     }
 
-    private List<String> searchVideoIds(String keywords) throws IOException {
-        YouTube.Search.List query = initIdQuery();
-        query.setQ(keywords);
-        return executeIdQuery(query);
-    }
-
-    public List<String> relatedVideoIds(YoutubeVideo video) throws IOException {
-        YouTube.Search.List query = initIdQuery();
-        query.setRelatedToVideoId(video.getId());
-        return executeIdQuery(query);
-    }
-
-    public List<YoutubeVideo> getVideoDetails(List<String> videoIds) throws IOException {
+    public SearchList<YoutubeVideo> getVideoDetails(List<String> videoIds)
+            throws IOException, NotInitializedException {
+        if (youtube == null) {
+            throw new NotInitializedException("YoutubeSearchEngine's uninitialized");
+        }
         Joiner stringJoiner = Joiner.on(',');
         String videoId = stringJoiner.join(videoIds);
-        YouTube.Videos.List query =
-                youtube.videos().list("contentDetails,snippet,statistics").setId(videoId);
-        query.setKey(DeveloperKey.DEVELOPER_KEY);
-        query.setFields("items(id,snippet/title,snippet/thumbnails/default/url," +
-                "contentDetails/duration,statistics/viewCount)");
 
-        VideoListResponse response = query.execute();
-
-        List<YoutubeVideo> youtubeVideos = new ArrayList<>();
-        for (Video video : response.getItems()) {
-            YoutubeVideo youtubeVideo = new YoutubeVideo();
-
-            youtubeVideo.setTitle(video.getSnippet().getTitle());
-            youtubeVideo.setThumbnailURL(video.getSnippet().getThumbnails().getDefault().getUrl());
-            youtubeVideo.setId(video.getId());
-            youtubeVideo.setDuration(video.getContentDetails().getDuration());
-            youtubeVideo.setViewCount(video.getStatistics().getViewCount());
-
-            youtubeVideos.add(youtubeVideo);
-        }
-
-        return youtubeVideos;
+        VideoList list = new VideoList(youtube, countryCode, getMusicCategoryId());
+        list.setId(videoId);
+        list.setMaxResults(videoIds.size());
+        return list;
     }
 
-    public List<YoutubeVideo> search(String keywords) {
-        // update keywords using highest score suggested one
-        List<String> suggestedKeywords = autoComplete(keywords);
-        if (suggestedKeywords.size() != 0) {
-            keywords = suggestedKeywords.get(0);
+    public SearchList<YoutubeVideo> getPopularVideos() throws IOException, NotInitializedException {
+        if (youtube == null) {
+            throw new NotInitializedException("YoutubeSearchEngine not initialized");
         }
-
-        // search with given keyword
-        List<String> videoIds;
-        try {
-            videoIds = searchVideoIds(keywords);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-
-        // for each answer, search for details
-        List<YoutubeVideo> videos;
-        try {
-            videos = getVideoDetails(videoIds);
-            return videos;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
+        VideoList list = new VideoList(youtube, countryCode, getMusicCategoryId());
+        list.setChart("mostPopular");
+        return list;
     }
 
-    // suggestion api
-    private List<String> autoComplete(String keyword) {
+    public SearchList<YoutubeVideo> search(String keywords) throws IOException, NotInitializedException {
+        if (youtube == null) {
+            throw new NotInitializedException("YoutubeSearchEngine not initialized");
+        }
+
+        try {
+            List<String> suggestedKeywords = autoComplete(keywords);
+            if (suggestedKeywords.size() > 0) {
+                keywords = suggestedKeywords.get(0);
+            }
+        } catch (JSONException e) {
+            Log.e("YoutubeSearchEngine",
+                    "Can't auto complete: " + e.getMessage() + " Defaulting to normal query");
+        }
+
+        IdList list = new IdList(youtube, countryCode, getMusicCategoryId());
+        list.setQ(keywords);
+        return new IdToVideoList(list);
+    }
+
+    /**
+     * Gives a list of suggested research using the given keyword
+     * @param keyword
+     * @return
+     */
+    private List<String> autoComplete(String keyword) throws IOException, JSONException {
         ArrayList<String> suggestions = new ArrayList<>();
 
         String path = "complete/search";
         String query = "client=firefox&ds=yt&q=" + keyword.replace(" ", "+");
 
-        try {
-            URL suggestionApiUrl = new URL("http", "suggestqueries.google.com", path + "?" + query);
+        URL suggestionApiUrl = new URL("http", "suggestqueries.google.com", path + "?" + query);
 
-            // open a connection to the autocompletion engine
-            HttpURLConnection connection = (HttpURLConnection) suggestionApiUrl.openConnection();
+        // open a connection to the autocompletion engine
+        HttpURLConnection connection = (HttpURLConnection) suggestionApiUrl.openConnection();
+
+        String readQuery = "";
+        try {
             InputStream in = new BufferedInputStream(connection.getInputStream());
 
             // read
             InputStreamReader reader = new InputStreamReader(in);
             int c;
-            String readQuery = "";
             while ((c = reader.read()) != -1) {
-                readQuery = readQuery + (char)c;
+                readQuery = readQuery + (char) c;
             }
-
-            // response is an array of size 2: 0 = keyword / 1 = array of response
-            JSONArray array = new JSONArray(readQuery).getJSONArray(1);
-            for (int index = 0; index < array.length(); index++) {
-                suggestions.add(array.getString(index));
-            }
-
-            connection.disconnect();
         } catch (IOException e) {
-            Log.w("YoutubeSearchEngine", "Can't autocomplete " + keyword + " : " + e.getMessage());
-        } catch (JSONException e) {
-            Log.w("YoutubeSearchEngine", "Can't parse json for keyword " + keyword + " : " + e.getMessage());
+            throw e;
+        } finally {
+            // Force the closing of the connection
+            connection.disconnect();
+        }
+
+        // response is an array of size 2: 0 = keyword / 1 = array of response
+        JSONArray array = new JSONArray(readQuery).getJSONArray(1);
+        for (int index = 0; index < array.length(); index++) {
+            suggestions.add(array.getString(index));
         }
 
         return suggestions;
+    }
+
+    private String getMusicCategoryId() {
+        try {
+            return getCategoryIdFromTitle(MUSIC_CATEGORY_TITLE);
+        } catch (CategoryNotFoundException | IOException e) {
+            Log.e("YoutubeSearchEngine",
+                    "Couldn't get music category id. Defaulting to " + DEFAULT_CATEGORY_ID);
+            return DEFAULT_CATEGORY_ID;
+        }
+    }
+
+    private String getCategoryIdFromTitle(String categoryTitle)
+            throws IOException, CategoryNotFoundException {
+        // TODO: cache result instead of query each time
+        YouTube.VideoCategories.List query = youtube.videoCategories().list("id,snippet");
+        query.setKey(DeveloperKey.DEVELOPER_KEY);
+        query.setRegionCode(countryCode);
+        query.setFields("items(id,snippet/title)");
+        VideoCategoryListResponse response = query.execute();
+        for (VideoCategory category : response.getItems()) {
+            if (category.getSnippet().getTitle().equals(categoryTitle)) {
+                return category.getId();
+            }
+        }
+        throw new CategoryNotFoundException("Category " + categoryTitle + " couldn't be found");
+    }
+
+    // Helpers
+    private class IdList implements SearchList<String> {
+        private YouTube.Search.List query;
+        private boolean nextPageAvailable;
+        private String nextPageToken;
+        public IdList(YouTube youtube, String countryCode, String categoryId)
+                throws IOException {
+            query = youtube.search().list("id");
+            query.setKey(DeveloperKey.DEVELOPER_KEY);
+            query.setType("video");
+            query.setFields("items(id/videoId),nextPageToken");
+            query.setMaxResults(MAX_RESULT_NUMBER);
+            query.setRegionCode(countryCode);
+            query.setVideoCategoryId(categoryId);
+            nextPageAvailable = true;
+            nextPageToken = null;
+        }
+        public void setQ(String q) {
+            query.setQ(q);
+        }
+        public void setRelatedToVideoId(String relatedToVideoId) {
+            query.setRelatedToVideoId(relatedToVideoId);
+        }
+        @Override
+        public void setMaxResults(long maxResults) {
+            query.setMaxResults(maxResults);
+        }
+        @Override
+        public boolean hasNextPage() {
+            return nextPageAvailable;
+        }
+        @Override
+        public List<String> getNextPage() throws IOException {
+            if (!hasNextPage()) {
+                throw new PageNotAvailableException("No next page available");
+            }
+
+            if (nextPageToken != null) {
+                query.setPageToken(nextPageToken);
+            }
+            SearchListResponse response = query.execute();
+
+            // get next page token
+            nextPageToken = response.getNextPageToken();
+            nextPageAvailable = nextPageToken != null;
+
+            List<String> ids = new ArrayList<>();
+            for (SearchResult result : response.getItems()) {
+                ids.add(result.getId().getVideoId());
+            }
+            return ids;
+        }
+    }
+
+    private class VideoList implements SearchList<YoutubeVideo> {
+        private YouTube.Videos.List query;
+        private boolean nextPageAvailable;
+        private String nextPageToken;
+        public VideoList(YouTube youtube, String countryCode, String categoryId)
+                throws IOException {
+            query = youtube.videos().list("contentDetails,snippet,statistics");
+            query.setKey(DeveloperKey.DEVELOPER_KEY);
+            query.setFields("items(id,snippet/title,snippet/thumbnails/default/url," +
+                    "snippet/thumbnails/high/url,contentDetails/duration,statistics/viewCount),"+
+                    "nextPageToken");
+            query.setMaxResults(MAX_RESULT_NUMBER);
+            query.setRegionCode(countryCode);
+            query.setVideoCategoryId(categoryId);
+            nextPageAvailable = true;
+            nextPageToken = null;
+        }
+        public void setChart(String chart) {
+            query.setChart(chart);
+        }
+        public void setId(String id) {
+            query.setId(id);
+        }
+        @Override
+        public void setMaxResults(long maxResults) {
+            query.setMaxResults(maxResults);
+        }
+        @Override
+        public boolean hasNextPage() {
+            return nextPageAvailable;
+        }
+        @Override
+        public List<YoutubeVideo> getNextPage() throws IOException {
+            if (!hasNextPage()) {
+                throw new PageNotAvailableException("No next page available");
+            }
+
+            if (nextPageToken != null) {
+                query.setPageToken(nextPageToken);
+            }
+            VideoListResponse response = query.execute();
+
+            nextPageToken = response.getNextPageToken();
+            nextPageAvailable = nextPageToken != null;
+
+            List<YoutubeVideo> youtubeVideos = new ArrayList<>();
+            for (Video video : response.getItems()) {
+                YoutubeVideo youtubeVideo = new YoutubeVideo();
+
+                youtubeVideo.setTitle(video.getSnippet().getTitle());
+                youtubeVideo.setThumbnailURL(
+                        video.getSnippet().getThumbnails().getDefault().getUrl());
+                youtubeVideo.setHighResolutionThumbnailURL(
+                        video.getSnippet().getThumbnails().getHigh().getUrl());
+                youtubeVideo.setId(video.getId());
+                youtubeVideo.setDuration(video.getContentDetails().getDuration());
+                youtubeVideo.setViewCount(video.getStatistics().getViewCount());
+
+                youtubeVideos.add(youtubeVideo);
+            }
+
+            return youtubeVideos;
+        }
+    }
+
+    private class IdToVideoList implements SearchList<YoutubeVideo> {
+        private IdList idList;
+        public IdToVideoList(IdList idList) {
+            this.idList = idList;
+        }
+        @Override
+        public void setMaxResults(long maxResults) {
+            idList.setMaxResults(maxResults);
+        }
+        @Override
+        public boolean hasNextPage() {
+            return idList.hasNextPage();
+        }
+        @Override
+        public List<YoutubeVideo> getNextPage() throws IOException {
+            return getVideoDetails(idList.getNextPage()).getNextPage();
+        }
     }
 }

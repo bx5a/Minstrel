@@ -1,17 +1,36 @@
+/*
+ * Copyright Guillaume VINCKE 2016
+ *
+ * This file is part of Minstrel
+ *
+ * Minstrel is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Minstrel is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Minstrel.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package com.bx5a.minstrel.youtube;
 
 import android.util.Log;
 
 import com.bx5a.minstrel.player.MasterPlayer;
 import com.bx5a.minstrel.player.Player;
+import com.bx5a.minstrel.utils.Task;
+import com.bx5a.minstrel.utils.TaskQueue;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerSupportFragment;
 
-import java.util.LinkedList;
-
 /**
- * Created by guillaume on 11/04/2016.
+ * Implementation of the Player interface for the YouTube streaming service
  */
 public class YoutubePlayer implements Player {
     private static YoutubePlayer ourInstance = new YoutubePlayer();
@@ -30,64 +49,6 @@ public class YoutubePlayer implements Player {
     // In our system we want to be able to queue load and seekTo requests without worrying about the
     // asynchronous system. To do so, we use a TaskQueue: A queue that will execute the next request
     // when it finishes
-    // TODO: move the TaskQueue system to utils
-    private interface TaskCompletionListener {
-        void onTaskCompleted();
-    }
-
-    private abstract class Task {
-        private TaskCompletionListener completionListener;
-
-        public Task() {
-            completionListener = null;
-        }
-
-        abstract void start();
-
-        public void markAsComplete() {
-            if (completionListener == null) {
-                return;
-            }
-            completionListener.onTaskCompleted();
-        }
-
-        public void setTaskCompletionListener(TaskCompletionListener listener) {
-            completionListener = listener;
-        }
-    }
-    private class TaskQueue {
-        private LinkedList<Task> tasks;
-
-        public TaskQueue() {
-            tasks = new LinkedList<>();
-        }
-
-        public void queueTask(Task task) {
-            task.setTaskCompletionListener(new TaskCompletionListener() {
-                @Override
-                public void onTaskCompleted() {
-                    // remove the completed task
-                    tasks.poll();
-                    startNextTask();
-                }
-            });
-            tasks.add(task);
-
-            // if we only have the task we've just added, we start it
-            if (tasks.size() == 1) {
-                startNextTask();
-            }
-        }
-
-        private void startNextTask() {
-            if (tasks.size() == 0) {
-                return;
-            }
-            tasks.getFirst().start();
-        }
-
-    }
-
     private TaskQueue taskQueue;
     private Task loadingTask;
 
@@ -196,30 +157,38 @@ public class YoutubePlayer implements Player {
                     Log.e("YoutubePlayer", "On loaded called even if loadingTask isn't set");
                     return;
                 }
-                Task currentTask = loadingTask;
-                loadingTask = null;
-                currentTask.markAsComplete();
+                markLoadingTaskAsComplete();
             }
 
             @Override
             public void onVideoEnded() {
-                videoStopped();
-            }
-
-            @Override
-            public void onError(YouTubePlayer.ErrorReason errorReason) {
-                videoStopped();
-            }
-
-            private void videoStopped() {
                 loadedId = "";
                 if (playerStoppedListener != null) {
                     playerStoppedListener.onPlayerStopped();
                 }
             }
+
+            @Override
+            public void onError(YouTubePlayer.ErrorReason errorReason) {
+                // TODO: pop error info ??
+                // if we are still in the loading process. We can say that it failed
+                if (loadingTask != null) {
+                    markLoadingTaskAsComplete();
+                }
+                loadedId = "";
+                if (playerStoppedListener != null) {
+                    playerStoppedListener.onPlayerError();
+                }
+            }
         });
 
         MasterPlayer.getInstance().registerPlayer(this);
+    }
+
+    private void markLoadingTaskAsComplete() {
+        Task currentTask = loadingTask;
+        loadingTask = null;
+        currentTask.markAsComplete();
     }
 
     public void load(final YoutubeVideo video) throws IllegalStateException {
@@ -228,9 +197,15 @@ public class YoutubePlayer implements Player {
         }
         pause();
 
+        // if a current loading task is pending, mark it as finished as we won't wait for its
+        // completion anyway
+        if (loadingTask != null) {
+            markLoadingTaskAsComplete();
+        }
+
         loadingTask = new Task() {
             @Override
-            void start() {
+            public void start() {
                 youtubePlayer.loadVideo(video.getId());
                 // task will be markedAsComplete by the playerStateChangeListener
             }
@@ -244,7 +219,7 @@ public class YoutubePlayer implements Player {
         }
         taskQueue.queueTask(new Task() {
             @Override
-            void start() {
+            public void start() {
                 if (!youtubePlayer.isPlaying()) {
                     youtubePlayer.play();
                 }
@@ -259,7 +234,7 @@ public class YoutubePlayer implements Player {
         }
         taskQueue.queueTask(new Task() {
             @Override
-            void start() {
+            public void start() {
                 if (youtubePlayer.isPlaying()) {
                     youtubePlayer.pause();
                 }
@@ -274,7 +249,7 @@ public class YoutubePlayer implements Player {
         }
         taskQueue.queueTask(new Task() {
             @Override
-            void start() {
+            public void start() {
                 int millis = (int) (position * youtubePlayer.getDurationMillis());
                 youtubePlayer.seekToMillis(millis);
                 markAsComplete();

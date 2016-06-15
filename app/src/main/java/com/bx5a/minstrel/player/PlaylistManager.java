@@ -1,15 +1,32 @@
+/*
+ * Copyright Guillaume VINCKE 2016
+ *
+ * This file is part of Minstrel
+ *
+ * Minstrel is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Minstrel is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Minstrel.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package com.bx5a.minstrel.player;
 
-import android.util.Log;
+import com.bx5a.minstrel.exception.EmptyPlaylistException;
 
 import java.security.InvalidParameterException;
-import java.util.List;
 
 /**
- * Created by guillaume on 30/05/2016.
+ * A playlist manager is a combination of a playlist and a selected index.
+ * Each basic playlist operation are done in relation of the selected index.
  */
-// the playlist manager represents common action you can made to a playlist when selected as
-// currently played
 public class PlaylistManager {
     public interface EventListener {
         void onEnqueued(int enqueuedIndex, int selectedIndex);
@@ -78,7 +95,7 @@ public class PlaylistManager {
             move(selectedIndex - 1);
         }
 
-        if (index != selectedIndex) {
+        if (index != selectedIndex || playlist.size() == 0) {
             return;
         }
         move(getValidGetIndexFromPosition(Position.Next));
@@ -115,10 +132,23 @@ public class PlaylistManager {
         move(selectedIndex + 1);
     }
 
+    public boolean canMoveToNext() {
+        return selectedIndex + 1 < playlist.size();
+    }
+
     public void previous() throws IndexOutOfBoundsException {
         move(selectedIndex - 1);
     }
 
+    public boolean canMoveToPrevious() {
+        return selectedIndex - 1 >= 0;
+    }
+
+    /**
+     * change the selected index
+     * @param index
+     * @throws IndexOutOfBoundsException
+     */
     public void move(int index) throws IndexOutOfBoundsException {
         if (index < 0 || index >= playlist.size()) {
             throw new IndexOutOfBoundsException("index " + String.valueOf(index) + " invalid");
@@ -127,9 +157,14 @@ public class PlaylistManager {
         selectedIndexEventListener.onChanged();
     }
 
-    public Playable getSelected() {
+    /**
+     *
+     * @return the currenty selected playable
+     * @throws EmptyPlaylistException if this.size() == 0
+     */
+    public Playable getSelected() throws EmptyPlaylistException {
         if (size() == 0) {
-            return null;
+            throw new EmptyPlaylistException("Can't get from an empty playlist");
         }
         return playlist.get(selectedIndex);
     }
@@ -148,5 +183,14 @@ public class PlaylistManager {
 
     public void setSelectedIndexEventListener(SelectedIndexEventListener selectedIndexEventListener) {
         this.selectedIndexEventListener = selectedIndexEventListener;
+    }
+
+    // helpers
+    public boolean hasIndex(int index) {
+        return playlist.hasIndex(index);
+    }
+
+    public boolean isEmpty() {
+        return playlist.isEmpty();
     }
 }

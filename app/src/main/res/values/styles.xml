@@ -1,11 +1,66 @@
 <resources>
-
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+    <!-- Dark theme definition -->
+    <style name="AppTheme.Dark" parent="Theme.AppCompat">
+        <!-- base color: gray -->
+        <item name="colorPrimary">#393939</item>
+        <item name="colorPrimaryDark">@color/darkGray</item>
+        <!-- accent color: orange -->
+        <item name="colorAccent">@color/orange</item>
+        <!-- text color: white -->
+        <item name="android:textColorPrimary">#FFFFFF</item>
+        <item name="android:textColorSecondary">#9E9E9E</item>
+        <!-- inverse text color: 87% black -->
+        <item name="android:textColorPrimaryInverse">#DE000000</item>
+        <item name="android:textColorSecondaryInverse">#9E9E9E</item>
+        <!-- control icons -->
+        <item name="playIcon">@drawable/ic_playwhite</item>
+        <item name="pauseIcon">@drawable/ic_pausewhite</item>
+        <item name="playlistIcon">@drawable/ic_playlistwhite</item>
+        <item name="nextIcon">@drawable/ic_next</item>
+        <item name="previousIcon">@drawable/ic_previous</item>
+        
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
     </style>
 
+    <style name="AppTheme.Light" parent="Theme.AppCompat.Light">
+        <!-- base color: gray -->
+        <item name="colorPrimary">#cdcdcd</item>
+        <item name="colorPrimaryDark">#a4a4a4</item>
+        <!-- accent color: orange -->
+        <item name="colorAccent">@color/orange</item>
+        <!-- text color: white -->
+        <item name="android:textColorPrimary">@color/darkGray</item>
+        <item name="android:textColorSecondary">#393939</item>
+        <!-- inverse text color -->
+        <item name="android:textColorPrimaryInverse">#FFFFFF</item>
+        <item name="android:textColorSecondaryInverse">#9E9E9E</item>
+        <!-- control icons -->
+        <item name="playIcon">@drawable/ic_play</item>
+        <item name="pauseIcon">@drawable/ic_pause</item>
+        <item name="playlistIcon">@drawable/ic_playlist</item>
+        <item name="nextIcon">@drawable/ic_nextdark</item>
+        <item name="previousIcon">@drawable/ic_previousdark</item>
+
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
+    </style>
+
+    <style name="AccentLayout">
+        <item name="android:background">?attr/colorAccent</item>
+    </style>
+    <style name="DarkText">
+        <item name="android:textColor">@color/darkGray</item>
+    </style>
+    <style name="TitleStyle">
+        <item name="android:textColor">?attr/colorAccent</item>
+        <item name="android:textSize">20dp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:padding">15dp</item>
+    </style>
+
+    <!-- default values for preferences -->
+    <bool name="brightness_management_default">true</bool>
+    <bool name="dark_theme_default">true</bool>
+    <bool name="disable_screen_rotation_default">false</bool>
+    <bool name="auto_enqueue_default">true</bool>
+    <bool name="show_undo_dialog_default">true</bool>
 </resources>

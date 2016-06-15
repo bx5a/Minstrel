@@ -11,19 +11,19 @@
         android:layout_weight="4"
         android:layout_width="0px"
         android:paddingLeft="10dp"
-        android:textColor="@color/white"
         android:textSize="17dp"
         android:text="text"
         android:gravity="center"
+        android:textColor="@color/white"
         android:id="@+id/dialogUndo_text"/>
     
     <Button
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:layout_width="wrap_content"
-        android:textColor="@color/colorAccent"
         android:text="@string/undo"
         android:background="@drawable/layout_border"
         android:layout_margin="10dp"
+        android:textColor="@color/white"
         android:id="@+id/dialogUndo_button"/>
 </com.bx5a.minstrel.legacy.RoundedCornerLayout>

@@ -32,8 +32,7 @@
                 android:gravity="center"
                 android:textAlignment="center"
                 android:singleLine="true"
-                android:textSize="12dp"
-                android:textColor="@color/colorAccent"/>
+                android:textSize="12dp"/>
         </FrameLayout>
 
         <RelativeLayout
@@ -51,8 +50,7 @@
                 android:gravity="center"
                 android:textAlignment="center"
                 android:singleLine="true"
-                android:textStyle="bold"
-                android:textColor="@color/colorAccent"/>
+                android:textStyle="bold"/>
         </RelativeLayout>
 
         <RelativeLayout
@@ -73,8 +71,7 @@
                 android:gravity="center"
                 android:textAlignment="center"
                 android:singleLine="true"
-                android:textSize="12dp"
-                android:textColor="@color/colorAccent"/>
+                android:textSize="12dp"/>
         </RelativeLayout>
     </LinearLayout>
 
@@ -84,48 +81,62 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:layout_marginLeft="60dp"
         android:layout_marginRight="60dp"
         android:layout_marginBottom="20dp">
-        <!-- placeholder to center -->
+
+        <SeekBar
+            android:id="@+id/fragmentPlayer_seekBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:progressDrawable="@drawable/primary_background_progress_horizontal"
+            android:minHeight="5dp"
+            android:maxHeight="5dp"/>
+
         <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:layout_width="0px"/>
-        <!-- -->
-        <ImageButton
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:src="@drawable/ic_previous"
-            android:layout_width="0px"
-            android:background="@null"
-            android:id="@+id/fragmentPlayer_previous"/>
-        <LinearLayout
-            android:layout_height="match_parent"
-            android:layout_weight="2"
-            android:layout_width="0px"
-            android:gravity="center">
+            android:orientation="horizontal">
+            <!-- placeholder to center -->
+            <LinearLayout
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_width="0px"/>
+            <!-- -->
             <ImageButton
-                android:layout_height="110dp"
-                android:layout_width="110dp"
-                android:background="@drawable/ic_playwhite"
-                android:id="@+id/fragmentPlayer_playPause"/>
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:src="?attr/previousIcon"
+                android:layout_width="0px"
+                android:background="@null"
+                android:id="@+id/fragmentPlayer_previous"/>
+            <LinearLayout
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                android:layout_width="0px"
+                android:gravity="center">
+                <ImageButton
+                    android:layout_height="110dp"
+                    android:layout_width="110dp"
+                    android:background="?attr/playIcon"
+                    android:id="@+id/fragmentPlayer_playPause"/>
+            </LinearLayout>
+            <ImageButton
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:src="?attr/nextIcon"
+                android:layout_width="0px"
+                android:background="@null"
+                android:id="@+id/fragmentPlayer_next"/>
+            <ImageButton
+                android:layout_marginLeft="10dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_width="0px"
+                android:src="?attr/playlistIcon"
+                android:background="@null"
+                android:id="@+id/fragmentPlayer_playlist" />
         </LinearLayout>
-        <ImageButton
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:src="@drawable/ic_next"
-            android:layout_width="0px"
-            android:background="@null"
-            android:id="@+id/fragmentPlayer_next"/>
-        <ImageButton
-            android:layout_marginLeft="10dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:layout_width="0px"
-            android:src="@drawable/ic_playlistwhite"
-            android:background="@null"
-            android:id="@+id/fragmentPlayer_playlist" />
     </LinearLayout>
 </LinearLayout>

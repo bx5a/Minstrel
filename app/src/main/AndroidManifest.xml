@@ -7,8 +7,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:windowSoftInputMode="adjustResize"
-        android:theme="@style/AppTheme">
+        android:windowSoftInputMode="adjustResize">
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -19,6 +18,9 @@
         <service android:name=".player.CurrentTimeUpdaterService">
 
         </service>
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="85e0a170004d0f2b01ccaa0060efa47b0e888791" />
     </application>
     <uses-permission android:name="android.permission.INTERNET"></uses-permission>
 </manifest>
