@@ -50,6 +50,9 @@ public class PopularFragment extends ThumbnailPlayableListFragment {
 
     @Override
     protected SearchList<Playable> getSearchList() {
+        if (!YoutubeSearchEngine.getInstance().isInitialized()) {
+            YoutubeSearchEngine.getInstance().init(getContext());
+        }
         try {
             return new YoutubeSearchList(YoutubeSearchEngine.getInstance().getPopularVideos());
         } catch (IOException e) {

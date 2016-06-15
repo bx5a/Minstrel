@@ -73,6 +73,9 @@ public class SearchFragment extends Fragment {
                 adapterCreator) {
             @Override
             protected SearchList<YoutubeVideo> getSearchList() {
+                if (!YoutubeSearchEngine.getInstance().isInitialized()) {
+                    YoutubeSearchEngine.getInstance().init(getContext());
+                }
                 try {
                     return YoutubeSearchEngine.getInstance().search(keywords);
                 } catch (IOException e) {
@@ -81,7 +84,6 @@ public class SearchFragment extends Fragment {
                 }
             }
         };
-
 
         resultList = (ListView) view.findViewById(R.id.viewSearch_resultList);
         searchView = (SearchView) view.findViewById(R.id.viewSearch_search);
