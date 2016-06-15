@@ -7,7 +7,8 @@ During those occasions, you usually find yourself switching between youtube, spo
 ## Install
 __Minstrel__ is built using [Android Studio](https://developer.android.com/studio/index.html). To try it you just have to create a new project from version control. 
 
-_Please note_ that this application requires that the YouTube application is installed. To work on a virtual device, you can download the app from [apkmirror](http://www.apkmirror.com/?s=youtube&post_type=apps_post) and install it using these [instructions](http://stackoverflow.com/questions/3480201/how-do-you-install-an-apk-file-in-the-android-emulator)
+_Please note_ that this application requires that the YouTube application is installed. To work on a virtual device, you can download the app from [apkmirror](http://www.apkmirror.com/?s=youtube&post_type=apps_post) and install it using these [instructions](http://stackoverflow.com/questions/3480201/how-do-you-install-an-apk-file-in-the-android-emulator).
+It also requires a valid developer key for the [YouTube data API](https://developers.google.com/youtube/v3/getting-started). Copy that key in the [DeveloperKey.java](https://github.com/bx5a/Minstrel/blob/master/app/src/main/java/com/bx5a/minstrel/youtube/DeveloperKey.java) file and you should be all set. 
 
 ## Contribute
 I'd be more than happy to listen to any suggestion from users or to accept pull requests. Feel free to fill an [issue](https://github.com/bx5a/Minstrel/issues) if you have troubles using the app or an idea to improve it.
