@@ -34,7 +34,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by guillaume on 15/06/2016.
+ * Widget that handles infinite scrolls.
+ * An infinite scroll is a system that displays search results progressively when scroll reaches
+ * bottom of list.
+ * That class handles any adapter type and element
  */
 abstract public class InfiniteScrollWidget<ElementType> {
     interface AdapterCreator<ElementType> {
@@ -63,11 +66,32 @@ abstract public class InfiniteScrollWidget<ElementType> {
         initListView();
     }
 
+    /**
+     * access the currently displayed element list
+     * @return element list
+     */
     protected List<ElementType> getElementList() {
         return elementList;
     }
 
+    /**
+     * that function is called when displayFirstPage is requested
+     * @return the search list to be displayed
+     */
     abstract protected SearchList<ElementType> getSearchList();
+
+    /**
+     * initialize and show the first few elements
+     * that function get the search list from the abstract getSearchList function
+     */
+    protected void displayFirstPage() {
+        if (isUpdating()) {
+            updateTask.cancel(true);
+        }
+        InitTask task = new InitTask();
+        task.execute();
+        updateTask = task;
+    }
 
     private void initWaitBar() {
         waitBar.setIndeterminate(true);
@@ -99,15 +123,6 @@ abstract public class InfiniteScrollWidget<ElementType> {
         return updateTask != null && updateTask.getStatus() != AsyncTask.Status.FINISHED;
     }
 
-    protected void displayFirstPage() {
-        if (isUpdating()) {
-            updateTask.cancel(true);
-        }
-        InitTask task = new InitTask();
-        task.execute();
-        updateTask = task;
-    }
-
     private void displayNextPage() {
         if (isUpdating()) {
             updateTask.cancel(true);
@@ -120,6 +135,7 @@ abstract public class InfiniteScrollWidget<ElementType> {
         updateTask = task;
     }
 
+    // Async tasks
     private class InitTask extends AsyncTask<Void, Void, SearchList<ElementType>> {
         private boolean isCancelled;
         public InitTask() {
