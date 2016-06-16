@@ -135,9 +135,7 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
         initYoutubePlayer();
         initMenuActions();
         initPlayerControl();
-        initUndoDialog();
         initFragments();
-        initMasterPlayerBehavior();
         initPreferencesListener();
         initTitleClickEvent();
 
@@ -148,10 +146,24 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
     @Override
     protected void onDestroy() {
         deinitPreferencesListener();
-        deinitMasterPlayerBehavior();
         super.onDestroy();
         YoutubePlayer.getInstance().reset();
         History.getInstance().setContext(null);
+    }
+
+    @Override
+    protected void onResume() {
+        initMasterPlayerBehavior();
+        initUndoDialog();
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        deInitMasterPlayerBehavior();
+        deInitUndoDialog();
+        super.onPause();
+        MasterPlayer.getInstance().unload();
     }
 
     @Override
@@ -186,12 +198,6 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        MasterPlayer.getInstance().unload();
     }
 
     @Override
@@ -326,6 +332,15 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
         });
     }
 
+    private void deInitUndoDialog() {
+        MasterPlayer.getInstance().setPlaylistManagerEventListener(new PlaylistManager.EventListener() {
+            @Override
+            public void onEnqueued(int enqueuedIndex, int selectedIndex) {
+
+            }
+        });
+    }
+
     private void displayUndoDialog(final int index, final int selectedIndex) {
         // preferences: don't show undo dialog
         if (!getDefaultSharedPreferences(getApplicationContext()).getBoolean("show_undo_dialog",
@@ -405,16 +420,16 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
         MasterPlayer.getInstance().addMasterPlayerEventListener(playerEventListener);
     }
 
+    private void deInitMasterPlayerBehavior() {
+        MasterPlayer.getInstance().removeMasterPlayerEventListener(playerEventListener);
+    }
+
     private void updateControlBarVisibility() {
         if (MasterPlayer.getInstance().getPlaylist().isEmpty()) {
             playerControlsParentLayout.setVisibility(View.GONE);
             return;
         }
         playerControlsParentLayout.setVisibility(View.VISIBLE);
-    }
-
-    private void deinitMasterPlayerBehavior() {
-        MasterPlayer.getInstance().removeMasterPlayerEventListener(playerEventListener);
     }
 
     private void initTitleClickEvent() {
