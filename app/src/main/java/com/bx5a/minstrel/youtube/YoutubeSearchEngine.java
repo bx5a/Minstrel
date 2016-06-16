@@ -366,8 +366,6 @@ public class YoutubeSearchEngine {
     }
 
     private boolean isEmbeddable(Video video) {
-        String videoTitle = video.getSnippet().getTitle();
-        Timber.i(videoTitle);
         VideoStatus status = video.getStatus();
         if (status == null) {
             return false;
