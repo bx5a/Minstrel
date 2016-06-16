@@ -36,6 +36,7 @@ import android.widget.TextView;
 
 import com.bx5a.minstrel.R;
 import com.bx5a.minstrel.exception.NoThumbnailAvailableException;
+import com.bx5a.minstrel.exception.NotInitializedException;
 import com.bx5a.minstrel.player.MasterPlayer;
 import com.bx5a.minstrel.player.MasterPlayerEventListener;
 import com.bx5a.minstrel.player.Playable;
@@ -120,7 +121,12 @@ public class PlayerControlFragment extends Fragment {
                     return;
                 }
                 float progress = (float) (seekBar.getProgress()) / seekBar.getMax();
-                MasterPlayer.getInstance().seekTo(progress);
+
+                try {
+                    MasterPlayer.getInstance().seekTo(progress);
+                } catch (NotInitializedException e) {
+                    Timber.e(e, "Can't seek because playable's player isn't initialized");
+                }
             }
         });
     }

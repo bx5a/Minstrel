@@ -34,10 +34,13 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.bx5a.minstrel.R;
+import com.bx5a.minstrel.exception.NotInitializedException;
 import com.bx5a.minstrel.player.CurrentTimeUpdaterService;
 import com.bx5a.minstrel.player.MasterPlayer;
 import com.bx5a.minstrel.player.MasterPlayerEventListener;
 import com.bx5a.minstrel.player.Playlist;
+
+import timber.log.Timber;
 
 public class PlayerControlBarFragment extends Fragment {
     private TextView currentSongText;
@@ -136,7 +139,11 @@ public class PlayerControlBarFragment extends Fragment {
                     return;
                 }
                 float progress = (float) (seekBar.getProgress()) / seekBar.getMax();
-                MasterPlayer.getInstance().seekTo(progress);
+                try {
+                    MasterPlayer.getInstance().seekTo(progress);
+                } catch (NotInitializedException e) {
+                    Timber.e(e, "Can't seek because playable's player isn't initialized");
+                }
             }
         });
     }
@@ -156,6 +163,7 @@ public class PlayerControlBarFragment extends Fragment {
                 }
 
                 if (player.isPlaying()) {
+                    // if is playing, we take for granted that this playable's player is initialized
                     player.pause();
                     return;
                 }
