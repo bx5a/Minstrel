@@ -163,11 +163,6 @@ public class MasterPlayer {
             return;
         }
 
-        // store playable in history
-        if (History.getInstance().isInitialized()) {
-            History.getInstance().store(playable);
-        }
-
         playable.play();
         if (seekValue != 0) {
             seekTo(seekValue);

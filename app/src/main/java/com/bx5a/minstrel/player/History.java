@@ -25,7 +25,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.bx5a.minstrel.LocalSQLiteOpenHelper;
-import com.bx5a.minstrel.exception.NotInitializedException;
 import com.bx5a.minstrel.exception.PageNotAvailableException;
 import com.bx5a.minstrel.exception.PlayableCreationException;
 import com.bx5a.minstrel.utils.PlayableFactory;
@@ -40,11 +39,10 @@ import java.util.Map;
 import timber.log.Timber;
 
 /**
- * Singleton that contains the history of played song
+ * history of enqueued song
  */
 public class History {
     private static History instance;
-    private Context context;
     private int MAX_RESULT_NUMBER = 20;
 
     public static History getInstance() {
@@ -54,55 +52,58 @@ public class History {
         return instance;
     }
 
-    public History() {
-        context = null;
+    private History() {}
+
+    public ReadableHistory getReadableHistory(Context context) {
+        return new ReadableHistory(context);
+    }
+    public class ReadableHistory {
+        private SQLiteDatabase db;
+        public ReadableHistory(Context context) {
+            LocalSQLiteOpenHelper helper = new LocalSQLiteOpenHelper(context);
+            db = helper.getReadableDatabase();
+        }
+        private SQLiteDatabase getDb() {
+            return db;
+        }
     }
 
-    /**
-     * To operate correctly, the history needs to be initialized with a context
-     * If not set, get and store function will throw a NullPointerException
-     * @param context
-     */
-    public void setContext(Context context) {
-        this.context = context;
+    public WritableHistory getWritableHistory(Context context) {
+        return new WritableHistory(context);
     }
-
-    /**
-     *
-     * @return boolean whether the context is or isn't set
-     */
-    public boolean isInitialized() {
-        return context != null;
+    public class WritableHistory {
+        private LocalSQLiteOpenHelper helper;
+        public WritableHistory(Context context) {
+            helper = new LocalSQLiteOpenHelper(context);
+        }
+        private SQLiteDatabase getWritableDb() {
+            return helper.getWritableDatabase();
+        }
+        private SQLiteDatabase getReadableDb() {
+            return helper.getReadableDatabase();
+        }
     }
 
     /**
      * get at most getMaximumSize() previously played playable
+     * @param readableHistory the readable object obtained through getReadableHistory
      * @return the list of playables
-     * @throws NotInitializedException if context isn't set
      */
-    public SearchList<Playable> get() throws NotInitializedException {
-        if (context == null) {
-            throw new NotInitializedException("Context needs to be set in History before using it");
-        }
-
-        return new HistoryList();
+    public SearchList<Playable> get(ReadableHistory readableHistory){
+        return new HistoryList(readableHistory);
     }
 
     /**
      * Add a playable to the history
+     * @param writableHistory the writable object obtained through getWritableHistory
      * @param playable the song to be stored
-     * @throws NotInitializedException if context isn't set
      */
-    public void store(Playable playable) throws NotInitializedException {
-        if (context == null) {
-            throw new NotInitializedException("Context needs to be set in History before using it");
-        }
+    public void store(WritableHistory writableHistory, Playable playable) {
 
         String classType = playable.getClassName();
         String id = playable.getId();
 
-        LocalSQLiteOpenHelper helper = new LocalSQLiteOpenHelper(context);
-        SQLiteDatabase readableDb = helper.getReadableDatabase();
+        SQLiteDatabase readableDb = writableHistory.getReadableDb();
 
         ContentValues values = new ContentValues();
         values.put("classType", classType);
@@ -113,7 +114,7 @@ public class History {
         boolean entryExists = exists(readableDb, where);
         readableDb.close();
 
-        SQLiteDatabase writableDb = helper.getWritableDatabase();
+        SQLiteDatabase writableDb = writableHistory.getReadableDb();
         if (entryExists) {
             writableDb.update("History", values, where, null);
         } else {
@@ -136,7 +137,9 @@ public class History {
         private long maxResults;
         private int indexOffset;
         private boolean nextPageAvailable;
-        public HistoryList() {
+        private ReadableHistory readableHistory;
+        public HistoryList(ReadableHistory readableHistory) {
+            this.readableHistory = readableHistory;
             maxResults = MAX_RESULT_NUMBER;
             indexOffset = 0;
             nextPageAvailable = true;
@@ -155,8 +158,7 @@ public class History {
                 throw new PageNotAvailableException("No next page available");
             }
 
-            LocalSQLiteOpenHelper helper = new LocalSQLiteOpenHelper(context);
-            SQLiteDatabase db = helper.getReadableDatabase();
+            SQLiteDatabase db = readableHistory.getDb();
 
             // we order from most recent to older
             Cursor cursor = db.query(true, "History",

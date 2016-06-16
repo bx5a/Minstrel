@@ -34,7 +34,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -49,6 +48,7 @@ import com.bx5a.minstrel.legacy.SoftKeyboardHandledLayout;
 import com.bx5a.minstrel.player.History;
 import com.bx5a.minstrel.player.MasterPlayer;
 import com.bx5a.minstrel.player.MasterPlayerEventListener;
+import com.bx5a.minstrel.player.Playable;
 import com.bx5a.minstrel.player.Playlist;
 import com.bx5a.minstrel.player.PlaylistManager;
 import com.bx5a.minstrel.player.Position;
@@ -131,7 +131,6 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
         playerControls = (PlayerControlBarFragment) getSupportFragmentManager().findFragmentById(R.id.activityMain_playerControls);
 
         initBackground();
-        initHistory();
         initYoutubePlayer();
         initMenuActions();
         initPlayerControl();
@@ -148,20 +147,19 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
         deinitPreferencesListener();
         super.onDestroy();
         YoutubePlayer.getInstance().reset();
-        History.getInstance().setContext(null);
     }
 
     @Override
     protected void onResume() {
         initMasterPlayerBehavior();
-        initUndoDialog();
+        initOnEnqueueEvent();
         super.onResume();
     }
 
     @Override
     public void onPause() {
         deInitMasterPlayerBehavior();
-        deInitUndoDialog();
+        deInitOnEnqueueEvent();
         super.onPause();
         MasterPlayer.getInstance().unload();
     }
@@ -239,7 +237,9 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
 
     private void initFragments() {
         popularFragment = new PopularFragment();
+
         historyFragment = new HistoryFragment();
+
         searchFragment = new SearchFragment();
         playlistFragment = new PlaylistFragment();
         playerControlFragment = new PlayerControlFragment();
@@ -252,10 +252,6 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
         });
         aboutFragment = new AboutFragment();
         generalPreferenceFragment = new GeneralPreferenceFragment();
-    }
-
-    private void initHistory() {
-        History.getInstance().setContext(this);
     }
 
     private void initYoutubePlayer() {
@@ -322,17 +318,26 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
         });
     }
 
-    private void initUndoDialog() {
+    private void initOnEnqueueEvent() {
         undoDialogFragment = new UndoDialogFragment();
         MasterPlayer.getInstance().setPlaylistManagerEventListener(new PlaylistManager.EventListener() {
             @Override
             public void onEnqueued(int index, int selectedIndex) {
                 displayUndoDialog(index, selectedIndex);
+
+                // Add cued song to history
+                // if we don't have enough playable in list, that's an error
+                if (MasterPlayer.getInstance().getPlaylist().size() <= index) {
+                    return;
+                }
+                Playable playable = MasterPlayer.getInstance().getPlaylist().get(index);
+                History history = History.getInstance();
+                history.store(history.getWritableHistory(getBaseContext()), playable);
             }
         });
     }
 
-    private void deInitUndoDialog() {
+    private void deInitOnEnqueueEvent() {
         MasterPlayer.getInstance().setPlaylistManagerEventListener(new PlaylistManager.EventListener() {
             @Override
             public void onEnqueued(int enqueuedIndex, int selectedIndex) {
