@@ -29,7 +29,7 @@ import com.bx5a.minstrel.R;
 import static android.support.v7.preference.PreferenceManager.getDefaultSharedPreferences;
 
 public class LowBrightnessOnIdleActivity  extends AppCompatActivity {
-    private final int kIdleTimeMilliseconds = 5000;  // 5 seconds
+    private final int IDLE_TIME_MILLISECONDS = 10000;  // 10 seconds
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +40,7 @@ public class LowBrightnessOnIdleActivity  extends AppCompatActivity {
     private void initIdleManager() {
         final Handler mainHandler = new Handler(getBaseContext().getMainLooper());
         IdleManager idleManager = IdleManager.getInstance();
-        idleManager.setInactivityMillisecondsBeforeIdle(kIdleTimeMilliseconds);
+        idleManager.setInactivityMillisecondsBeforeIdle(IDLE_TIME_MILLISECONDS);
         idleManager.setIdleEventListener(new IdleManager.IdleEventListener() {
             @Override
             public void onIdleStart() {
