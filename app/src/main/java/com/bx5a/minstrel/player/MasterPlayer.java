@@ -20,6 +20,7 @@
 package com.bx5a.minstrel.player;
 
 import com.bx5a.minstrel.exception.EmptyPlaylistException;
+import com.bx5a.minstrel.exception.NotInitializedException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -224,11 +225,17 @@ public class MasterPlayer {
         playAt(0);
     }
 
-    public void pause() throws EmptyPlaylistException {
+    public void pause() throws EmptyPlaylistException, NotInitializedException {
         if (playlistManager.size() == 0) {
             throw new EmptyPlaylistException("Can't pause an empty playlist");
         }
-        playlistManager.getSelected().pause();
+
+        Playable playable = playlistManager.getSelected();
+
+        if (!playable.getPlayer().isInitialized()) {
+            throw new NotInitializedException("Can't seek on an uninitialized player");
+        }
+        playable.pause();
     }
 
     public boolean isPlaying() {
@@ -269,11 +276,15 @@ public class MasterPlayer {
     }
 
     // position is a [0, 1] value
-    public void seekTo(float position) throws EmptyPlaylistException {
+    public void seekTo(float position) throws EmptyPlaylistException, NotInitializedException {
         if (playlistManager.isEmpty()) {
             throw new EmptyPlaylistException("Can't seek on an empty playlist");
         }
         Playable playable = playlistManager.getSelected();
+
+        if (!playable.getPlayer().isInitialized()) {
+            throw new NotInitializedException("Can't seek on an uninitialized player");
+        }
         playable.seekTo(position);
     }
 

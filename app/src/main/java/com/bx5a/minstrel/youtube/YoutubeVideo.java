@@ -144,7 +144,7 @@ public class YoutubeVideo implements Playable {
     }
 
     @Override
-    public void seekTo(float position) throws IllegalStateException {
+    public void seekTo(float position) {
         YoutubePlayer.getInstance().seekTo(position);
     }
 

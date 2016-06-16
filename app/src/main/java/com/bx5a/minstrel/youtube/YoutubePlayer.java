@@ -19,6 +19,7 @@
 
 package com.bx5a.minstrel.youtube;
 
+import com.bx5a.minstrel.exception.NotInitializedException;
 import com.bx5a.minstrel.player.MasterPlayer;
 import com.bx5a.minstrel.player.Player;
 import com.bx5a.minstrel.utils.Task;
@@ -191,9 +192,9 @@ public class YoutubePlayer implements Player {
         currentTask.markAsComplete();
     }
 
-    public void load(final YoutubeVideo video) throws IllegalStateException {
+    public void load(final YoutubeVideo video) throws NotInitializedException {
         if (!isInitialized()) {
-            throw new IllegalStateException("Youtube player isn't initialized");
+            throw new NotInitializedException("Youtube player isn't initialized");
         }
         pause();
 
@@ -213,9 +214,9 @@ public class YoutubePlayer implements Player {
         taskQueue.queueTask(loadingTask);
     }
 
-    public void play() throws IllegalStateException {
+    public void play() throws NotInitializedException {
         if (!isInitialized()) {
-            throw new IllegalStateException("Youtube player isn't initialized");
+            throw new NotInitializedException("Youtube player isn't initialized");
         }
         taskQueue.queueTask(new Task() {
             @Override
@@ -228,9 +229,9 @@ public class YoutubePlayer implements Player {
         });
     }
 
-    public void pause() throws IllegalStateException {
+    public void pause() throws NotInitializedException {
         if (!isInitialized()) {
-            throw new IllegalStateException("Youtube player isn't initialized");
+            throw new NotInitializedException("Youtube player isn't initialized");
         }
         taskQueue.queueTask(new Task() {
             @Override
@@ -243,9 +244,9 @@ public class YoutubePlayer implements Player {
         });
     }
 
-    public void seekTo(final float position) throws IllegalStateException {
+    public void seekTo(final float position) throws NotInitializedException {
         if (!isInitialized()) {
-            throw new IllegalStateException("Youtube player isn't initialized");
+            throw new NotInitializedException("Youtube player isn't initialized");
         }
         taskQueue.queueTask(new Task() {
             @Override
