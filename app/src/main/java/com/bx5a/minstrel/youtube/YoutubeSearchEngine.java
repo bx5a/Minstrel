@@ -20,6 +20,7 @@
 package com.bx5a.minstrel.youtube;
 
 import android.content.Context;
+import android.util.LruCache;
 
 import com.bx5a.minstrel.R;
 import com.bx5a.minstrel.exception.CategoryNotFoundException;
@@ -37,7 +38,9 @@ import com.google.api.services.youtube.model.SearchResult;
 import com.google.api.services.youtube.model.Video;
 import com.google.api.services.youtube.model.VideoCategory;
 import com.google.api.services.youtube.model.VideoCategoryListResponse;
+import com.google.api.services.youtube.model.VideoContentDetailsRegionRestriction;
 import com.google.api.services.youtube.model.VideoListResponse;
+import com.google.api.services.youtube.model.VideoStatus;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -63,6 +66,7 @@ public class YoutubeSearchEngine {
     private final long MAX_RESULT_NUMBER = 15;
     private final String MUSIC_CATEGORY_TITLE = "Music";
     private final String DEFAULT_CATEGORY_ID = "0";
+    private LruCache<String, String> categoryCache;
 
     private static YoutubeSearchEngine ourInstance = new YoutubeSearchEngine();
 
@@ -72,6 +76,9 @@ public class YoutubeSearchEngine {
 
     private YoutubeSearchEngine() {
         youtube = null;
+        final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
+        final int cacheSize = maxMemory / 16;
+        categoryCache = new LruCache<>(cacheSize);
     }
 
     public boolean isInitialized() {
@@ -198,7 +205,10 @@ public class YoutubeSearchEngine {
 
     private String getCategoryIdFromTitle(String categoryTitle)
             throws IOException, CategoryNotFoundException {
-        // TODO: cache result instead of query each time
+        String cachedValue = categoryCache.get(categoryTitle);
+        if (cachedValue != null) {
+            return cachedValue;
+        }
         YouTube.VideoCategories.List query = youtube.videoCategories().list("id,snippet");
         query.setKey(DeveloperKey.DEVELOPER_KEY);
         query.setRegionCode(countryCode);
@@ -206,7 +216,9 @@ public class YoutubeSearchEngine {
         VideoCategoryListResponse response = query.execute();
         for (VideoCategory category : response.getItems()) {
             if (category.getSnippet().getTitle().equals(categoryTitle)) {
-                return category.getId();
+                String id = category.getId();
+                categoryCache.put(categoryTitle, id);
+                return id;
             }
         }
         throw new CategoryNotFoundException("Category " + categoryTitle + " couldn't be found");
@@ -222,6 +234,7 @@ public class YoutubeSearchEngine {
             query = youtube.search().list("id");
             query.setKey(DeveloperKey.DEVELOPER_KEY);
             query.setType("video");
+            query.setVideoSyndicated("true");
             query.setFields("items(id/videoId),nextPageToken");
             query.setMaxResults(MAX_RESULT_NUMBER);
             query.setRegionCode(countryCode);
@@ -272,11 +285,12 @@ public class YoutubeSearchEngine {
         private String nextPageToken;
         public VideoList(YouTube youtube, String countryCode, String categoryId)
                 throws IOException {
-            query = youtube.videos().list("contentDetails,snippet,statistics");
+            query = youtube.videos().list("contentDetails,snippet,status,statistics");
             query.setKey(DeveloperKey.DEVELOPER_KEY);
             query.setFields("items(id,snippet/title,snippet/thumbnails/default/url," +
-                    "snippet/thumbnails/high/url,contentDetails/duration,statistics/viewCount),"+
-                    "nextPageToken");
+                    "snippet/thumbnails/high/url,contentDetails/duration,"+
+                    "contentDetails/regionRestriction/blocked,status/embeddable,"+
+                    "statistics/viewCount),nextPageToken");
             query.setMaxResults(MAX_RESULT_NUMBER);
             query.setRegionCode(countryCode);
             query.setVideoCategoryId(categoryId);
@@ -313,6 +327,10 @@ public class YoutubeSearchEngine {
 
             List<YoutubeVideo> youtubeVideos = new ArrayList<>();
             for (Video video : response.getItems()) {
+                if (isRestrictedInCurrentCountry(video)) {
+                    continue;
+                }
+
                 YoutubeVideo youtubeVideo = new YoutubeVideo();
 
                 youtubeVideo.setTitle(video.getSnippet().getTitle());
@@ -329,6 +347,32 @@ public class YoutubeSearchEngine {
 
             return youtubeVideos;
         }
+    }
+
+    private boolean isRestrictedInCurrentCountry(Video video) {
+        VideoContentDetailsRegionRestriction region =
+                video.getContentDetails().getRegionRestriction();
+        if (region == null) {
+            return !isEmbeddable(video);
+        }
+        List<String> blockedRegions = region.getBlocked();
+        if (blockedRegions == null || blockedRegions.isEmpty()) {
+            return !isEmbeddable(video);
+        }
+        if (!blockedRegions.contains(countryCode)) {
+            return !isEmbeddable(video);
+        }
+        return true;
+    }
+
+    private boolean isEmbeddable(Video video) {
+        String videoTitle = video.getSnippet().getTitle();
+        Timber.i(videoTitle);
+        VideoStatus status = video.getStatus();
+        if (status == null) {
+            return false;
+        }
+        return status.getEmbeddable();
     }
 
     private class IdToVideoList implements SearchList<YoutubeVideo> {
