@@ -32,6 +32,7 @@
     <string name="manage_brightness_title">Manage Brightness</string>
     <string name="dark_theme_preference_title">Use Dark Theme</string>
     <string name="screen_rotation_disabled_preference_title">Disable Screen Rotation</string>
+    <string name="screen_rotation_disabled_preference_summary">Screen rotation restarts YouTube player. A few seconds are required before restarting the video</string>
     <string name="show_undo_dialog_title">Display Undo Option</string>
     <string name="show_undo_dialog_summary">Show the undo option when a song is added to the list</string>
 </resources>

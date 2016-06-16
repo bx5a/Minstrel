@@ -15,6 +15,7 @@
         <CheckBoxPreference
             android:persistent="true"
             android:title="@string/screen_rotation_disabled_preference_title"
+            android:summary="@string/screen_rotation_disabled_preference_summary"
             android:defaultValue="@bool/disable_screen_rotation_default"
             android:key="disable_screen_rotation"/>
     </PreferenceCategory>
