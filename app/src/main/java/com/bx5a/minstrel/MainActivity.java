@@ -38,9 +38,11 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -54,6 +56,7 @@ import com.bx5a.minstrel.player.PlaylistManager;
 import com.bx5a.minstrel.player.Position;
 import com.bx5a.minstrel.utils.GeneralPreferencesEnum;
 import com.bx5a.minstrel.utils.LowBrightnessOnIdleActivity;
+import com.bx5a.minstrel.utils.MotionEventHandler;
 import com.bx5a.minstrel.widget.AboutFragment;
 import com.bx5a.minstrel.widget.GeneralPreferenceFragment;
 import com.bx5a.minstrel.widget.HistoryFragment;
@@ -88,6 +91,7 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
     private PlayerControlBarFragment playerControls;
     private UndoDialogFragment undoDialogFragment;
     private RelativeLayout playerControlsParentLayout;
+    private LinearLayout youtubeFragmentHolder;
     private final int AUTO_DISMISS_MILLISECOND = 2000;
 
     private boolean currentThemeIsDark;
@@ -106,6 +110,7 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
 
     private SharedPreferences.OnSharedPreferenceChangeListener preferencesListener;
     private MasterPlayerEventListener playerEventListener;
+    private MotionEventHandler motionEventHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,6 +133,7 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
         aboutButton = (ImageAndTextButton) findViewById(R.id.activityMain_aboutButton);
         preferenceButton = (ImageAndTextButton) findViewById(R.id.activityMain_preferenceButton);
         playerControlsParentLayout = (RelativeLayout) findViewById(R.id.activityMain_bottomControls);
+        youtubeFragmentHolder = (LinearLayout) findViewById(R.id.activityMain_youtubeFragmentHolder);
         playerControls = (PlayerControlBarFragment) getSupportFragmentManager().findFragmentById(R.id.activityMain_playerControls);
 
         initBackground();
@@ -137,10 +143,19 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
         initFragments();
         initPreferencesListener();
         initTitleClickEvent();
+        initMotionEventHandler();
 
         displayInitialFragment();
         updateControlBarVisibility();
     }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        motionEventHandler.dispatchEvent(ev);
+        return super.dispatchTouchEvent(ev);
+    }
+
+
 
     @Override
     protected void onDestroy() {
@@ -458,6 +473,16 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
             // Apply the custom view
             actionBar.setCustomView(customView);
         }
+    }
+
+    private void initMotionEventHandler() {
+        motionEventHandler = new MotionEventHandler();
+        motionEventHandler.setOnViewClickListener(youtubeFragmentHolder, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                displayPlayerControls();
+            }
+        });
     }
 
     // from http://stackoverflow.com/questions/1109022/close-hide-the-android-soft-keyboard
