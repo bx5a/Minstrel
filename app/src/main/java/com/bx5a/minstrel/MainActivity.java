@@ -347,7 +347,7 @@ public class MainActivity extends LowBrightnessOnIdleActivity {
                 }
                 Playable playable = MasterPlayer.getInstance().getPlaylist().get(index);
                 History history = History.getInstance();
-                history.store(history.getWritableHistory(getBaseContext()), playable);
+                history.store(playable);
             }
         });
     }

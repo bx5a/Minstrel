@@ -20,7 +20,6 @@
 package com.bx5a.minstrel.player;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
@@ -44,6 +43,7 @@ import timber.log.Timber;
 public class History {
     private static History instance;
     private int MAX_RESULT_NUMBER = 20;
+    private LocalSQLiteOpenHelper helper;
 
     public static History getInstance() {
         if (instance == null) {
@@ -52,58 +52,27 @@ public class History {
         return instance;
     }
 
-    private History() {}
-
-    public ReadableHistory getReadableHistory(Context context) {
-        return new ReadableHistory(context);
-    }
-    public class ReadableHistory {
-        private SQLiteDatabase db;
-        public ReadableHistory(Context context) {
-            LocalSQLiteOpenHelper helper = new LocalSQLiteOpenHelper(context);
-            db = helper.getReadableDatabase();
-        }
-        private SQLiteDatabase getDb() {
-            return db;
-        }
-    }
-
-    public WritableHistory getWritableHistory(Context context) {
-        return new WritableHistory(context);
-    }
-    public class WritableHistory {
-        private LocalSQLiteOpenHelper helper;
-        public WritableHistory(Context context) {
-            helper = new LocalSQLiteOpenHelper(context);
-        }
-        private SQLiteDatabase getWritableDb() {
-            return helper.getWritableDatabase();
-        }
-        private SQLiteDatabase getReadableDb() {
-            return helper.getReadableDatabase();
-        }
+    private History() {
+        helper = new LocalSQLiteOpenHelper();
     }
 
     /**
      * get at most getMaximumSize() previously played playable
-     * @param readableHistory the readable object obtained through getReadableHistory
      * @return the list of playables
      */
-    public SearchList<Playable> get(ReadableHistory readableHistory){
-        return new HistoryList(readableHistory);
+    public SearchList<Playable> get(){
+        return new HistoryList();
     }
 
     /**
      * Add a playable to the history
-     * @param writableHistory the writable object obtained through getWritableHistory
      * @param playable the song to be stored
      */
-    public void store(WritableHistory writableHistory, Playable playable) {
-
+    public void store(Playable playable) {
         String classType = playable.getClassName();
         String id = playable.getId();
 
-        SQLiteDatabase readableDb = writableHistory.getReadableDb();
+        SQLiteDatabase readableDb = helper.getReadableDatabase();
 
         ContentValues values = new ContentValues();
         values.put("classType", classType);
@@ -114,7 +83,7 @@ public class History {
         boolean entryExists = exists(readableDb, where);
         readableDb.close();
 
-        SQLiteDatabase writableDb = writableHistory.getReadableDb();
+        SQLiteDatabase writableDb = helper.getWritableDatabase();
         if (entryExists) {
             writableDb.update("History", values, where, null);
         } else {
@@ -137,9 +106,7 @@ public class History {
         private long maxResults;
         private int indexOffset;
         private boolean nextPageAvailable;
-        private ReadableHistory readableHistory;
-        public HistoryList(ReadableHistory readableHistory) {
-            this.readableHistory = readableHistory;
+        public HistoryList() {
             maxResults = MAX_RESULT_NUMBER;
             indexOffset = 0;
             nextPageAvailable = true;
@@ -158,7 +125,7 @@ public class History {
                 throw new PageNotAvailableException("No next page available");
             }
 
-            SQLiteDatabase db = readableHistory.getDb();
+            SQLiteDatabase db = helper.getReadableDatabase();
 
             // we order from most recent to older
             Cursor cursor = db.query(true, "History",

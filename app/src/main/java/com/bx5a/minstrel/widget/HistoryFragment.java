@@ -43,6 +43,6 @@ public class HistoryFragment extends ThumbnailPlayableListFragment {
     @Override
     protected SearchList<Playable> getSearchList() {
         History history = History.getInstance();
-        return history.get(history.getReadableHistory(getContext()));
+        return history.get();
     }
 }

@@ -19,13 +19,14 @@
 
 package com.bx5a.minstrel;
 
-import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.bx5a.minstrel.utils.MinstrelApplication;
+
 public class LocalSQLiteOpenHelper extends SQLiteOpenHelper {
-    public LocalSQLiteOpenHelper(Context context) {
-        super(context, "minstrel.db", null, 1);
+    public LocalSQLiteOpenHelper() {
+        super(MinstrelApplication.getContext(), "minstrel.db", null, 1);
     }
 
     @Override
