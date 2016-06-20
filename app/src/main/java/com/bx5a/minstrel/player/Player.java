@@ -31,9 +31,14 @@ public interface Player {
         void onPlayerStopped();
         void onPlayerError();
     }
+    interface OnCurrentTimeChangeListener {
+        //  position is a value in the [0, 1] interval
+        void onCurrentTimeChanged(float position);
+    }
 
     void initialize(OnInitializedListener listener, OnPlayerStoppedListener playerStoppedListener);
     boolean isInitialized();
+    void setOnCurrentTimeChangeListener(OnCurrentTimeChangeListener listener);
 
     void play();
     void pause();

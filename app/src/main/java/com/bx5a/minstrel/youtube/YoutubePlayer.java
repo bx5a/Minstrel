@@ -24,6 +24,7 @@ import com.bx5a.minstrel.player.MasterPlayer;
 import com.bx5a.minstrel.player.Player;
 import com.bx5a.minstrel.utils.Task;
 import com.bx5a.minstrel.utils.TaskQueue;
+import com.bx5a.minstrel.utils.TimeTrackingTask;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerSupportFragment;
@@ -40,6 +41,7 @@ public class YoutubePlayer implements Player {
     private String loadedId;
     private YouTubePlayerSupportFragment playerFragment;
     private OnPlayerStoppedListener playerStoppedListener;
+    private TimeTrackingTask timeTrackingTask;
 
     // In youtube API, the load method is asynchronous. Therefore, doing
     // player.load(id);
@@ -63,6 +65,7 @@ public class YoutubePlayer implements Player {
         taskQueue = new TaskQueue();
         loadingTask = null;
         playerStoppedListener = null;
+        timeTrackingTask = new TimeTrackingTask(this);
     }
 
     public String getLoadedId() {
@@ -105,6 +108,11 @@ public class YoutubePlayer implements Player {
                 listener.onInitializationFailure(youTubeInitializationResult.toString());
             }
         });
+    }
+
+    @Override
+    public void setOnCurrentTimeChangeListener(OnCurrentTimeChangeListener listener) {
+        timeTrackingTask.setOnCurrentTimeChangeListener(listener);
     }
 
     private void setYoutubePlayer(final YouTubePlayer youtubePlayer) {
@@ -154,6 +162,7 @@ public class YoutubePlayer implements Player {
 
             @Override
             public void onVideoStarted() {
+                timeTrackingTask.start();
                 if (loadingTask == null) {
                     Timber.e("On loaded called even if loadingTask isn't set");
                     return;
@@ -163,6 +172,7 @@ public class YoutubePlayer implements Player {
 
             @Override
             public void onVideoEnded() {
+                timeTrackingTask.stop();
                 loadedId = "";
                 if (playerStoppedListener != null) {
                     playerStoppedListener.onPlayerStopped();
@@ -171,6 +181,7 @@ public class YoutubePlayer implements Player {
 
             @Override
             public void onError(YouTubePlayer.ErrorReason errorReason) {
+                timeTrackingTask.stop();
                 // TODO: pop error info ??
                 // if we are still in the loading process. We can say that it failed
                 if (loadingTask != null) {

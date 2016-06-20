@@ -19,7 +19,6 @@
 
 package com.bx5a.minstrel.widget;
 
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -35,7 +34,6 @@ import android.widget.TextView;
 
 import com.bx5a.minstrel.R;
 import com.bx5a.minstrel.exception.NotInitializedException;
-import com.bx5a.minstrel.player.CurrentTimeUpdaterService;
 import com.bx5a.minstrel.player.MasterPlayer;
 import com.bx5a.minstrel.player.MasterPlayerEventListener;
 import com.bx5a.minstrel.player.Playlist;
@@ -117,9 +115,6 @@ public class PlayerControlBarFragment extends Fragment {
         seekBar.getProgressDrawable().setColorFilter(Color.BLACK, android.graphics.PorterDuff.Mode.MULTIPLY);
         //seekBar.getThumb().mutate().setAlpha(0);
         seekBar.setPadding(0, 0, 0, 0);
-        // init current time updater service
-        Intent intent = new Intent(getActivity(), CurrentTimeUpdaterService.class);
-        getActivity().startService(intent);
         // on click
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override

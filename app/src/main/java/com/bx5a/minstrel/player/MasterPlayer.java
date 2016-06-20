@@ -311,10 +311,17 @@ public class MasterPlayer {
 
     public void registerPlayer(Player player) {
         players.add(player);
+        player.setOnCurrentTimeChangeListener(new Player.OnCurrentTimeChangeListener() {
+            @Override
+            public void onCurrentTimeChanged(float position) {
+                notifyCurrentTimeChanged();
+            }
+        });
     }
 
     public void unregisterPlayer(Player player) {
         players.remove(player);
+        player.setOnCurrentTimeChangeListener(null);
     }
 
     public void unload() {
@@ -337,15 +344,15 @@ public class MasterPlayer {
         }
     }
 
-    public void notifyPlayStateChanged() {
+    private void notifyCurrentTimeChanged() {
         for (MasterPlayerEventListener listener : listeners) {
-            listener.onPlayStateChange();
+            listener.onCurrentTimeChange();
         }
     }
 
-    public void notifyCurrentTimeChanged() {
+    public void notifyPlayStateChanged() {
         for (MasterPlayerEventListener listener : listeners) {
-            listener.onCurrentTimeChange();
+            listener.onPlayStateChange();
         }
     }
 
